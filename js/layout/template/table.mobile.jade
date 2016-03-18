@@ -1,0 +1,52 @@
+mixin th(column, cls)
+  - var cls = cls || [];
+  if column.header
+    - cls.push(column.header['class']);
+  if column.sortable
+    - cls.push('sortable');
+  if column.$orderby
+    - cls.push('orderby');
+
+  - cls = cls.join(' ');
+  th(class=cls)
+    if column.$orderby
+      if column.$orderby.dir > 0
+        span.grid-asc
+      else
+        span.grid-des
+    if (column && column.$html)
+      != column.$html
+    else
+      = (typeof column.$text != 'undefined')? column.$text : (column.property || column)
+
+mixin td(row, column, cls)
+  - var cls = cls || [];
+  if column.cell
+    - cls.push(column.cell['class']);
+  - cls = cls.join(' ');
+  td(class=cls)
+    - var res = row[column.property]
+    if (res && res.$html)
+      != res.$html
+    else
+      = res
+
+.table-responsive
+  table.table.table-hover.grid
+    thead
+      tr
+        each column, index in locals['columns.group.lock'][true] || []
+          +th(column, ['lock'])
+        each column, index in locals['columns.group.lock'][false] || []
+          +th(column)
+        if ((locals['columns.group.lock'][false] || []).length ==- 0)
+          th.fillter
+    tbody
+      each row, i in value
+        tr
+          each column, j in locals['columns.group.lock'][true] || []
+            +td(row, column, ['lock'])
+          each column, j in locals['columns.group.lock'][false] || []
+            +td(row, column)
+          if ((locals['columns.group.lock'][false] || []).length ==- 0)
+            td.fillterr

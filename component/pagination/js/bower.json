@@ -1,0 +1,25 @@
+{
+  "name": "Scripts",
+  "version": "0.0.0",
+  "license": "MICROSOFT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "lib",
+    "test",
+    "tests"
+  ],
+  "directory": "lib",
+  "dependencies": {
+    "jquery": "1.9.1",
+    "backbone": "0.9.9",
+    "requirejs": "2.1.2",
+    "knockout": "~2.3.0",
+    "bootstrap": "~3.0.0",
+    "underscore": "1.4.3"
+  },
+  "devDependencies": {
+    "squire": "~0.2.0"
+  }
+}

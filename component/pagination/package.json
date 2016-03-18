@@ -1,0 +1,10 @@
+{
+  "src" : "js/module",
+  "requirejs": {
+    "config": {
+      "paths": {
+        "component/pagination": "component/pagination/js/module"
+      }
+    }
+  }
+}

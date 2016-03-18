@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <link href="../lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" media="screen">
+<!--     <link href="../../grid-toolbar/examples/controls_next.css" rel="stylesheet" media="screen">
+    <link href="../../grid-toolbar/style/grid-toolbar.css" rel="stylesheet" media="screen"> -->
+    <script type="text/javascript" src="../lib/requirejs/require.js"></script>
+    <script type="text/javascript" src="require.config.js"></script>
+    <style>
+      table > thead > tr {
+        background-color: #FFF;
+      }
+
+      .table {
+          /*table-layout: fixed;*/
+          width: 1200px;
+          overflow: hidden;
+      }
+
+      .table thead td {
+        /*display: flex;*/
+      }
+
+      .table td, .table th {
+        word-break: break-word;
+        /*outline: solid gray 1px;*/
+      }
+
+      .table__row--aggregate td {
+        background-color: #f5f5f5;
+      }
+
+      .table__row--body td:hover {
+        background-color: #ddd;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <div class='row'>
+        <div class="panel panel-info">
+          <div class="panel-heading">Commands you can run in the console</div>
+          <div class="panel-body">
+            <pre>
+-- skip and take only work when pagination control is not connected [for now]
+// window.grid.projection.set({ skip : 20, take : 100, filter : function(i){ return i.age &lt; 5; } });
+-- select is being overriden by the column shifter's options
+// window.grid.projection.set({ select : ['age', 'age', 'name', 'index', 'name', 'age', 'index', 'age'] });
+-- call to column.take should work fine on this page
+// window.grid.projection.set({ 'column.take' : 4, 'column.skip' : 3 });
+// --- only used to change column settings / dimensions; window.grid.set('columns', [{ property : 'name', title : 'My Name' }, { property : 'age', title : 'Cat Age' }]);
+            </pre>
+          </div>
+        </div>
+        <div class="panel panel-info">
+          <div class="panel-heading">Notes</div>
+          <div class="panel-body">
+            <ul>
+              <li>Column 'ContactName' is sortable</li>
+              <li>Shift Columns right and left</li>
+              <li>Use Pager to navigate OData Source</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class='row'>
+        <div id='grid_toolbar_host_a'></div>
+        <div id='pagination_host_a'></div>
+        <div id='grid_host_a'></div>
+      </div>
+      <div class="panel panel-info">
+          <div class="panel-heading">Footer Space</div>
+          <div class="panel-body">
+            <ul>
+              <li>Used to make sure that grid virtualization renders correctly at the end of page</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="example.js"></script>
+  </body>
+</html>

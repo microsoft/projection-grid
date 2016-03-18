@@ -1,0 +1,32 @@
+{
+  "name": "projection-grid",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Ahmed Kamel <public@ahmedkamel.net>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/BingAds/projection-grid",
+  "moduleType": [
+    "amd"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "lib/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "backbone": "backbone#1.2.3",
+    "bootstrap": "bootstrap#v3.3.6",
+    "jquery": "jquery#2.2.1",
+    "requirejs": "requirejs#latest",
+    "underscore": "underscore#1.8.3"
+  },
+  "devDependencies": {
+    "squire": "squire#v0.2.0"
+  }
+}
