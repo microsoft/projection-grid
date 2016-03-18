@@ -1,0 +1,9 @@
+{
+  "requirejs" : {
+    "config" :{
+      "paths" : {
+        "component/connectors" : "component/connectors/js/module"
+      }
+    }
+  }
+}

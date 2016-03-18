@@ -1,0 +1,9 @@
+{
+  "requirejs": {
+    "config": {
+      "paths": {
+        "component/grid/examples": "component/grid/examples"
+      }
+    }
+  }
+}

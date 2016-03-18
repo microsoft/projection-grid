@@ -1,0 +1,27 @@
+table.table.table-striped.table-hover
+  - var i = 0;
+  - var j = 0;
+  thead
+    tr
+      - j = 0;
+      while j < columns.length
+        - var column = columns[j];
+        th(style=column.$th_style)
+          = column.$text || column.property || column
+        - j++
+  tbody
+    - i = 0;
+    while i < value.length
+      - var row = value[i];
+      tr
+       - j = 0
+       while j < columns.length
+         - var column = columns[j];
+         td(class=column.$lock?'table-col-lock':undefined, style=column.$td_style)
+            - var res = row[column.property]
+            if (res && res.$html)
+              != res.$html
+            else
+              = res
+          - j++
+      - i++

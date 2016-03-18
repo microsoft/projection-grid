@@ -1,0 +1,1 @@
+Component_Pagination_SummaryText

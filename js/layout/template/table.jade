@@ -1,0 +1,41 @@
+mixin th(column)
+  - var attr = (column.$metadata || {})['attr.head']
+  - var cls = [];
+  if column.sortable
+    - cls.push('sortable');
+  if column.$orderby
+    - cls.push('orderby');
+
+  - cls = cls.join(' ');
+  th(class=cls)&attributes(attributes)&attributes(attr)
+    if column.$orderby
+      if column.$orderby.dir > 0
+        span.grid-asc
+      else
+        span.grid-des
+    if (column && column.$html)
+      != column.$html
+    else
+      = (typeof column.$text != 'undefined')? column.$text : (column.property || column)
+
+mixin td(row, column)
+  - var attr = (column.$metadata || {})['attr.body']
+
+  td&attributes(attributes)&attributes(attr)
+    - var res = row[column.property]
+    if (res && res.$html)
+      != res.$html
+    else
+      = res
+
+table.table.table-hover.grid
+  thead
+    tr.table__row--header
+      each column, index in locals['columns'] || []
+        +th(column)
+  tbody
+    each row, i in value
+      - var attr = (row.$metadata || {}).attr
+      tr.table__row--body&attributes(attr)
+        each column, j in locals['columns'] || []
+          +td(row, column)

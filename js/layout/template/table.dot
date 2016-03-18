@@ -1,0 +1,20 @@
+<table class='table table-striped table-hover'>
+  <thead>
+    <tr>
+      {{~it.columns :column:j}}
+        <th>{{=column.$text || column.property || column}}</th>
+      {{~}}
+    </tr>
+  </thead>
+  <tbody>
+    {{~it.value :row:i}}
+      <tr>
+        {{~it.columns :column:j}}
+          <td>
+            {{= row[column.property].$html || row[column.property] || '' }}
+          </td>
+        {{~}}
+      </tr>
+    {{~}}
+  </tbody>
+</table>
