@@ -2,7 +2,7 @@ define([
   'lib/underscore',
   'lib/backbone',
   'component/grid/projection/base',
-  'component/grid/layout/template/row.checked'
+  'component/grid/layout/template/row.checked.jade'
 ], function(_, Backbone, BaseProjection, rowCheckTemp){
   'use strict';
 
@@ -113,7 +113,7 @@ define([
             .filter(function(item) {
               return !!(_.isFunction(checkbox_allow) ? checkbox_allow(item) : checkbox_allow) && !_.isUndefined(item[check_id]);
             })
-            .map(function(item) { 
+            .map(function(item) {
               return item[check_id];
             })
             .value();

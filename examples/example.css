@@ -1,0 +1,26 @@
+table > thead > tr {
+  background-color: #FFF;
+}
+
+.table {
+  /*table-layout: fixed;*/
+  width: 1200px;
+  overflow: hidden;
+}
+
+.table thead td {
+  /*display: flex;*/
+}
+
+.table td, .table th {
+  word-break: break-word;
+  /*outline: solid gray 1px;*/
+}
+
+.table__row--aggregate td {
+  background-color: #f5f5f5;
+}
+
+.table__row--body td:hover {
+  background-color: #ddd;
+}
