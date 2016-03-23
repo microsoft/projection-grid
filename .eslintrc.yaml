@@ -1,0 +1,13 @@
+---
+"extends": "xo-space"
+"env":
+  "mocha": true
+  "amd": true
+"rules":
+  "comma-dangle":
+    - 2
+    - "always-multiline"
+  "object-curly-spacing":
+    - 2
+    - "always"
+  "linebreak-style": 0
