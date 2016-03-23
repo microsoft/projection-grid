@@ -1,22 +1,21 @@
 define([
-      'lib/underscore'
-    , 'lib/backbone'
-    , 'component/grid/projection/base'
-    , 'component/grid/schema/properties'
-    , 'component/grid/model/response'
-  ],
-function(_, Backbone, BaseProjection, schema_properties, Response){
+  'lib/underscore', 
+  'lib/backbone',
+  'component/grid/projection/base',
+  'component/grid/schema/properties',
+  'component/grid/model/response',
+], function(_, Backbone, BaseProjection, schema_properties, Response) {
 
   var Model = BaseProjection.extend({
     defaults : {
-        skip        : 0
-      , take        : Number.MAX_VALUE
-      , filter      : function(){ return true; }
-      , orderby     : []
-      , select      : []
+      skip : 0,
+      take : Number.MAX_VALUE,
+      filter : function(){ return true; },
+      orderby : [],
+      select : [],
     },
     name : 'map-queryable',
-    beforeSet : function(local, other){
+    beforeSet : function(local, other) {
       if (_.has(local, 'filter')) {
         if (!_.isFunction(local['filter'])) {
           local['filter'] = this.defaults['filter'];
@@ -27,23 +26,15 @@ function(_, Backbone, BaseProjection, schema_properties, Response){
       // Model.__super__.update.call(this, options);
 
       if (Model.__super__.update.call(this, options)) {
-        var model = this.src.data
-          , order =  _.chain(this.get('orderby'))
-                      .first()
-                      .pairs()
-                      .first()
-                      .value();
+        var model = this.src.data;
+        var order = _.chain(this.get('orderby')).first().pairs().first().value();
 
-        var order_key = _.first(order)
-          , order_dir = _.last(order)
-          ;
+        var order_key = _.first(order), order_dir = _.last(order);
 
         var value = model.get('value');
         var count = value? value.length : 0;
 
-        value = _.chain(value)
-                  .filter(this.get('filter'))
-                  ;
+        var value = _.chain(value).filter(this.get('filter'));
 
         if (order_key) {
           value = value.sortBy(order_key);
@@ -53,9 +44,9 @@ function(_, Backbone, BaseProjection, schema_properties, Response){
         }
 
         value = value
-                  .rest(this.get('skip'))
-                  .first(this.get('take'))
-                  .value();
+          .rest(this.get('skip'))
+          .first(this.get('take'))
+          .value();
 
         var select = this.get('select');
         if (!_.size(select)) {
@@ -63,8 +54,8 @@ function(_, Backbone, BaseProjection, schema_properties, Response){
         }
 
         this.patch({
-            value   : value
-          , select  : select
+          value   : value,
+          select  : select
         });
       } else {
         // todo [akamel] unset our properties only

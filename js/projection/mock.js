@@ -1,9 +1,8 @@
 define([
-      'lib/underscore'
-    , 'lib/backbone'
-    , 'component/grid/projection/base'
-  ],
-function(_, Backbone, BaseProjection){
+  'lib/underscore',
+  'lib/backbone',
+  'component/grid/projection/base'
+], function(_, Backbone, BaseProjection){
 
   var wrds = ['troubles', 'kahlua', 'poncho', 'suzie', 'baheyya'];
   var idx = 0;
@@ -13,9 +12,9 @@ function(_, Backbone, BaseProjection){
     var wrd2 = wrds[_.random(0, wrds.length - 1)];
 
     return {
-        index : idx++
-      , name  : wrd1 + ' ' + wrd2
-      , age   : _.random(0, 22)
+      index : idx++,
+      name : wrd1 + ' ' + wrd2,
+      age : _.random(0, 22)
     };
   };
 
