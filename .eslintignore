@@ -7,9 +7,6 @@ coverage
 # output folder
 dist
 
-# npm logs
-node-debug.log
-
 # generated code for example pages
 examples/requirejs/require.config.js
 examples/webpack/dist

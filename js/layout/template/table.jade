@@ -1,5 +1,5 @@
 mixin th(column)
-  - var attr = (column.$metadata || {})['attr.head']
+  - var attr = (column.$metadata || {})['attr.head'] || {}
   - var cls = [];
   if column.sortable
     - cls.push('sortable');
@@ -19,7 +19,7 @@ mixin th(column)
       = (typeof column.$text != 'undefined')? column.$text : (column.property || column)
 
 mixin td(row, column)
-  - var attr = (column.$metadata || {})['attr.body']
+  - var attr = (column.$metadata || {})['attr.body'] || {}
 
   td&attributes(attributes)&attributes(attr)
     - var res = row[column.property]

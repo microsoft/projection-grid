@@ -14,7 +14,7 @@ define([
   'lib/underscore',
   'lib/jquery',
   'component/grid/projection/base',
-  'component/grid/layout/template/row.editable.string'
+  'component/grid/layout/template/row.editable.string.jade'
 ], function(_, jquery, BaseProjection, editableTemplate) {
   'use strict';
 
