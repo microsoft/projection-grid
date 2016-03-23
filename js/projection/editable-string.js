@@ -11,12 +11,11 @@
  */
 
 define([
-      'lib/underscore'
-    , 'lib/jquery'
-    , 'component/grid/projection/base'
-    , 'component/grid/layout/template/row.editable.string'
-  ],
-function(_, jquery, BaseProjection, editableTemplate){
+  'lib/underscore',
+  'lib/jquery',
+  'component/grid/projection/base',
+  'component/grid/layout/template/row.editable.string'
+], function(_, jquery, BaseProjection, editableTemplate) {
   'use strict';
 
   var Model = BaseProjection.extend({
@@ -26,10 +25,10 @@ function(_, jquery, BaseProjection, editableTemplate){
     name : 'column-editable-string',
     update : function(options) {
       if (Model.__super__.update.call(this, options)) {
-        var model        = this.src.data
-        , columnEditable = this.get('column.editable.string')
-        , value          = _.map(model.get('value'), function(item){
-          var ret          = _.clone(item);
+        var model = this.src.data;
+        var columnEditable = this.get('column.editable.string');
+        var value = _.map(model.get('value'), function(item) {
+          var ret = _.clone(item);
 
           _.each(columnEditable, function(value, key) {
             if (_.has(ret, key)) {
@@ -57,7 +56,7 @@ function(_, jquery, BaseProjection, editableTemplate){
         });
 
         this.patch({
-            value : value
+          value : value
         });
       }
     }
