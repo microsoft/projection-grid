@@ -1,43 +1,41 @@
 
 define([
-      'lib/underscore'
-    , 'lib/backbone'
-    , 'component/grid/model/response'
-  ],
-function(_, Backbone, Response) {
+  'lib/underscore',
+  'lib/backbone',
+  'component/grid/model/response'
+], function(_, Backbone, Response) {
   var Model = Backbone.Model.extend({
       initialize: function(options) {
         _.bindAll(this, 'on_src_update', 'beforeSet', 'afterSet', 'update');
-
         this.data = new Response();
-
         this.src = undefined;
-
         this.on('change', function(model, options){
           // todo [akamel] the model here is the settings model
           this.update({ model : model });
         }.bind(this));
-      }
-    , constructor: function() {
-        // used to figure out which options to set localy and which ones to pass down the pipe
-        this.local_keys = _.keys(this.defaults);
+      },
 
-        // todo [akamel] this might prevent us from overriding initialize
-        Model.__super__.constructor.apply(this, arguments);
-    }
-    , pipe            : function(to) {
+      constructor: function() {
+          // used to figure out which options to set localy and which ones to pass down the pipe
+          this.local_keys = _.keys(this.defaults);
+          // todo [akamel] this might prevent us from overriding initialize
+          Model.__super__.constructor.apply(this, arguments);
+      },
+
+      pipe: function(to) {
         if (to) {
           to.set_src(this);
         }
 
         return to;
-     }
-    , unpipe          : function() {
-        to.set_src();
+      },
 
+      unpipe: function() {
+        to.set_src();
         return this;
-     }
-    , set_src         : function(src) {
+      },
+
+      set_src: function(src) {
         if (this.src) {
           this.src.data.off('change', this.on_src_update);
           this.src.off('all', this.bubble);
@@ -50,48 +48,50 @@ function(_, Backbone, Response) {
         }
 
         this.update();
-    }
-    , patch      : function(delta) {
-        var src   = this.src? this.src.data.toJSON() : {}
-          , delta = _.isObject(delta)? delta : {}
-          ;
+    },
 
-        this.data.set(_.defaults(delta, this.attributes, src));
-    }
-    , beforeSet        : function(local, other){}
-    , afterSet         : function(){}
-    , on_src_update    : function(model) {
-        this.update(/*{ model : model }*/);
-    }
-    , bubble           : function(){
-        var key = _.first(arguments);
+    patch: function(delta) {
+      var src   = this.src? this.src.data.toJSON() : {},
+        delta = _.isObject(delta)? delta : {};
 
-        if (_.has(this.events, key)) {
-          var fct = this[this.events[key]];
-          if (_.isFunction(fct)) {
-            fct.apply(this, _.rest(arguments))
-          }
+      this.data.set(_.defaults(delta, this.attributes, src));
+    },
+
+    beforeSet: function(local, other) {},
+    afterSet: function() {},
+    on_src_update: function(model) {
+      this.update(/*{ model : model }*/);
+    },
+    bubble: function() {
+      var key = _.first(arguments);
+
+      if (_.has(this.events, key)) {
+        var fct = this[this.events[key]];
+        if (_.isFunction(fct)) {
+          fct.apply(this, _.rest(arguments))
         }
-
-        // todo [akamel] can this result in multiple redraw calls?
-        if (this.src) {
-          this.src.bubble.apply(this.src, _.toArray(arguments));
-        }
-    }
-    , update           : function(options) {
-        var options = options || {};
-
-        if (this.src) {
-          if (options.deep) {
-            this.src.update(options);
-            return false;
-          }
-
-          return true;
-        }
-
-        return false;
       }
+
+      // todo [akamel] can this result in multiple redraw calls?
+      if (this.src) {
+        this.src.bubble.apply(this.src, _.toArray(arguments));
+      }
+    },
+
+    update: function(options) {
+      var options = options || {};
+
+      if (this.src) {
+        if (options.deep) {
+          this.src.update(options);
+          return false;
+        }
+
+        return true;
+      }
+
+      return false;
+    }
   });
 
   Model.prototype.set = function(key, value, options) {
@@ -104,9 +104,8 @@ function(_, Backbone, Response) {
       options = value;
     }
 
-    var local       = _.pick(obj, this.local_keys)
-      , other       = _.omit(obj, this.local_keys)
-      ;
+    var local = _.pick(obj, this.local_keys);
+    var other = _.omit(obj, this.local_keys);
 
     this.beforeSet(local, other);
 
@@ -119,7 +118,6 @@ function(_, Backbone, Response) {
         this.src.set(other, options);
       }
     }
-
     this.afterSet();
 
     return ret;
@@ -131,9 +129,7 @@ function(_, Backbone, Response) {
     var match = Model.key_regex.exec(key);
 
     if (match) {
-      var type = match[1]
-        , name = match[2]
-        ;
+      var type = match[1], name = match[2];
 
       switch(type) {
         case 'projection':
@@ -144,9 +140,9 @@ function(_, Backbone, Response) {
             }
             p = p.src;
           } while(p);
-        break;
+          break;
         default:
-        throw new Error('unknown special get key type');
+          throw new Error('unknown special get key type');
       }
     } else {
       var ret = Model.__super__.get.apply(this, arguments);

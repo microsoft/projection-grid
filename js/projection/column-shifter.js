@@ -16,29 +16,26 @@ function(_, Backbone, BaseProjection, schema_properties, Response){
     update : function(options) {
       // todo [akamel] when calling a deep update; suppress onchange event based updates
       if (Model.__super__.update.call(this, options)) {
-        var model         = this.src.data
+        var model         = this.src.data,
           // todo [akamel] have 'columns' crated at the source so we don't have to put this all over the place
-          , columns       = model.get('columns') || _.map(model.get('select'), function(i){ return { property : i }; })
-          , col_skipped   = model.get('columns.skipped')
-          , col_remaining = model.get('columns.remaining')
-          ;
+          columns       = model.get('columns') || _.map(model.get('select'), function(i){ return { property : i }; }),
+          col_skipped   = model.get('columns.skipped'),
+          col_remaining = model.get('columns.remaining');
 
         var unlocked_at = Math.max(_.findIndex(columns, function(col) { return !col.$lock; }), 0);
 
-        var has_less = !!_.size(col_skipped)
-          , has_more = !!_.size(col_remaining)
-          ;
+        var has_less = !!_.size(col_skipped), has_more = !!_.size(col_remaining);
 
         var col_less = { 
-              property  : 'column.skip.less'
-            , $metadata : { 'attr.head' : { 'class' : ['skip-less'] }, enabled : has_less }
-            , $html     : '<span class="glyphicon glyphicon-triangle-left" />'
-          }
-          , col_more = {
-            property    : 'column.skip.more'
-            , $metadata : { 'attr.head' : { 'class' : ['skip-more'] }, enabled : has_more }
-            , $html     : '<span class="glyphicon glyphicon-triangle-right" />'
-          };
+          property  : 'column.skip.less',
+          $metadata : { 'attr.head' : { 'class' : ['skip-less'] }, enabled : has_less },
+          $html     : '<span class="glyphicon glyphicon-triangle-left" />'
+        };
+        var col_more = {
+          property    : 'column.skip.more',
+          $metadata : { 'attr.head' : { 'class' : ['skip-more'] }, enabled : has_more },
+          $html     : '<span class="glyphicon glyphicon-triangle-right" />'
+        };
 
         if (!has_less) {
           col_less.$metadata['attr.head']['class'].push('disabled');
@@ -61,9 +58,7 @@ function(_, Backbone, BaseProjection, schema_properties, Response){
     },
     th_click : function(e, arg) {
       if (_.has(arg.column, '$metadata') && arg.column.$metadata.enabled) {
-        var ret   = 0
-          , skip  = this.get('column.skip')
-          ;
+        var ret = 0, skip = this.get('column.skip');
 
         // todo [akamel] is this logic solid?
         switch(arg.property) {
