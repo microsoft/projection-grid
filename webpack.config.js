@@ -39,6 +39,15 @@ module.exports = {
       return 'webpack-src:///projection-grid-example/' + path.relative('.', info.absoluteResourcePath);
     },
   },
+  module: {
+    loaders: [
+      // jade
+      { test: /\.jade$/, loader: 'jade-loader' },
+      // jade-end
+      // es2015
+      // react
+    ],
+  },
   externals: [getExternals()],
   resolve: { alias: webpackAlias },
   devtool: 'source-map',
