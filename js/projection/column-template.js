@@ -15,7 +15,7 @@ define([
 
       //TODO [imang]: columns: ideally we should not need to read from select.
       if (Model.__super__.update.call(this, options)) {
-        var model = this.src.data, col_template = this.get('column.template'), 
+        var model = this.src.data, col_template = this.get('column.template');
         var columns = _.map(model.get('columns') || _.map(model.get('select'), function(i) { return { property : i }; }), function(item) {
           var ret = _.clone(item);
           var property = ret.property;
