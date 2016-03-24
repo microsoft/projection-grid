@@ -48,6 +48,7 @@
     "mocha": "^2.4.5",
     "phantomjs-prebuilt": "^2.1.6",
     "requirejs": "^2.2.0",
+    "source-map-loader": "^0.1.5",
     "underscore": "^1.8.3",
     "webpack": "^1.12.14",
     "webpack-stream": "^3.1.0"
