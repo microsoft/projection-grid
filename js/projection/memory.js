@@ -1,17 +1,20 @@
-define(['component/grid/projection/base'], function(BaseProjection) {
+define(['component/grid/projection/base'], function (BaseProjection) {
   var Model = BaseProjection.extend({
     defaults: {
-      seed: []
+      seed: [],
     },
-    update: function() {
+    update: function () {
       this.trigger('update:beginning');
-      value = this.get('seed');
+
+      var value = this.get('seed');
+
       this.data.set({
         value: value,
-        count: value.length
+        count: value.length,
       });
+
       this.trigger('update:finished');
-    }
+    },
   });
 
   return Model;

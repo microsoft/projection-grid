@@ -14,26 +14,26 @@ define([
   'lib/underscore',
   'lib/jquery',
   'component/grid/projection/base',
-  'component/grid/layout/template/row.editable.string.jade'
-], function(_, jquery, BaseProjection, editableTemplate) {
+  'component/grid/layout/template/row.editable.string.jade',
+], function (_, jquery, BaseProjection, editableTemplate) {
   'use strict';
 
   var Model = BaseProjection.extend({
-    defaults : {
-      'column.editable.string' : {}
+    defaults: {
+      'column.editable.string': {},
     },
-    name : 'column-editable-string',
-    update : function(options) {
+    name: 'column-editable-string',
+    update: function (options) {
       if (Model.__super__.update.call(this, options)) {
         var model = this.src.data;
         var columnEditable = this.get('column.editable.string');
-        var value = _.map(model.get('value'), function(item) {
+        var value = _.map(model.get('value'), function (item) {
           var ret = _.clone(item);
 
-          _.each(columnEditable, function(value, key) {
+          _.each(columnEditable, function (value, key) {
             if (_.has(ret, key)) {
               if (!_.isObject(ret[key])) {
-                var obj = new Object(ret[key]);
+                var obj = new Object(ret[key]); //eslint-disable-line
 
                 if (_.isUndefined(ret[key])) {
                   obj.$undefined = true;
@@ -48,18 +48,16 @@ define([
 
               var defaultValue = (ret[key].$undefined || ret[key].$null) ? value.defaultValue : ret[key];
 
-              ret[key].$html = editableTemplate({defaultValue : defaultValue});
+              ret[key].$html = editableTemplate({ defaultValue: defaultValue });
             }
           });
 
           return ret;
         });
 
-        this.patch({
-          value : value
-        });
+        this.patch({ value: value });
       }
-    }
+    },
   });
 
   return Model;

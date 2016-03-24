@@ -13,3 +13,12 @@
     - "always"
   "linebreak-style": 0
   "no-warning-comments": 0
+  "one-var":
+    - 2
+    -
+      uninitialized: always
+      initialized: never
+  "no-unused-expressions":
+    - 2
+    -
+      allowShortCircuit: true

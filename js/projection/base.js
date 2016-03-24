@@ -1,74 +1,69 @@
-
 define([
   'lib/underscore',
   'lib/backbone',
-  'component/grid/model/response'
-], function(_, Backbone, Response) {
+  'component/grid/model/response',
+], function (_, Backbone, Response) {
   var Model = Backbone.Model.extend({
-      initialize: function(options) {
-        _.bindAll(this, 'on_src_update', 'beforeSet', 'afterSet', 'update');
-        this.data = new Response();
-        this.src = undefined;
-        this.on('change', function(model, options){
-          // todo [akamel] the model here is the settings model
-          this.update({ model : model });
-        }.bind(this));
-      },
-
-      constructor: function() {
-          // used to figure out which options to set localy and which ones to pass down the pipe
-          this.local_keys = _.keys(this.defaults);
-          // todo [akamel] this might prevent us from overriding initialize
-          Model.__super__.constructor.apply(this, arguments);
-      },
-
-      pipe: function(to) {
-        if (to) {
-          to.set_src(this);
-        }
-
-        return to;
-      },
-
-      unpipe: function() {
-        to.set_src();
-        return this;
-      },
-
-      set_src: function(src) {
-        if (this.src) {
-          this.src.data.off('change', this.on_src_update);
-          this.src.off('all', this.bubble);
-        }
-
-        this.src = src;
-        if (this.src) {
-          this.src.data.on('change', this.on_src_update);
-          this.src.on('all', this.bubble);
-        }
-
-        this.update();
+    initialize: function () {
+      _.bindAll(this, 'onSrcUpdate', 'beforeSet', 'afterSet', 'update');
+      this.data = new Response();
+      this.src = undefined;
+      this.on('change', function (model) {
+        // todo [akamel] the model here is the settings model
+        this.update({ model: model });
+      }.bind(this));
     },
 
-    patch: function(delta) {
-      var src   = this.src? this.src.data.toJSON() : {},
-        delta = _.isObject(delta)? delta : {};
+    constructor: function () {
+      // used to figure out which options to set localy and which ones to pass down the pipe
+      this.localKeys = _.keys(this.defaults);
+      // todo [akamel] this might prevent us from overriding initialize
+      Model.__super__.constructor.apply(this, arguments);
+    },
+
+    pipe: function (to) {
+      if (to) {
+        to.setSrc(this);
+      }
+
+      return to;
+    },
+
+    setSrc: function (src) {
+      if (this.src) {
+        this.src.data.off('change', this.onSrcUpdate);
+        this.src.off('all', this.bubble);
+      }
+
+      this.src = src;
+      if (this.src) {
+        this.src.data.on('change', this.onSrcUpdate);
+        this.src.on('all', this.bubble);
+      }
+
+      this.update();
+    },
+
+    patch: function (delta) {
+      var src = this.src ? this.src.data.toJSON() : {};
+      delta = _.isObject(delta) ? delta : {};
 
       this.data.set(_.defaults(delta, this.attributes, src));
     },
 
-    beforeSet: function(local, other) {},
-    afterSet: function() {},
-    on_src_update: function(model) {
-      this.update(/*{ model : model }*/);
+    beforeSet: function (/* local, other */) {},
+    afterSet: function () {},
+
+    onSrcUpdate: function (/* model */) {
+      this.update(/* { model : model } */);
     },
-    bubble: function() {
+    bubble: function () {
       var key = _.first(arguments);
 
       if (_.has(this.events, key)) {
         var fct = this[this.events[key]];
         if (_.isFunction(fct)) {
-          fct.apply(this, _.rest(arguments))
+          fct.apply(this, _.rest(arguments));
         }
       }
 
@@ -78,8 +73,8 @@ define([
       }
     },
 
-    update: function(options) {
-      var options = options || {};
+    update: function (options) {
+      options = options || {};
 
       if (this.src) {
         if (options.deep) {
@@ -91,10 +86,10 @@ define([
       }
 
       return false;
-    }
+    },
   });
 
-  Model.prototype.set = function(key, value, options) {
+  Model.prototype.set = function (key, value, options) {
     var obj = {};
 
     if (_.isString(key)) {
@@ -104,8 +99,8 @@ define([
       options = value;
     }
 
-    var local = _.pick(obj, this.local_keys);
-    var other = _.omit(obj, this.local_keys);
+    var local = _.pick(obj, this.localKeys);
+    var other = _.omit(obj, this.localKeys);
 
     this.beforeSet(local, other);
 
@@ -123,26 +118,29 @@ define([
     return ret;
   };
 
-  Model.key_regex = /^([\w_\-$]+):(.+)$/;
+  Model.keyRegex = /^([\w_\-$]+):(.+)$/;
 
-  Model.prototype.get = function(key) {
-    var match = Model.key_regex.exec(key);
+  Model.prototype.get = function (key) {
+    var match = Model.keyRegex.exec(key);
 
     if (match) {
-      var type = match[1], name = match[2];
+      var type = match[1];
+      var name = match[2];
 
-      switch(type) {
-        case 'projection':
+      switch (type) {
+        case 'projection': {
           var p = this;
           do {
-            if (p.name == name) {
+            if (p.name === name) {
               return p;
             }
             p = p.src;
-          } while(p);
+          } while (p);
           break;
-        default:
+        }
+        default: {
           throw new Error('unknown special get key type');
+        }
       }
     } else {
       var ret = Model.__super__.get.apply(this, arguments);

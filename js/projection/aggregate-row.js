@@ -2,12 +2,11 @@ define([
   'lib/underscore',
   'lib/backbone',
   'component/grid/projection/base',
-], function(_, Backbone, BaseProjection) {
-
-  var createRows = function(fn, data) {
+], function (_, Backbone, BaseProjection) {
+  var createRows = function (fn, data) {
     var rows = fn(data);
 
-    _.each(rows, function(row) {
+    _.each(rows, function (row) {
       row.$metadata = _.extend(row.$metadata, { type: 'aggregate' });
     });
 
@@ -23,12 +22,8 @@ define([
 
     name: 'aggregate-row',
 
-    update: function(options) {
-      var value,
-        topFn,
-        rowTop,
-        bottomFn,
-        rowBottom;
+    update: function (options) {
+      var value, topFn, rowTop, bottomFn, rowBottom;
 
       if (Model.__super__.update.call(this, options)) {
         value = this.src.data.get('value');

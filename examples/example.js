@@ -120,7 +120,7 @@ window.example = function (modules) {
 
   // TODO [akamel] also support not-in
   var colq = new ColumnQueryableProjection({
-    'column.lock': ['__row_index', 'first', 'checkbox'],
+    'column.lock': ['rowIndex', 'first', 'checkbox'],
     'column.take': 10,
     // , 'column.in'   : [ 'last', 'email', 'CustomerID', 'ShipCity', 'ShipCountry' ]
   });
@@ -203,7 +203,7 @@ window.example = function (modules) {
     var grid = new Grid({
       el: $('#grid_host_a'),
       projection: src,
-      layout: TableLayout.partial({
+      Layout: TableLayout.partial({
         template: tmplJade,
         renderers: [Virtualization, FixedHeader],
         columns: {
@@ -240,7 +240,7 @@ window.example = function (modules) {
     });
 
     grid.on('layout:click:cell', function (e, data) {
-      console.log(data.model.__row_index, data);
+      console.log(data.model.rowIndex, data);
     });
 
     grid.render({

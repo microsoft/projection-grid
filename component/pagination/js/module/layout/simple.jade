@@ -1,8 +1,0 @@
-nav.unselectable
-  ul.pagination
-    li.human
-      span(data-bind='text: human_item_range')
-    li.previous(data-bind='css: { disabled: page_count_before() <= 0 }')
-      a: span.glyphicon.glyphicon-triangle-left
-    li.next(data-bind='css: { disabled: page_count_after() <= 0 }')
-      a: span.glyphicon.glyphicon-triangle-right

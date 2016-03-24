@@ -1,37 +1,40 @@
 define([
-      'lib/underscore'
-    , 'lib/backbone'
-    , 'component/grid/projection/base'
-    , 'component/grid/schema/properties'
-    , 'component/grid/model/response'
-  ],
-function(_, Backbone, BaseProjection, schema_properties, Response){
+  'lib/underscore',
+  'lib/backbone',
+  'component/grid/projection/base',
+  'component/grid/schema/properties',
+  'component/grid/model/response',
+], function (_, Backbone, BaseProjection /* , schemaProperties, Response */) {
   var Model = BaseProjection.extend({
     defaults: {
-      'column.skip'   : 0, 
-      'column.take'   : Number.MAX_VALUE, 
-      'column.lock'   : [], 
-      'column.filter' : function(i) { return true; }, 
-      'column.in'     : undefined
+      'column.skip': 0,
+      'column.take': Number.MAX_VALUE,
+      'column.lock': [],
+      'column.filter': function () {
+        return true;
+      },
+      'column.in': undefined,
     },
     name: 'column-queryable',
-    update: function(options){
+    update: function (options) {
       if (Model.__super__.update.call(this, options)) {
-        var model = this.src.data, 
-          take = this.get('column.take'), 
-          skip = this.get('column.skip'), 
-          lock = this.get('column.lock') || [], 
-          filter = this.get('column.filter'),
-          // todo [akamel] consider renaming to column.select
-          $in = this.get('column.in'),
-          select = _.size(model.get('columns'))? _.map(model.get('columns'), function(i){ return i.property; }) : model.get('select'),
-          unlocked = _.isFunction(filter)? _.filter($in || select, filter) : ($in || select),
-          lookup = {},
-          set = _.chain(unlocked).difference(lock).value(),
-          col = set;
+        var model = this.src.data;
+        var take = this.get('column.take');
+        var skip = this.get('column.skip');
+        var lock = this.get('column.lock') || [];
+        var filter = this.get('column.filter');
+        // todo [akamel] consider renaming to column.select
+        var $in = this.get('column.in');
+        var select = _.size(model.get('columns')) ? _.map(model.get('columns'), function (i) {
+          return i.property;
+        }) : model.get('select');
+        var unlocked = _.isFunction(filter) ? _.filter($in || select, filter) : ($in || select);
+        var lookup = {};
+        var set = _.chain(unlocked).difference(lock).value();
+        var col = set;
 
         // todo [akamel] use indexBy from underscore 1.5.x
-        _.each(model.get('columns'), function(element, index, list) {
+        _.each(model.get('columns'), function (element) {
           lookup[element.property] = element;
         });
 
@@ -58,25 +61,28 @@ function(_, Backbone, BaseProjection, schema_properties, Response){
         // end query
 
         // todo [akamel] [perf] this used a contains within a loop
-        var res = _.map(col, function(element, index, list){
-          return _.defaults({ $lock : _.contains(lock, element), property : element }, lookup[element]);
+        var res = _.map(col, function (element) {
+          return _.defaults({
+            $lock: _.contains(lock, element),
+            property: element,
+          }, lookup[element]);
         });
 
         this.patch({
-          'columns' : res,
+          'columns': res,
           // todo [akamel] rename to column.in???
           // , 'columns.select'  : set
-          'columns.skipped' : skipped,
-          'columns.remaining' : remaining,
+          'columns.skipped': skipped,
+          'columns.remaining': remaining,
           // , 'columns.count'   : _.size(res)
           // todo [akamel] do we still need to update skip?
-          'column.skip' : skip
+          'column.skip': skip,
         });
       } else {
         // todo [akamel] unset our properties only
         // this.unset();
       }
-    }
+    },
   });
 
   return Model;

@@ -1,57 +1,64 @@
 define([
-      'lib/underscore'
-    , 'lib/backbone'
-    , 'component/grid/projection/base'
-    , 'component/grid/schema/properties'
-    , 'component/grid/model/response'
-  ],
-function(_, Backbone, BaseProjection, schema_properties, Response){
+  'lib/underscore',
+  'lib/backbone',
+  'component/grid/projection/base',
+  'component/grid/schema/properties',
+  'component/grid/model/response',
+], function (_, Backbone, BaseProjection /* , schemaProperties, Response */) {
   var Model = BaseProjection.extend({
-    defaults : {
-      'column.i18n' : { '' : function(name) { return name; } }
+    defaults: {
+      'column.i18n': {
+        '': function (name) {
+          return name;
+        },
+      },
     },
-    name : 'column-i18n',
-    beforeSet : function(local, other){
+    name: 'column-i18n',
+    beforeSet: function (local) {
       if (_.has(local, 'column.i18n')) {
         if (!_.isObject(local['column.i18n'])) {
           local['column.i18n'] = this.defaults['column.i18n'];
         }
       }
     },
-    update : function(options) {
+    update: function (options) {
       // todo [akamel] when calling a deep update; suppress onchange event based updates
       // Model.__super__.update.call(this, options);
 
       if (Model.__super__.update.call(this, options)) {
-        var model       = this.src.data
-          , col_options = this.get('column.i18n')
-          , select      = _.size(model.get('columns'))? _.map(model.get('columns'), function(i){ return i.property; }) : model.get('select')
-          , lookup      = {}
-          , $default    = col_options['']
-          ;
+        var model = this.src.data;
+        var colOptions = this.get('column.i18n');
+        var select = _.size(model.get('columns')) ? _.map(model.get('columns'), function (i) {
+          return i.property;
+        }) : model.get('select');
+        var lookup = {};
+        var $default = colOptions[''];
 
         // todo [akamel] use indexBy from underscore 1.5.x
-        _.each(model.get('columns'), function(element, index, list){
+        _.each(model.get('columns'), function (element) {
           lookup[element.property] = element;
         });
 
-        var i18n_columns = _.map(select, function(element, index, list){
-          var opt = col_options[element];
+        var i18nColumns = _.map(select, function (element) {
+          var opt = colOptions[element];
           if (_.isUndefined(opt)) {
             opt = $default;
           }
-          
-          return _.defaults({ $text : _.isFunction(opt)? opt(element) : opt, property : element  }, lookup[element]);
+
+          return _.defaults({
+            $text: _.isFunction(opt) ? opt(element) : opt,
+            property: element,
+          }, lookup[element]);
         });
 
         this.patch({
-            columns : i18n_columns
+          columns: i18nColumns,
         });
       } else {
         // todo [akamel] unset our properties only
         // this.unset();
       }
-    }
+    },
   });
 
   return Model;

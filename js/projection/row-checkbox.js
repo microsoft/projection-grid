@@ -2,131 +2,144 @@ define([
   'lib/underscore',
   'lib/backbone',
   'component/grid/projection/base',
-  'component/grid/layout/template/row.checked.jade'
-], function(_, Backbone, BaseProjection, rowCheckTemp){
+  'component/grid/layout/template/row.checked.jade',
+], function (_, Backbone, BaseProjection, rowCheckTemp) {
   'use strict';
 
   var Model = BaseProjection.extend({
     defaults: {
-      'column.checked': 'checkbox',  //the checkbox column
+      'column.checked': 'checkbox',   // the checkbox column
       'row.check.id': 'Id',
       'row.check.list': [],
-      'row.check.checked.all': false,   //used to store user's check value for the special case no rows or all rows is disabled
-      'row.check.allow': function() { return true; }
+      'row.check.checked.all': false, // used to store user's check value for the special case no rows or all rows is disabled
+      'row.check.allow': function () {
+        return true;
+      },
     },
     name: 'row-check',
     events: {
-      'layout:click:cell': 'td_click',
-      'layout:click:header': 'th_click'
+      'layout:click:cell': 'tdClick',
+      'layout:click:header': 'thClick',
     },
-    reset : function() {
+    reset: function () {
       this.set({
         'row.check.checked.all': false,
-        'row.check.list': []
+        'row.check.list': [],
       });
     },
-    update : function(options){
+    update: function (options) {
       // Model.__super__.update.call(this, options);
 
       if (Model.__super__.update.call(this, options)) {
-        var check_id = this.get('row.check.id'),
-          ids = _.pluck(this.src.data.get('value'), check_id),
-          checked = _.intersection(this.get('row.check.list'), ids),
-          checked_lookup = _.object(checked, []),
-          col = this.get('column.checked'),
-          columns = _.clone(this.src.data.get('columns')),
-          checkedAll = true,
-          has_checkboxable = false,
-          checkbox_allow = this.get('row.check.allow'),
-          checkbox_column = _.find(columns, function(item){ return item['property'] === col; });
+        var checkId = this.get('row.check.id');
+        var ids = _.pluck(this.src.data.get('value'), checkId);
+        var checked = _.intersection(this.get('row.check.list'), ids);
+        var checkedLookup = _.object(checked, []);
+        var col = this.get('column.checked');
+        var columns = _.clone(this.src.data.get('columns'));
+        var checkedAll = true;
+        var hasCheckboxable = false;
+        var checkboxAllow = this.get('row.check.allow');
+        var checkboxColumn = _.find(columns, function (item) {
+          return item.property === col;
+        });
 
-        this.set('row.check.list', checked, { silent : true });
+        this.set('row.check.list', checked, { silent: true });
 
-        // todo [akamel] it is not clear how 'has_checkboxable' is used
-        var value = _.map(this.src.data.get('value'), function(item) {
-          var ret       = _.clone(item);
-          var checked   = false;
-          var disabled  = true;
-          var isAllowed = _.isFunction(checkbox_allow) ? checkbox_allow(ret) : checkbox_allow;
+        // todo [akamel] it is not clear how 'hasCheckboxable' is used
+        var value = _.map(this.src.data.get('value'), function (item) {
+          var ret = _.clone(item);
+          var checked = false;
+          var disabled = true;
+          var isAllowed = _.isFunction(checkboxAllow) ? checkboxAllow(ret) : checkboxAllow;
 
           if (isAllowed) {
-            checked          = _.has(checked_lookup, ret[check_id]);
-            checkedAll       = checkedAll && checked;
-            disabled         = false;
-            has_checkboxable = true;
+            checked = _.has(checkedLookup, ret[checkId]);
+            checkedAll = checkedAll && checked;
+            disabled = false;
+            hasCheckboxable = true;
           }
 
           ret[col] = _.extend({}, ret[col], {
-              $html : rowCheckTemp({ checked : checked, disabled : disabled })
-          })
+            $html: rowCheckTemp({
+              checked: checked,
+              disabled: disabled,
+            }),
+          });
 
           return ret;
         });
 
-        //set the checkbox in th
-        if (!_.isUndefined(checkbox_column)) {
+        // set the checkbox in th
+        if (!_.isUndefined(checkboxColumn)) {
           var disabled = _.size(ids) === 0;
-          if (has_checkboxable) {
-            checkbox_column.$html = rowCheckTemp({ checked : checkedAll, disabled : disabled });
+          if (hasCheckboxable) {
+            checkboxColumn.$html = rowCheckTemp({
+              checked: checkedAll,
+              disabled: disabled,
+            });
             this.attributes['row.check.checked.all'] = checkedAll;
           } else {
-            checkbox_column.$html = rowCheckTemp({ checked : this.get('row.check.checked.all'), disabled : disabled });
+            checkboxColumn.$html = rowCheckTemp({
+              checked: this.get('row.check.checked.all'),
+              disabled: disabled,
+            });
           }
         }
 
         this.patch({
           value: value,
-          columns: columns
+          columns: columns,
         });
       } else {
         // todo [akamel] unset our properties only
         // this.unset();
       }
     },
-    td_click : function(e, arg) {
-      var checkbox_property = this.get('column.checked');
+    tdClick: function (e, arg) {
+      var checkboxProperty = this.get('column.checked');
 
-      if (arg.property === checkbox_property) {
-        var list = this.get('row.check.list'),
-          id = arg.model[this.get('row.check.id')];
+      if (arg.property === checkboxProperty) {
+        var list = this.get('row.check.list');
+        var id = arg.model[this.get('row.check.id')];
 
         this.set({
-          'row.check.list': arg.checked? list.concat([id]) : _.without(list, id)
+          'row.check.list': arg.checked ? list.concat([id]) : _.without(list, id),
         });
 
         this.update();
       }
     },
-    th_click : function(e, arg) {
-      var checkbox_property = this.get('column.checked');
+    thClick: function (e, arg) {
+      var checkboxProperty = this.get('column.checked');
 
-      if (arg.property === checkbox_property) {
+      if (arg.property === checkboxProperty) {
         var list = [];
 
         if (arg.checked) {
-          var check_id = this.get('row.check.id');
-            // todo [akamel] this concept of check allow is strange
-          var checkbox_allow  = this.get('row.check.allow');
+          var checkId = this.get('row.check.id');
+          // TODO [akamel] this concept of check allow is strange
+          var checkboxAllow = this.get('row.check.allow');
 
-          //get the list of allowed rows' id
+          // get the list of allowed rows' id
           list = _.chain(this.data.get('value'))
-            .filter(function(item) {
-              return !!(_.isFunction(checkbox_allow) ? checkbox_allow(item) : checkbox_allow) && !_.isUndefined(item[check_id]);
+            .filter(function (item) {
+              return (_.isFunction(checkboxAllow) ? checkboxAllow(item) : checkboxAllow) && !_.isUndefined(item[checkId]);
             })
-            .map(function(item) {
-              return item[check_id];
+            .map(function (item) {
+              return item[checkId];
             })
             .value();
         }
 
         this.set({
           'row.check.list': list,
-          'row.check.checked.all': arg.checked
+          'row.check.checked.all': arg.checked,
         });
 
         this.update();
       }
-    }
+    },
   });
 
   return Model;
