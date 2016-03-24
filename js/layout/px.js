@@ -1,14 +1,11 @@
 // todo [akamel] move to /component
-define([
-      'lib/underscore'
-  ],
-function(_){
+define(['lib/underscore'], function (_) {
   function parse(a) {
-    return abs(parseFloat(a))
+    return abs(parseFloat(a));
   }
 
   function abs(a) {
-    return _.isFinite(a)? a : 0; 
+    return _.isFinite(a) ? a : 0;
   }
 
   function pixelify(a) {
@@ -16,7 +13,7 @@ function(_){
   }
 
   return {
-      parse       : parse
-    , pixelify    : pixelify
+    parse: parse,
+    pixelify: pixelify,
   };
 });

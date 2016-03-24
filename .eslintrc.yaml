@@ -3,6 +3,7 @@
 "env":
   "mocha": true
   "amd": true
+  "browser": true
 "rules":
   "comma-dangle":
     - 2
@@ -11,3 +12,4 @@
     - 2
     - "always"
   "linebreak-style": 0
+  "no-warning-comments": 0

@@ -164,7 +164,7 @@ function(_, $, Backbone){
 
       this.data = _.defaults(delta, model.toJSON());
 
-      this.draw({ can_skip_draw : false });
+      this.draw({ canSkipDraw : false });
     },
 
     schedule_draw: function() {
@@ -203,10 +203,10 @@ function(_, $, Backbone){
           cb(undefined, data);
         } else {
           var clone = _.defaults({}, data, { css : {} });
-          delete clone.can_skip_draw;
+          delete clone.canSkipDraw;
 
           r.draw(clone, _.once(function(err, res){
-            res.can_skip_draw = data.can_skip_draw === true && res.can_skip_draw === true;
+            res.canSkipDraw = data.canSkipDraw === true && res.canSkipDraw === true;
             if (err) {
               cb(err);
             } else {
@@ -216,13 +216,13 @@ function(_, $, Backbone){
         }
       }
 
-      var can_skip_draw = _.has(options, 'can_skip_draw')? options.can_skip_draw : true;
+      var canSkipDraw = _.has(options, 'canSkipDraw')? options.canSkipDraw : true;
 
       // this is _not_ and _cannot_ be async
-      middleware({ rows : this.data.value, can_skip_draw : can_skip_draw }, function(err, res){
+      middleware({ rows : this.data.value, canSkipDraw : canSkipDraw }, function(err, res){
         res.css && this.$el.css(res.css);
 
-        if (res.can_skip_draw !== true) {
+        if (res.canSkipDraw !== true) {
           this.el.innerHTML = this.toHTML(res.rows);
         }
       }.bind(this));
