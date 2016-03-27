@@ -49,21 +49,7 @@
         </div>
       </div>
     </div>
-    <script src="../example.js" charset="utf-8"></script>
-    <script src="../../node_modules/requirejs/require.js" charset="utf-8"></script>
     <script src="./require.config.js" charset="utf-8"></script>
-    <script type="text/javascript">
-      require([
-        '../../dist/projection-grid',
-        'underscore',
-        'jquery'
-      ], function (pgrid, _, $) {
-        example({
-          pgrid: pgrid,
-          _: _,
-          $: $
-        });
-      });
-    </script>
+    <script src="../../node_modules/requirejs/require.js" data-main="examples/example" charset="utf-8"></script>
   </body>
 </html>
