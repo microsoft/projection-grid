@@ -1,7 +1,8 @@
 define([
+  'lib/underscore',
   'component/grid/projection/base',
   'component/grid/schema/properties',
-], function (BaseProjection, schemaProperties) {
+], function (_, BaseProjection, schemaProperties) {
   var Model = BaseProjection.extend({
 
     defaults: {
@@ -20,6 +21,7 @@ define([
         this.patch({
           value: value,
           select: select,
+          count: _.size(value),
         });
       }
     },

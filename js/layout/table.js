@@ -158,6 +158,7 @@ define([
         'columns.lookup': _.indexBy(columns, function (col) {
           return col.property;
         }),
+        '$metadata': this.options.$metadata,
       };
 
       this.data = _.defaults(delta, model.toJSON());
