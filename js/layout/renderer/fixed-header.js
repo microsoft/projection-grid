@@ -61,6 +61,7 @@ define([
         'top': px.pixelify(this.layout.container.el === window ? 0 : this.layout.container.$el.scrollTop()),
         'display': 'flex',
         'margin-left': px.pixelify(-data.vpMeasures.offsetLeft),
+        'z-index': 1000,
       });
     } else {
       _.extend(data.css, {

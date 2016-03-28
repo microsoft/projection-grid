@@ -101,6 +101,7 @@ define([
           ret.checked = checkbox[0].checked;
         }
       }
+      ret.grid = this.grid;
 
       return ret;
     },
