@@ -162,6 +162,10 @@ define([
         return _.extend(col, colOptions[col.property], delta);
       });
 
+      if (_.has(this.options.$metadata, 'class') && _.isArray(this.options.$metadata.class)) {
+        this.options.$metadata.class = this.options.$metadata.class.join(' ');
+      }
+
       var delta = {
         'value': value,
         'columns': columns,
