@@ -105,8 +105,8 @@ define([
             col.$metadata['attr.head'].class = col.$metadata['attr.head'].class.join(' ');
           }
 
-          if (_.has(col.$metadata['attr.body'], 'class') && _.isArray(col.$metadata['attr.head'].class)) {
-            col.$metadata['attr.head'].class = col.$metadata['attr.head'].class.join(' ');
+          if (_.has(col.$metadata['attr.body'], 'class') && _.isArray(col.$metadata['attr.body'].class)) {
+            col.$metadata['attr.body'].class = col.$metadata['attr.body'].class.join(' ');
           }
 
          // TODO [akamel] merge attr that are on $metadata['attr']
