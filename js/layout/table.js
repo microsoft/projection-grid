@@ -18,6 +18,7 @@ define([
       // TODO [akamel] rename? this isn't a backbone data obj?
       this.data = undefined;
 
+      this.container = options.container;
       this.grid = options.grid;
 
       this.renderers = _.map(this.options.renderers, function (Renderer) {
@@ -25,9 +26,18 @@ define([
       }.bind(this));
 
       // TODO [akamel] make this conditional if these renderes are enabled
-      $(window).on('scroll resize', function () {
-        this.scheduleDraw();
-      }.bind(this));
+      this.onViewPortChange = this.onViewPortChange.bind(this);
+      this.listenTo(this.container, 'scroll:container', this.onViewPortChange);
+      this.listenTo(this.container, 'resize:container', this.onViewPortChange);
+    },
+
+    onViewPortChange: function () {
+      this.scheduleDraw();
+    },
+
+    remove: function () {
+      this.container.stopListening(this.container);
+      Backbone.View.prototype.remove.apply(this, arguments);
     },
 
     thClick: function (e) {

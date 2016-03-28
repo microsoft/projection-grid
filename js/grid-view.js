@@ -2,18 +2,23 @@ define([
   'lib/underscore',
   'lib/backbone',
   'component/grid/model/index',
-], function (_, Backbone, Options) {
-  return Backbone.View.extend({
+  'component/grid/windowContainer',
+  'component/grid/elementContainer',
+], function (_, Backbone, Options, WindowContainer, ElementContainer) {
+  var GridView = Backbone.View.extend({
     // todo [akamel] document available options
     initialize: function (options) {
       options = options || {};
 
       this.options = new Options(options);
 
+      var container = selectContainer(options.container);
+
       // todo [akamel] assert that layout is a ctor
       this.layout = new options.Layout({
         el: this.el,
         grid: this,
+        container: container,
       });
 
       this.projection = options.projection;
@@ -57,6 +62,11 @@ define([
       this.options.set(local);
     },
 
+    remove: function () {
+      this.layout.remove();
+      Backbone.View.prototype.remove.apply(this, arguments);
+    },
+
     set: function () {
       this.options.set.apply(this.options, _.toArray(arguments));
     },
@@ -74,4 +84,14 @@ define([
     },
 
   });
+
+  function selectContainer(userContainer) {
+    if (userContainer && window !== userContainer && ElementContainer.isValidContainer(userContainer)) {
+      return new ElementContainer({ el: userContainer });
+    }
+
+    return new WindowContainer();
+  }
+
+  return GridView;
 });

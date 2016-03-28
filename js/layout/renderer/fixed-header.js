@@ -19,7 +19,7 @@ define([
       // todo [akamel] assumes we have table rendered; measure/estimate otherwise
 
       // a. compensate for header displacement
-      // .. as we set 'thead > tr' css position 'fixed'
+      // .. as we set 'thead > tr' css position 'absolute'
       var displacement = $el.find('thead tr').outerHeight();
       _.extend(data.css, {
         'padding-top': px.pixelify(px.parse(data.css['padding-top']) + displacement),
@@ -57,8 +57,8 @@ define([
 
       // f. set position 'fixed' and lock header at top of table
       $thead.find('tr').css({
-        'position': 'fixed',
-        'top': '0px',
+        'position': this.layout.container.el === window ? 'fixed' : 'absolute',
+        'top': px.pixelify(this.layout.container.el === window ? 0 : this.layout.container.$el.scrollTop()),
         'display': 'flex',
         'margin-left': px.pixelify(-data.vpMeasures.offsetLeft),
       });

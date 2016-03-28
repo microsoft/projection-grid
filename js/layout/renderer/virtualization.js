@@ -57,12 +57,12 @@ define([
     if (!this.__measures) {
       var smpl = measure.sample.call(this.layout);
       this.__measures = _.pick(smpl, 'avgRowHeight', 'estimateHeight', 'thead');
-    }
 
-    // b.1 set height based on measures estimate
-    this.layout.$el.css({
-      'padding-top': px.pixelify(this.__measures.estimateHeight),
-    });
+      // b.1 set height based on measures estimate
+      this.layout.$el.css({
+        'padding-top': px.pixelify(this.__measures.estimateHeight),
+      });
+    }
 
     // c. find visible viewport
     data.vpMeasures = data.vpMeasures || measure.viewport.call(this.layout);
