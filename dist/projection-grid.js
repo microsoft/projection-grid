@@ -7,7 +7,7 @@
 		exports["projection-grid"] = factory(require("underscore"), require("backbone"), require("jquery"));
 	else
 		root["projection-grid"] = factory(root["underscore"], root["backbone"], root["jquery"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_15__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_6__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -56,8 +56,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 	  GridView: __webpack_require__(1),
-	  projections: __webpack_require__(5),
-	  layout: __webpack_require__(30),
+	  projections: __webpack_require__(9),
+	  layout: __webpack_require__(33),
 	};
 
 
@@ -69,18 +69,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	  __webpack_require__(2),
 	  __webpack_require__(3),
 	  __webpack_require__(4),
-	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, Options) {
-	  return Backbone.View.extend({
+	  __webpack_require__(5),
+	  __webpack_require__(8),
+	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, Options, WindowContainer, ElementContainer) {
+	  var GridView = Backbone.View.extend({
 	    // todo [akamel] document available options
 	    initialize: function (options) {
 	      options = options || {};
 	
 	      this.options = new Options(options);
 	
+	      var container = selectContainer(options.container);
+	
 	      // todo [akamel] assert that layout is a ctor
 	      this.layout = new options.Layout({
 	        el: this.el,
 	        grid: this,
+	        container: container,
 	      });
 	
 	      this.projection = options.projection;
@@ -124,6 +129,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.options.set(local);
 	    },
 	
+	    remove: function () {
+	      this.layout.remove();
+	      Backbone.View.prototype.remove.apply(this, arguments);
+	    },
+	
 	    set: function () {
 	      this.options.set.apply(this.options, _.toArray(arguments));
 	    },
@@ -141,6 +151,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	
 	  });
+	
+	  function selectContainer(userContainer) {
+	    if (userContainer && window !== userContainer && ElementContainer.isValidContainer(userContainer)) {
+	      return new ElementContainer({ el: userContainer });
+	    }
+	
+	    return new WindowContainer();
+	  }
+	
+	  return GridView;
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
@@ -177,35 +197,125 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = {
-	  AggregateRow: __webpack_require__(6),
-	  Base: __webpack_require__(7),
-	  ColumnI18n: __webpack_require__(9),
-	  ColumnQueryable: __webpack_require__(11),
-	  ColumnShifter: __webpack_require__(12),
-	  ColumnTemplate: __webpack_require__(13),
-	  EditableString: __webpack_require__(14),
-	  Map: __webpack_require__(19),
-	  MemoryQueryable: __webpack_require__(20),
-	  Memory: __webpack_require__(21),
-	  Mock: __webpack_require__(22),
-	  Odata: __webpack_require__(23),
-	  Page: __webpack_require__(24),
-	  PropertyTemplate: __webpack_require__(25),
-	  RowCheckbox: __webpack_require__(26),
-	  RowIndex: __webpack_require__(28),
-	  Sink: __webpack_require__(29),
-	};
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+	  __webpack_require__(2),
+	  __webpack_require__(6),
+	  __webpack_require__(7),
+	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, $, ContainerBase) {
+	  var WindowContainer = ContainerBase.extend({
+	    constructor: function (options) {
+	      options = _.extend({}, options, { el: window });
+	      ContainerBase.prototype.constructor.apply(this, [options].concat(_.rest(arguments)));
+	    },
+	
+	    offset: function (element) {
+	      return $(element).offset();
+	    },
+	  });
+	
+	  return WindowContainer;
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
 /***/ },
 /* 6 */
+/***/ function(module, exports) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_6__;
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+	  __webpack_require__(2),
+	  __webpack_require__(6),
+	  __webpack_require__(3),
+	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, $, Backbone) {
+	  var ContainerBase = Backbone.View.extend({
+	    events: {
+	      scroll: 'onScroll',
+	      resize: 'onResize',
+	    },
+	
+	    onScroll: function (e) {
+	      this.trigger('scroll:container', e);
+	    },
+	
+	    onResize: function (e) {
+	      this.trigger('resize:container', e);
+	    },
+	
+	    offset: function (/* element, scrollTop, scrollLeft */) {
+	      throw new Error("Offset function not implemented");
+	    },
+	  });
+	
+	  return ContainerBase;
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+	  __webpack_require__(2),
+	  __webpack_require__(6),
+	  __webpack_require__(7),
+	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, $, ContainerBase) {
+	  var ElementContainer = ContainerBase.extend({
+	    offset: function (element) {
+	      var position = $(element).position();
+	
+	      return {
+	        top: position.top + this.$el.scrollTop(),
+	        left: position.left + this.$el.scrollLeft(),
+	      };
+	    },
+	  });
+	
+	  ElementContainer.isValidContainer = function (userContainer) {
+	    return ['absolute', 'relative', 'fixed'].indexOf($(userContainer).css('position')) >= 0;
+	  };
+	
+	  return ElementContainer;
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = {
+	  AggregateRow: __webpack_require__(10),
+	  Base: __webpack_require__(11),
+	  ColumnI18n: __webpack_require__(13),
+	  ColumnQueryable: __webpack_require__(15),
+	  ColumnShifter: __webpack_require__(16),
+	  ColumnTemplate: __webpack_require__(17),
+	  EditableString: __webpack_require__(18),
+	  Map: __webpack_require__(22),
+	  MemoryQueryable: __webpack_require__(23),
+	  Memory: __webpack_require__(24),
+	  Mock: __webpack_require__(25),
+	  Odata: __webpack_require__(26),
+	  Page: __webpack_require__(27),
+	  PropertyTemplate: __webpack_require__(28),
+	  RowCheckbox: __webpack_require__(29),
+	  RowIndex: __webpack_require__(31),
+	  Sink: __webpack_require__(32),
+	};
+
+
+/***/ },
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
-	  __webpack_require__(7),
+	  __webpack_require__(11),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection) {
 	  var createRows = function (fn, data) {
 	    var rows = fn(data);
@@ -260,13 +370,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
-	  __webpack_require__(8),
+	  __webpack_require__(12),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, Response) {
 	  var Model = Backbone.Model.extend({
 	    initialize: function () {
@@ -425,7 +535,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -444,15 +554,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
-	  __webpack_require__(7),
-	  __webpack_require__(10),
-	  __webpack_require__(8),
+	  __webpack_require__(11),
+	  __webpack_require__(14),
+	  __webpack_require__(12),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection /* , schemaProperties, Response */) {
 	  var Model = BaseProjection.extend({
 	    defaults: {
@@ -515,7 +625,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -532,15 +642,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
-	  __webpack_require__(7),
-	  __webpack_require__(10),
-	  __webpack_require__(8),
+	  __webpack_require__(11),
+	  __webpack_require__(14),
+	  __webpack_require__(12),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection /* , schemaProperties, Response */) {
 	  var Model = BaseProjection.extend({
 	    defaults: {
@@ -627,15 +737,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
-	  __webpack_require__(7),
-	  __webpack_require__(10),
-	  __webpack_require__(8),
+	  __webpack_require__(11),
+	  __webpack_require__(14),
+	  __webpack_require__(12),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection /* , schemaProperties, Response */) {
 	  var Model = BaseProjection.extend({
 	    defaults: {
@@ -724,12 +834,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
-	  __webpack_require__(7),
+	  __webpack_require__(11),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, BaseProjection) {
 	  'use strict';
 	
@@ -773,7 +883,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -790,9 +900,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
-	  __webpack_require__(15),
-	  __webpack_require__(7),
-	  __webpack_require__(16),
+	  __webpack_require__(6),
+	  __webpack_require__(11),
+	  __webpack_require__(19),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, jquery, BaseProjection, editableTemplate) {
 	  'use strict';
 	
@@ -843,16 +953,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
-/***/ function(module, exports) {
-
-	module.exports = __WEBPACK_EXTERNAL_MODULE_15__;
-
-/***/ },
-/* 16 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jade = __webpack_require__(17);
+	var jade = __webpack_require__(20);
 	
 	module.exports = function template(locals) {
 	var buf = [];
@@ -863,7 +967,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 17 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1083,7 +1187,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    throw err;
 	  }
 	  try {
-	    str = str || __webpack_require__(18).readFileSync(filename, 'utf8')
+	    str = str || __webpack_require__(21).readFileSync(filename, 'utf8')
 	  } catch (ex) {
 	    rethrow(err, null, lineno)
 	  }
@@ -1115,21 +1219,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 18 */
+/* 21 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 19 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
-	  __webpack_require__(7),
-	  __webpack_require__(10),
-	  __webpack_require__(8),
+	  __webpack_require__(11),
+	  __webpack_require__(14),
+	  __webpack_require__(12),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection, schemaProperties /* , Response */) {
 	  var Model = BaseProjection.extend({
 	    defaults: {
@@ -1163,25 +1267,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 20 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
-	  __webpack_require__(7),
-	  __webpack_require__(10),
-	  __webpack_require__(8),
+	  __webpack_require__(11),
+	  __webpack_require__(14),
+	  __webpack_require__(12),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection, schemaProperties /* , Response */) {
 	  var Model = BaseProjection.extend({
 	    defaults: {
-	      skip: 0,
-	      take: Number.MAX_VALUE,
-	      filter: function () {
+	      'skip': 0,
+	      'take': Number.MAX_VALUE,
+	      'filter': function () {
 	        return true;
 	      },
-	      orderby: [],
-	      select: [],
+	      'orderby': [],
+	      'select': [],
+	      'column.sortable': {},
 	    },
 	    name: 'map-queryable',
 	    beforeSet: function (local) {
@@ -1202,11 +1307,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var orderDir = _.last(order);
 	
 	        var value = _.chain(model.get('value')).filter(this.get('filter'));
+	        var sortFunc = this.get('column.sortable')[orderKey];
 	
 	        if (orderKey) {
-	          value = value.sortBy(orderKey);
-	          if (orderDir === -1) {
-	            value = value.reverse();
+	          if (_.isFunction(sortFunc)) {
+	            value = _.chain(sortFunc(value.value(), orderDir));
+	          } else {
+	            value = value.sortBy(orderKey);
+	            if (orderDir === -1) {
+	              value = value.reverse();
+	            }
 	          }
 	        }
 	
@@ -1236,10 +1346,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 21 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (BaseProjection) {
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(11)], __WEBPACK_AMD_DEFINE_RESULT__ = function (BaseProjection) {
 	  var Model = BaseProjection.extend({
 	    defaults: {
 	      seed: [],
@@ -1263,13 +1373,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 22 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
-	  __webpack_require__(7),
+	  __webpack_require__(11),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection) {
 	  var wrds = ['troubles', 'kahlua', 'poncho', 'suzie', 'baheyya'];
 	  var idx = 0;
@@ -1311,16 +1421,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 23 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
-	  __webpack_require__(15),
-	  __webpack_require__(7),
-	  __webpack_require__(22),
-	  __webpack_require__(10),
+	  __webpack_require__(6),
+	  __webpack_require__(11),
+	  __webpack_require__(25),
+	  __webpack_require__(14),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, $, BaseProjection, MemoryMock, schemaProperties) {
 	  var Model = BaseProjection.extend({
 	    defaults: {
@@ -1392,15 +1502,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 24 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
-	  __webpack_require__(7),
-	  __webpack_require__(10),
-	  __webpack_require__(8),
+	  __webpack_require__(11),
+	  __webpack_require__(14),
+	  __webpack_require__(12),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection /* , schemaProperties, Response */) {
 	  var Model = BaseProjection.extend({
 	    defaults: {
@@ -1459,15 +1569,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 25 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
-	  __webpack_require__(7),
-	  __webpack_require__(10),
-	  __webpack_require__(8),
+	  __webpack_require__(11),
+	  __webpack_require__(14),
+	  __webpack_require__(12),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection /* , schemaProperties, Response */) {
 	  var Model = BaseProjection.extend({
 	    defaults: {
@@ -1524,14 +1634,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 26 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
-	  __webpack_require__(7),
-	  __webpack_require__(27),
+	  __webpack_require__(11),
+	  __webpack_require__(30),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection, rowCheckTemp) {
 	  'use strict';
 	
@@ -1676,10 +1786,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 27 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jade = __webpack_require__(17);
+	var jade = __webpack_require__(20);
 	
 	module.exports = function template(locals) {
 	var buf = [];
@@ -1711,15 +1821,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 28 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
-	  __webpack_require__(7),
-	  __webpack_require__(10),
-	  __webpack_require__(8),
+	  __webpack_require__(11),
+	  __webpack_require__(14),
+	  __webpack_require__(12),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection /* , schemaProperties, Response */) {
 	  var Model = BaseProjection.extend({
 	    defaults: {},
@@ -1747,13 +1857,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 29 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(7),
-	  __webpack_require__(10),
-	], __WEBPACK_AMD_DEFINE_RESULT__ = function (BaseProjection, schemaProperties) {
+	  __webpack_require__(2),
+	  __webpack_require__(11),
+	  __webpack_require__(14),
+	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, BaseProjection, schemaProperties) {
 	  var Model = BaseProjection.extend({
 	
 	    defaults: {
@@ -1772,6 +1883,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.patch({
 	          value: value,
 	          select: select,
+	          count: _.size(value),
 	        });
 	      }
 	    },
@@ -1783,25 +1895,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 30 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = {
-	  TableLayout: __webpack_require__(31),
+	  TableLayout: __webpack_require__(34),
 	  templates: {
-	    table: __webpack_require__(32),
+	    table: __webpack_require__(35),
 	  },
-	  renderers: __webpack_require__(33),
+	  renderers: __webpack_require__(36),
 	};
 
 
 /***/ },
-/* 31 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
-	  __webpack_require__(15),
+	  __webpack_require__(6),
 	  __webpack_require__(3),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, $, Backbone) {
 	  var View = Backbone.View.extend({
@@ -1819,6 +1931,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // TODO [akamel] rename? this isn't a backbone data obj?
 	      this.data = undefined;
 	
+	      this.container = options.container;
 	      this.grid = options.grid;
 	
 	      this.renderers = _.map(this.options.renderers, function (Renderer) {
@@ -1826,9 +1939,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }.bind(this));
 	
 	      // TODO [akamel] make this conditional if these renderes are enabled
-	      $(window).on('scroll resize', function () {
-	        this.scheduleDraw();
-	      }.bind(this));
+	      this.onViewPortChange = this.onViewPortChange.bind(this);
+	      this.listenTo(this.container, 'scroll:container', this.onViewPortChange);
+	      this.listenTo(this.container, 'resize:container', this.onViewPortChange);
+	    },
+	
+	    onViewPortChange: function () {
+	      this.scheduleDraw();
+	    },
+	
+	    remove: function () {
+	      this.container.stopListening(this.container);
+	      Backbone.View.prototype.remove.apply(this, arguments);
 	    },
 	
 	    thClick: function (e) {
@@ -1892,6 +2014,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          ret.checked = checkbox[0].checked;
 	        }
 	      }
+	      ret.grid = this.grid;
 	
 	      return ret;
 	    },
@@ -1906,8 +2029,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            col.$metadata['attr.head'].class = col.$metadata['attr.head'].class.join(' ');
 	          }
 	
-	          if (_.has(col.$metadata['attr.body'], 'class') && _.isArray(col.$metadata['attr.head'].class)) {
-	            col.$metadata['attr.head'].class = col.$metadata['attr.head'].class.join(' ');
+	          if (_.has(col.$metadata['attr.body'], 'class') && _.isArray(col.$metadata['attr.body'].class)) {
+	            col.$metadata['attr.body'].class = col.$metadata['attr.body'].class.join(' ');
 	          }
 	
 	         // TODO [akamel] merge attr that are on $metadata['attr']
@@ -1953,12 +2076,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return _.extend(col, colOptions[col.property], delta);
 	      });
 	
+	      if (_.has(this.options.$metadata, 'class') && _.isArray(this.options.$metadata.class)) {
+	        this.options.$metadata.class = this.options.$metadata.class.join(' ');
+	      }
+	
 	      var delta = {
 	        'value': value,
 	        'columns': columns,
 	        'columns.lookup': _.indexBy(columns, function (col) {
 	          return col.property;
 	        }),
+	        '$metadata': this.options.$metadata,
 	      };
 	
 	      this.data = _.defaults(delta, model.toJSON());
@@ -2050,16 +2178,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 32 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jade = __webpack_require__(17);
+	var jade = __webpack_require__(20);
 	
 	module.exports = function template(locals) {
 	var buf = [];
 	var jade_mixins = {};
 	var jade_interp;
-	;var locals_for_with = (locals || {});(function (undefined, value) {
+	;var locals_for_with = (locals || {});(function ($metadata, undefined, value) {
 	jade_mixins["th"] = jade_interp = function(column){
 	var block = (this && this.block), attributes = (this && this.attributes) || {};
 	var attr = (column.$metadata || {})['attr.head'] || {}
@@ -2110,7 +2238,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	buf.push("</td>");
 	};
-	buf.push("<table class=\"table table-hover grid\"><thead><tr class=\"table__row--header\">");
+	buf.push("<table" + (jade.attrs(jade.merge([{"class": "table table-hover grid"},$metadata || {}]), true)) + "><thead><tr class=\"table__row--header\">");
 	// iterate locals['columns'] || []
 	;(function(){
 	  var $$obj = locals['columns'] || [];
@@ -2204,28 +2332,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	}).call(this);
 	
-	buf.push("</tbody></table>");}.call(this,"undefined" in locals_for_with?locals_for_with.undefined: false?undefined:undefined,"value" in locals_for_with?locals_for_with.value:typeof value!=="undefined"?value:undefined));;return buf.join("");
+	buf.push("</tbody></table>");}.call(this,"$metadata" in locals_for_with?locals_for_with.$metadata:typeof $metadata!=="undefined"?$metadata:undefined,"undefined" in locals_for_with?locals_for_with.undefined: false?undefined:undefined,"value" in locals_for_with?locals_for_with.value:typeof value!=="undefined"?value:undefined));;return buf.join("");
 	}
 
 /***/ },
-/* 33 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = {
-	  FixedHeader: __webpack_require__(34),
-	  Virtualization: __webpack_require__(37),
+	  FixedHeader: __webpack_require__(37),
+	  Virtualization: __webpack_require__(40),
 	};
 
 
 /***/ },
-/* 34 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(15),
+	  __webpack_require__(6),
 	  __webpack_require__(2),
-	  __webpack_require__(35),
-	  __webpack_require__(36),
+	  __webpack_require__(38),
+	  __webpack_require__(39),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _, measure, px) {
 	  function Renderer(options) {
 	    this.options = options || {};
@@ -2242,7 +2370,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // todo [akamel] assumes we have table rendered; measure/estimate otherwise
 	
 	      // a. compensate for header displacement
-	      // .. as we set 'thead > tr' css position 'fixed'
+	      // .. as we set 'thead > tr' css position 'absolute'
 	      var displacement = $el.find('thead tr').outerHeight();
 	      _.extend(data.css, {
 	        'padding-top': px.pixelify(px.parse(data.css['padding-top']) + displacement),
@@ -2280,10 +2408,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      // f. set position 'fixed' and lock header at top of table
 	      $thead.find('tr').css({
-	        'position': 'fixed',
-	        'top': '0px',
+	        'position': this.layout.container.el === window ? 'fixed' : 'absolute',
+	        'top': px.pixelify(this.layout.container.el === window ? 0 : this.layout.container.$el.scrollTop()),
 	        'display': 'flex',
 	        'margin-left': px.pixelify(-data.vpMeasures.offsetLeft),
+	        'z-index': 1000,
 	      });
 	    } else {
 	      _.extend(data.css, {
@@ -2305,24 +2434,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 35 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(15),
+	  __webpack_require__(6),
 	  __webpack_require__(2),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _) {
-	  function viewport(el) {
+	  function viewport(el, container) {
 	    var $el = el ? $(el) : this.$el;
 	
-	    // todo [akamel] this would assume that only window has a scrollbar
-	    var $viewport = $(window);
+	    container = container || this.container;
+	    var $viewport = container.$el;
 	
 	    var viewportTop = $viewport.scrollTop();
 	    var viewportBottom = viewportTop + $viewport.height();
 	    var viewportLeft = $viewport.scrollLeft();
 	
-	    var boundsTop = $el.offset().top;
+	    var boundsTop = container.offset($el).top;
 	    var boundsBottom = boundsTop + $el.innerHeight();
 	    // var boundsLeft = $el.offset().left;
 	
@@ -2390,7 +2519,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 36 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// todo [akamel] move to /component
@@ -2415,16 +2544,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 37 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// TODO [akamel] [bug] with large data set, jitters when scrolling to bottom
 	
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(15),
+	  __webpack_require__(6),
 	  __webpack_require__(2),
-	  __webpack_require__(35),
-	  __webpack_require__(36),
+	  __webpack_require__(38),
+	  __webpack_require__(39),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _, measure, px) {
 	  function rowHeight(row) {
 	    return _.isNumber(row.__height) ? row.__height : this.__measures.avgRowHeight;
@@ -2477,12 +2606,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (!this.__measures) {
 	      var smpl = measure.sample.call(this.layout);
 	      this.__measures = _.pick(smpl, 'avgRowHeight', 'estimateHeight', 'thead');
-	    }
 	
-	    // b.1 set height based on measures estimate
-	    this.layout.$el.css({
-	      'padding-top': px.pixelify(this.__measures.estimateHeight),
-	    });
+	      // b.1 set height based on measures estimate
+	      this.layout.$el.css({
+	        'padding-top': px.pixelify(this.__measures.estimateHeight),
+	      });
+	    }
 	
 	    // c. find visible viewport
 	    data.vpMeasures = data.vpMeasures || measure.viewport.call(this.layout);
