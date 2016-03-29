@@ -30,12 +30,12 @@ define([
     },
 
     setSrc: function (src) {
+      this.src = src;
       if (this.src) {
         this.src.data.off('change', this.onSrcUpdate);
         this.src.off('all', this.bubble);
       }
 
-      this.src = src;
       if (this.src) {
         this.src.data.on('change', this.onSrcUpdate);
         this.src.on('all', this.bubble);
