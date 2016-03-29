@@ -2,17 +2,17 @@ define([
   'lib/jquery',
   'lib/underscore',
 ], function ($, _) {
-  function viewport(el) {
+  function viewport(el, container) {
     var $el = el ? $(el) : this.$el;
 
-    // todo [akamel] this would assume that only window has a scrollbar
-    var $viewport = $(window);
+    container = container || this.container;
+    var $viewport = container.$el;
 
     var viewportTop = $viewport.scrollTop();
     var viewportBottom = viewportTop + $viewport.height();
     var viewportLeft = $viewport.scrollLeft();
 
-    var boundsTop = $el.offset().top;
+    var boundsTop = container.offset($el).top;
     var boundsBottom = boundsTop + $el.innerHeight();
     // var boundsLeft = $el.offset().left;
 

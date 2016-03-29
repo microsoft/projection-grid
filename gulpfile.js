@@ -80,11 +80,12 @@ gulp.task('example:requirejs', function () {
     'require.config.js',
     escodegen.generate(
       esprima.parse(
-        'window.requirejs.config(' + JSON.stringify({
-          paths: _.mapValues(pkg.peerDependencies, function (value, key) {
-            return path.relative('./examples/requirejs', require.resolve(key)).replace(/\.js$/, '');
-          }),
-        }) + ');'
+        'var require = ' + JSON.stringify({
+          baseUrl: path.relative('examples/requirejs', '.'),
+          paths: _.defaults(_.mapValues(pkg.peerDependencies, function (value, key) {
+            return path.relative('.', require.resolve(key)).replace(/\.js$/, '');
+          }), { 'projection-grid': 'dist/projection-grid' }),
+        }) + ';'
       ),
       _.set({}, 'format.indent.style', '  ')
     )

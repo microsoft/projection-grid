@@ -1,5 +1,6 @@
 var url = require('url');
 var path = require('path');
+var webpack = require('webpack');
 
 module.exports = {
   entry: path.join(__dirname, './index.js'),
@@ -21,5 +22,13 @@ module.exports = {
       { test: /\.js$/, loader: "source-map-loader" },
     ],
   },
+  resolve: {
+    alias: {
+      'projection-grid': path.resolve(__dirname, '../..'),
+    },
+  },
+  plugins: [
+    new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
+  ],
   devtool: 'source-map',
 };

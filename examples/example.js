@@ -1,8 +1,4 @@
-window.example = function (modules) {
-  var pgrid = modules.pgrid;
-  var _ = modules._;
-  var $ = modules.$;
-
+require(['projection-grid', 'underscore', 'jquery'], function (pgrid, _, $) {
   var Grid = pgrid.GridView;
 
   // projections
@@ -251,4 +247,4 @@ window.example = function (modules) {
 
     window.grid = grid;
   });
-};
+});

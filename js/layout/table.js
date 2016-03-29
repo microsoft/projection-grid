@@ -18,6 +18,7 @@ define([
       // TODO [akamel] rename? this isn't a backbone data obj?
       this.data = undefined;
 
+      this.container = options.container;
       this.grid = options.grid;
 
       this.renderers = _.map(this.options.renderers, function (Renderer) {
@@ -25,9 +26,18 @@ define([
       }.bind(this));
 
       // TODO [akamel] make this conditional if these renderes are enabled
-      $(window).on('scroll resize', function () {
-        this.scheduleDraw();
-      }.bind(this));
+      this.onViewPortChange = this.onViewPortChange.bind(this);
+      this.listenTo(this.container, 'scroll:container', this.onViewPortChange);
+      this.listenTo(this.container, 'resize:container', this.onViewPortChange);
+    },
+
+    onViewPortChange: function () {
+      this.scheduleDraw();
+    },
+
+    remove: function () {
+      this.container.stopListening(this.container);
+      Backbone.View.prototype.remove.apply(this, arguments);
     },
 
     thClick: function (e) {
@@ -91,6 +101,7 @@ define([
           ret.checked = checkbox[0].checked;
         }
       }
+      ret.grid = this.grid;
 
       return ret;
     },
@@ -105,8 +116,8 @@ define([
             col.$metadata['attr.head'].class = col.$metadata['attr.head'].class.join(' ');
           }
 
-          if (_.has(col.$metadata['attr.body'], 'class') && _.isArray(col.$metadata['attr.head'].class)) {
-            col.$metadata['attr.head'].class = col.$metadata['attr.head'].class.join(' ');
+          if (_.has(col.$metadata['attr.body'], 'class') && _.isArray(col.$metadata['attr.body'].class)) {
+            col.$metadata['attr.body'].class = col.$metadata['attr.body'].class.join(' ');
           }
 
          // TODO [akamel] merge attr that are on $metadata['attr']
@@ -152,12 +163,17 @@ define([
         return _.extend(col, colOptions[col.property], delta);
       });
 
+      if (_.has(this.options.$metadata, 'class') && _.isArray(this.options.$metadata.class)) {
+        this.options.$metadata.class = this.options.$metadata.class.join(' ');
+      }
+
       var delta = {
         'value': value,
         'columns': columns,
         'columns.lookup': _.indexBy(columns, function (col) {
           return col.property;
         }),
+        '$metadata': this.options.$metadata,
       };
 
       this.data = _.defaults(delta, model.toJSON());
