@@ -10,6 +10,7 @@ describe('projection OData', function () {
       url: 'www.bing.com',
       skip: 10,
       take: 10,
+      orderby: [{name: 1}],
       filter: 'name'
     });
     sinon.stub($, 'getJSON', function() {
@@ -25,7 +26,8 @@ describe('projection OData', function () {
       $format: 'json', 
       $count: true,
       $top: 10,
-      $skip: 10
+      $skip: 10,
+      $orderby: 'name asc'
     };
     expect($.getJSON.calledWith('www.bing.com', expectRes)).to.be.true;
   });

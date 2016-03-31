@@ -29,4 +29,31 @@ describe('projection RowCheckbox', function () {
     expect(model.data.get('value')[1]['name']['$html']).to.be.not.null;
   });
 
+  it('thClick should run normal', function() {
+    var model = new RowCheckbox({
+      'row.check.id': 'id',
+      'column.checked': 'name',
+      'row.check.allow': true
+    });
+    model.data = new Response({
+      value: [
+        {name: new String('hello'), id: 'hello_id'},
+        {name: new String('world'), id: 'world_id'}
+      ],
+    });
+    model.thClick({}, {property: 'name', checked: true});
+    expect(model.get('row.check.list')).to.be.eql(['hello_id', 'world_id']);
+  });
+
+  it('tdClick should run normal', function() {
+    var model = new RowCheckbox({
+      'row.check.id': 'id',
+      'column.checked': 'name',
+      'row.check.list': []
+    });
+    var newModel = new Response({name: new String('hello'), id: 'hello_id'});
+    model.tdClick({}, {property: 'name', model: newModel, checked: true});
+
+    expect(model.get('row.check.list')).to.be.eql(['hello_id']);
+  });
 });

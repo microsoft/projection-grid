@@ -43,7 +43,7 @@ define([
       var orderby = this.get('orderby');
       if (_.size(orderby)) {
         var col = _.first(orderby);
-        var key = _.keys(col);
+        var key = _.keys(col)[0];
         var dir = col[key];
 
         op.$orderby = key + ' ' + (dir > 0 ? 'asc' : 'desc');
