@@ -47,4 +47,17 @@ describe('projection Base', function () {
     expect(otherInstance.afterSet.called).to.be.true;
     expect(otherInstance.get('attr1')).to.equal('value1');
   });
+
+  it('bubble should run normal', function() {
+    var otherInstance = new ExtendModel;
+    sinon.stub(instance, 'bubble');
+    if (!otherInstance.events) otherInstance.events = {};
+    otherInstance.events['test-event'] = 'testEvent';
+    otherInstance.testEvent = sinon.spy();
+
+    instance.pipe(otherInstance);
+    otherInstance.bubble('test-event', 'arguments');
+    expect(otherInstance.testEvent.calledWith('arguments')).to.be.true;
+    expect(instance.bubble.calledWith('test-event', 'arguments'));
+  });
 });
