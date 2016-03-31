@@ -21,4 +21,16 @@ describe('projection ColumnShifter', function () {
     expect(model.data.get('columns')[3]['property']).to.be.equal('column.skip.more');
   });
 
+  it('thClick should run normal', function() {
+    var model = new ColumnShifter();
+    model.get = sinon.stub().returns(1);
+    sinon.spy(model, 'set');
+
+    console.log(model.get('column.skip'));
+    model.thClick({}, {
+      column: {$metadata: {enabled: true}},
+      property: 'column.skip.less'
+    });
+    expect(model.set.calledWith({'column.skip': 0})).to.be.true;
+  });
 });
