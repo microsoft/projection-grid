@@ -57,7 +57,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = {
 	  GridView: __webpack_require__(1),
 	  projections: __webpack_require__(9),
-	  layout: __webpack_require__(33),
+	  layout: __webpack_require__(34),
 	};
 
 
@@ -295,16 +295,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  ColumnShifter: __webpack_require__(16),
 	  ColumnTemplate: __webpack_require__(17),
 	  EditableString: __webpack_require__(18),
-	  Map: __webpack_require__(22),
-	  MemoryQueryable: __webpack_require__(23),
-	  Memory: __webpack_require__(24),
-	  Mock: __webpack_require__(25),
-	  Odata: __webpack_require__(26),
-	  Page: __webpack_require__(27),
-	  PropertyTemplate: __webpack_require__(28),
-	  RowCheckbox: __webpack_require__(29),
-	  RowIndex: __webpack_require__(31),
-	  Sink: __webpack_require__(32),
+	  JSData: __webpack_require__(22),
+	  Map: __webpack_require__(23),
+	  MemoryQueryable: __webpack_require__(24),
+	  Memory: __webpack_require__(25),
+	  Mock: __webpack_require__(26),
+	  Odata: __webpack_require__(27),
+	  Page: __webpack_require__(28),
+	  PropertyTemplate: __webpack_require__(29),
+	  RowCheckbox: __webpack_require__(30),
+	  RowIndex: __webpack_require__(32),
+	  Sink: __webpack_require__(33),
 	};
 
 
@@ -1230,6 +1231,95 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
+	  __webpack_require__(11),
+	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, BaseProjection) {
+	  var Model = BaseProjection.extend({
+	    defaults: {
+	      entity: undefined,
+	      options: undefined,
+	      skip: undefined,
+	      take: undefined,
+	      filter: undefined,
+	      orderby: [],
+	      select: [],
+	    },
+	    name: 'jsdata',
+	
+	    update: function () {
+	      if (!this.isUpdating) {
+	        this.isUpdating = true;
+	        this.on('update:finished', function () {
+	          this.isUpdating = false;
+	        });
+	        this.doUpdate();
+	      }
+	    },
+	
+	    doUpdate: function () {
+	      var self = this;
+	      var entity = this.get('entity');
+	      var options = _.defaults(this.get('options'), { all: true });
+	      var op = {};
+	
+	      this.trigger('update:beginning');
+	
+	      var take = this.get('take');
+	
+	      if (take) {
+	        op.limit = take;
+	      }
+	
+	      var skip = this.get('skip');
+	
+	      if (skip) {
+	        op.offset = skip;
+	      }
+	
+	      var filter = this.get('filter');
+	
+	      if (filter) {
+	        op.where = filter;
+	      }
+	
+	      var orderby = this.get('orderby');
+	
+	      if (orderby && orderby.length) {
+	        op.orderBy = _.chain(orderby)
+	          .map(_.pairs)
+	          .map(function (pair) {
+	            return [pair[0], pair[1] > 0 ? 'ASC' : 'DESC'];
+	          })
+	          .value();
+	      }
+	
+	      entity.findAll(op, options)
+	        .then(function (data) {
+	          self.patch({
+	            value: data,
+	            count: data.totalCount,
+	          });
+	        })
+	        .catch(function (jqXHR, textStatus, errorThrown) {
+	          self.patch({
+	            error: errorThrown,
+	          });
+	        })
+	        .finally(function () {
+	          self.trigger('update:finished');
+	        });
+	    },
+	  });
+	
+	  return Model;
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+	  __webpack_require__(2),
 	  __webpack_require__(3),
 	  __webpack_require__(11),
 	  __webpack_require__(14),
@@ -1267,7 +1357,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -1346,7 +1436,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(11)], __WEBPACK_AMD_DEFINE_RESULT__ = function (BaseProjection) {
@@ -1373,7 +1463,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -1421,7 +1511,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -1429,7 +1519,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  __webpack_require__(3),
 	  __webpack_require__(6),
 	  __webpack_require__(11),
-	  __webpack_require__(25),
+	  __webpack_require__(26),
 	  __webpack_require__(14),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, $, BaseProjection, MemoryMock, schemaProperties) {
 	  var Model = BaseProjection.extend({
@@ -1502,7 +1592,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -1569,7 +1659,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -1634,14 +1724,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
 	  __webpack_require__(11),
-	  __webpack_require__(30),
+	  __webpack_require__(31),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection, rowCheckTemp) {
 	  'use strict';
 	
@@ -1786,7 +1876,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var jade = __webpack_require__(20);
@@ -1821,7 +1911,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -1857,7 +1947,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -1895,20 +1985,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = {
-	  TableLayout: __webpack_require__(34),
+	  TableLayout: __webpack_require__(35),
 	  templates: {
-	    table: __webpack_require__(35),
+	    table: __webpack_require__(36),
 	  },
-	  renderers: __webpack_require__(36),
+	  renderers: __webpack_require__(37),
 	};
 
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -2178,7 +2268,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var jade = __webpack_require__(20);
@@ -2336,24 +2426,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = {
-	  FixedHeader: __webpack_require__(37),
-	  Virtualization: __webpack_require__(40),
+	  FixedHeader: __webpack_require__(38),
+	  Virtualization: __webpack_require__(41),
 	};
 
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(6),
 	  __webpack_require__(2),
-	  __webpack_require__(38),
 	  __webpack_require__(39),
+	  __webpack_require__(40),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _, measure, px) {
 	  function Renderer(options) {
 	    this.options = options || {};
@@ -2434,7 +2524,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -2519,7 +2609,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// todo [akamel] move to /component
@@ -2544,7 +2634,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// TODO [akamel] [bug] with large data set, jitters when scrolling to bottom
@@ -2552,8 +2642,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(6),
 	  __webpack_require__(2),
-	  __webpack_require__(38),
 	  __webpack_require__(39),
+	  __webpack_require__(40),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _, measure, px) {
 	  function rowHeight(row) {
 	    return _.isNumber(row.__height) ? row.__height : this.__measures.avgRowHeight;
