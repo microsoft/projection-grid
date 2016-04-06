@@ -405,12 +405,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	
 	    setSrc: function (src) {
+	      this.src = src;
 	      if (this.src) {
 	        this.src.data.off('change', this.onSrcUpdate);
 	        this.src.off('all', this.bubble);
 	      }
 	
-	      this.src = src;
 	      if (this.src) {
 	        this.src.data.on('change', this.onSrcUpdate);
 	        this.src.on('all', this.bubble);
@@ -1469,7 +1469,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var orderby = this.get('orderby');
 	      if (_.size(orderby)) {
 	        var col = _.first(orderby);
-	        var key = _.keys(col);
+	        var key = _.keys(col)[0];
 	        var dir = col[key];
 	
 	        op.$orderby = key + ' ' + (dir > 0 ? 'asc' : 'desc');
@@ -1993,7 +1993,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var $closestTD = $el.closest('td', this.el);
 	      var $closestTH = $el.closest('th', this.el);
 	      var $td = _.size($closestTD) ? $closestTD : $closestTH;
-	      var virtualizer = this.get_renderer('virtualization');
+	      var virtualizer = this.getRenderer('virtualization');
 	      var i = $tr.index() + (virtualizer ? virtualizer.first : 0);
 	      var j = $td.index();
 	      // TODO [akamel] 1- check if $td is th; 2- throw if el is neither th or td as it is assumed in this function
