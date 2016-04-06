@@ -9,6 +9,10 @@ var webpack = require('webpack');
 var esprima = require('esprima');
 var escodegen = require('escodegen');
 var del = require('del');
+var http = require('http');
+var fs = require('fs'); 
+var path = require('path'); 
+var os = require('os');
 
 var pkg = require('./package');
 
@@ -22,6 +26,46 @@ function webpackBuild(configFilePath) {
     });
   };
 }
+
+function getSeleniumFilePath() {
+  var SELENIUM_NAME = 'selenium-server-standalone-2.53.0.jar';
+  return path.resolve(os.tmpdir(), SELENIUM_NAME);
+}
+
+
+gulp.task('download-selenium', function(cb) {
+  var filePath = getSeleniumFilePath();
+  fs.stat(filePath, function(err, stats) {
+    if (!err) cb(null);
+    var file = fs.createWriteStream(filePath);
+    var URL = "http://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.0.jar";
+    var request = http.get(URL, function(response) {
+      response.pipe(file);
+    });
+    file.on('error', function(err) {
+      fs.unlinkSync(filePath);
+      cb(err);
+    });
+    file.on('finish', cb);
+  });
+});
+
+function startSeleniumServer() {
+  var filePath = getSeleniumFilePath();
+  console.log(filePath);
+  return require('child_process').spawn('java', ['-jar', filePath], {stdio: 'inherit'});
+}
+
+gulp.task('run-selenium', function(cb) {
+  var cp = startSeleniumServer();
+  cp.on('error', cb);
+  cp.on('exit', cb);
+  var wdioCmd = path.resolve(__dirname, './node_modules/.bin/wdio');
+  if (process.platform === 'win32') wdioCmd += '.cmd';
+  var testProcess = spawn(wdioCmd, ['wdio.conf.js'], {stdio: 'inherit'})
+  testProcess.on('exit', function() { cp.kill(); });
+  testProcess.on('error', function() { cp.kill(); });
+});
 
 //
 // Don't use Karma API for now
@@ -61,6 +105,18 @@ gulp.task('test', function (cb) {
     'start',
     '--single-run',
   ], { stdio: 'inherit' }).on('close', handler);
+});
+
+gulp.task('selenium-test', ['example:webpack'], function(cb) {
+  var static = require('node-static');
+
+  var fileServer = new static.Server('./examples/webpack/');
+
+  var server = require('http').createServer(function (request, response) {
+      request.addListener('end', function () {
+          fileServer.serve(request, response);
+      }).resume();
+  }).listen(8080);
 });
 
 gulp.task('static', function () {

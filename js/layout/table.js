@@ -80,7 +80,7 @@ define([
       var $closestTD = $el.closest('td', this.el);
       var $closestTH = $el.closest('th', this.el);
       var $td = _.size($closestTD) ? $closestTD : $closestTH;
-      var virtualizer = this.get_renderer('virtualization');
+      var virtualizer = this.getRenderer('virtualization');
       var i = $tr.index() + (virtualizer ? virtualizer.first : 0);
       var j = $td.index();
       // TODO [akamel] 1- check if $td is th; 2- throw if el is neither th or td as it is assumed in this function
