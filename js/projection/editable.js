@@ -54,9 +54,13 @@ define([
             var column = columnIndex[key] || { property: key };
             var $metadata = column.$metadata = column.$metadata || {};
             var attrBody = $metadata['attr.body'] = $metadata['attr.body'] || {};
-            var className = attrBody.class = attrBody.class || [];
+            var className = attrBody.class || [];
 
-            className.push('grid-editable-cell');
+            if (_.isString(className)) {
+              className = className.split(/\s+/);
+            }
+            attrBody.class = _.union(className, ['grid-editable-cell']);
+
             if (!columnIndex[key]) {
               columns.push(column);
             }
