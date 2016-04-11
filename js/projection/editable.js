@@ -29,7 +29,6 @@ define([
       };
 
       if (_.has(local, 'column.editable')) {
-
         var conditions = _.reduce(local['column.editable'], function (conds, editableColumn) {
           if (_.isString(editableColumn)) {
             conds[editableColumn] = editable;
