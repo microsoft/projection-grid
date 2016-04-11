@@ -7,8 +7,9 @@ define([
 ], function (_, Backbone, BaseProjection, schemaProperties /* , Response */) {
   var Model = BaseProjection.extend({
     defaults: {
-      // todo [akamel] consider supporting a select on this level?
-      map: _.identity,
+      'column.group': {},
+      'column.groupExpansion': [],
+      'column.select': null
     },
     name: 'column-group',
     update: function (options) {
@@ -16,24 +17,31 @@ define([
 
       if (Model.__super__.update.call(this, options)) {
         var model = this.src.data;
-        var columnGroup = this.get('column.group');
+        var columnGroup = this.get('column.group') || {};
         var groupExpansion = this.get('column.groupExpansion') || [];
+        var select = this.get('column.select') || model.get('select');
+        var selectExpand = select.slice(0);
         var columns = model.get('columns');
-        var select = model.get('select');
+        var subSelect = [], isApplyGroup = false;
 
         _.each(columnGroup, function(subColumns, name) {
+          if (columns[name] == null) return;
+          isApplyGroup = true;
           columns[name].group = subColumns;
           var isExpand = columns[name].groupExpansion = _.contains(groupExpansion, name);
           if (_.contains(select, name) && isExpand) {
-            var nameIndex = select.indexOf(name);
-            select.splice.apply(select, [nameIndex, 1].concat(subColumns));
+            var nameIndex = selectExpand.indexOf(name);
+            selectExpand.splice.apply(selectExpand, [nameIndex, 1].concat(subColumns));
+            subSelect = subSelect.concat(subColumns);
           }
         }, this);
 
         this.patch({
           columns: columns,
           select: select,
-          'columns.groupExpansion': groupExpansion
+          subSelect: subSelect,
+          selectExpand: selectExpand,
+          isApplyGroup: isApplyGroup
         });
       } else {
         // todo [akamel] unset our properties only

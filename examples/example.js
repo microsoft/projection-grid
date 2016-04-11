@@ -140,7 +140,10 @@ require(['projection-grid', 'underscore', 'jquery'], function (pgrid, _, $) {
   var group = new ColumnGroup({
     'column.group': {
       'OrderDate': ['RequiredDate', 'ShippedDate']
-    }
+    },
+    'column.select': ['OrderID', 'CustomerID', 'EmployeeID', 'OrderDate', 'ShipVia',
+      'Freight', 'ShipName', 'ShipAddress', 'ShipCity', 'ShipRegion',
+      'ShipPostalCode', 'ShipCountry']
   });
 
   var colshifter = new ColumnShifterProjection();
@@ -202,8 +205,8 @@ require(['projection-grid', 'underscore', 'jquery'], function (pgrid, _, $) {
   // TODO [akamel] remove demo pipes
   // mock.pipe(memquery).pipe(map).pipe(proptmpl).pipe(colq).pipe(coli18n)
   // mock.pipe(memquery).pipe(map).pipe(colq).pipe(coli18n).pipe(proptmpl)
-  src = odata.pipe(map).pipe(coli18n).pipe(page).pipe(colq).pipe(group).pipe(proptmpl)
-    .pipe(colshifter).pipe(checkbox).pipe(rowindex).pipe(aggregateRow);
+  src = odata.pipe(map).pipe(coli18n).pipe(page).pipe(colq).pipe(proptmpl)
+    .pipe(colshifter).pipe(group).pipe(checkbox).pipe(rowindex).pipe(aggregateRow);
 
   $(function () {
     // $('#grid_toolbar_host_a').append(createToolbar().render().$el);
