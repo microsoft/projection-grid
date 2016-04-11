@@ -1,5 +1,11 @@
-require(['projection-grid', 'underscore', 'jquery'], function (pgrid, _, $) {
+require([
+  'projection-grid',
+  'underscore',
+  'jquery',
+  'pagination-control',
+], function (pgrid, _, $, pager) {
   var Grid = pgrid.GridView;
+  var PaginationView = pager.PaginationView;
 
   // projections
   // var MemoryQueryableProjection = pgrid.projections.MemoryQueryable;
@@ -241,6 +247,21 @@ require(['projection-grid', 'underscore', 'jquery'], function (pgrid, _, $) {
 
     grid.render({
       fetch: true,
+    });
+
+    var pager = new PaginationView({ el: '#pager', pageSize: 200, pageNumber: 0 });
+    pager.render();
+
+    grid.once('change:data', function(model) {
+      pager.itemCount = model.get('count');
+    });
+
+    pager.on('change:page-number', function(pageNumber) {
+      grid.projection.set('page.number', pageNumber);
+    });
+
+    pager.on('change:page-size', function(pageSize) {
+      grid.projection.set('page.size', pageSize);
     });
 
     // window.paginationConnector = new PaginationConnector(grid, pagination).connect();

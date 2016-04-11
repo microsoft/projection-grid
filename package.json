@@ -50,9 +50,11 @@
     "karma-phantomjs-launcher": "^1.0.0",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^1.7.0",
+    "knockout": "^3.4.0",
     "lodash": "^4.6.1",
     "mocha": "^2.4.5",
     "node-static": "^0.7.7",
+    "pagination-control": "git+ssh://git@github.com/Microsoft/pagination-control.git#publish",
     "phantomjs-prebuilt": "^2.1.7",
     "requirejs": "^2.2.0",
     "sinon": "^1.17.3",
@@ -68,6 +70,8 @@
   "peerDependencies": {
     "backbone": "^1.3.2",
     "jquery": "^2.2.2",
+    "knockout": "^3.4.0",
+    "pagination-control": "git+ssh://git@github.com/Microsoft/pagination-control.git#publish",
     "underscore": "^1.8.3"
   }
 }
