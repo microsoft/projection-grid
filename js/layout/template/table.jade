@@ -22,7 +22,7 @@ mixin th(column, hasGroup, isSubColumn)
     - var colspan = 1, rowspan = 1;
     th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
       +columnHeader(column)
-  if hasGroup && column.groupExpansion
+  else if hasGroup && column.groupExpansion
     - var colspan = column.group.length, rowspan = 1;
     th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
       +columnHeader(column)
@@ -54,7 +54,7 @@ table.table.table-hover.grid&attributes($metadata || {})
       tr.table__row--header
         each columnName in locals['select'] || []
           +th(columns[columnName], true)
-      tr.table__row--header
+      tr.table__row--header.table__row--sub-header
         each columnName in locals['subSelect']
           +th(columns[columnName], true, true)
     else

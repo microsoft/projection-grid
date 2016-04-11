@@ -80,7 +80,7 @@ define([
       var $closestTD = $el.closest('td', this.el);
       var $closestTH = $el.closest('th', this.el);
       var $td = _.size($closestTD) ? $closestTD : $closestTH;
-      var virtualizer = this.get_renderer('virtualization');
+      var virtualizer = this.getRenderer('virtualization');
       var i = $tr.index() + (virtualizer ? virtualizer.first : 0);
       var j = $td.index();
       // TODO [akamel] 1- check if $td is th; 2- throw if el is neither th or td as it is assumed in this function
@@ -91,9 +91,15 @@ define([
       if (!isHeader) {
         ret.model = this.data.value[i];
       }
+      if (isHeader && i === 0) {
+        ret.property = this.data.select[j];
+      } else if (isHeader && i === 1) {
+        ret.property = this.data.subSelect[j];
+      } else {
+        ret.property = this.data.selectExpand[j];
+      }
 
-      ret.column = this.data.columns[j];
-      ret.property = this.data.columns[j].property;
+      ret.column = this.data.columns[ret.property];
       if (ret.property === this.grid.projection.get('column.checked')) {
         // TODO [akamel] this shouldn't be here
         var checkbox = $el.find('.column-checkbox');

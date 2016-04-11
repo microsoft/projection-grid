@@ -12,6 +12,11 @@ define([
       'column.select': null
     },
     name: 'column-group',
+
+    events: {
+      'layout:click:header': 'onClickHeader',
+    },
+
     update: function (options) {
       // Model.__super__.update.call(this, options);
 
@@ -51,6 +56,19 @@ define([
         // this.unset();
       }
     },
+
+    onClickHeader: function (e, arg) {
+      var column = arg.column;
+      if (column.group != null) {
+        var groupExpansion = this.get('column.groupExpansion') || [];
+        if (column.groupExpansion) {
+          groupExpansion = _.without(groupExpansion, column.property);
+        } else {
+          groupExpansion = _.union(groupExpansion, [column.property]);
+        }
+        this.set({'column.groupExpansion': groupExpansion});
+      }
+    }
   });
 
   return Model;

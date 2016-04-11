@@ -140,7 +140,8 @@ require(['projection-grid', 'underscore', 'jquery'], function (pgrid, _, $) {
   var group = new ColumnGroup({
     'column.group': {
       'OrderDate': ['RequiredDate', 'ShippedDate']
-    }
+    },
+    'column.groupExpansion': ['OrderDate']
   });
 
   var colshifter = new ColumnShifterProjection();

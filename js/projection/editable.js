@@ -20,7 +20,7 @@ define([
     },
     name: 'column-editable',
     events: {
-      'layout:click:cell': 'td_click',
+      'layout:click:cell': 'tdClick',
     },
 
     beforeSet: function (local) {
