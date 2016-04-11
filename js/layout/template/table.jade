@@ -66,4 +66,4 @@ table.table.table-hover.grid&attributes($metadata || {})
       - var attr = (row.$metadata || {}).attr
       tr.table__row--body&attributes(attr)
         each columnName in locals['selectExpand'] || []
-          +td(row, columns[column])
+          +td(row, columns[columnName])

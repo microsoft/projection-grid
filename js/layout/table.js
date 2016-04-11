@@ -135,9 +135,7 @@ define([
       // TODO [akamel] consider moving this to a projection
       var value = model.get('value');
       // TODO [akamel] is this overriding the values we got from the projection //see column extend below
-      var columns = model.get('columns') || _.map(model.get('select'), function (i) {
-        return { property: i };
-      });
+      var columns = model.get('columns');
       var colOptions = this.options.columns || {};
       var orderby = {};
 
@@ -149,18 +147,14 @@ define([
         };
       });
 
-      columns = _.filter(columns, function (col) {
-        return col.property.charAt(0) !== '$';
-      });
-
-      columns = _.map(columns, function (col) {
+      _.each(columns, function (col, property) {
       // TODO [akamel] consider filtering which props to copy/override
         var delta = {};
-        if (orderby[col.property]) {
-          delta.$orderby = orderby[col.property];
+        if (orderby[property]) {
+          delta.$orderby = orderby[property];
         }
 
-        return _.extend(col, colOptions[col.property], delta);
+        columns[property] = _.extend(col, colOptions[property], delta);
       });
 
       if (_.has(this.options.$metadata, 'class') && _.isArray(this.options.$metadata.class)) {

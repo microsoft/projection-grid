@@ -23,7 +23,7 @@ define([
 
         this.patch({
           value: value,
-          select: schemaProperties.from(value),
+          select: _.without(schemaProperties.from(value), '$metadata')
         });
       } else {
         // todo [akamel] unset our properties only

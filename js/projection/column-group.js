@@ -28,6 +28,9 @@ define([
           if (columns[name] == null) return;
           isApplyGroup = true;
           columns[name].group = subColumns;
+          // remove the columns that appear in the select
+          select = _.difference(select, subColumns);
+          selectExpand = _.difference(selectExpand, subColumns);
           var isExpand = columns[name].groupExpansion = _.contains(groupExpansion, name);
           if (_.contains(select, name) && isExpand) {
             var nameIndex = selectExpand.indexOf(name);

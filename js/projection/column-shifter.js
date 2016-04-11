@@ -18,11 +18,12 @@ define([
         var model = this.src.data;
         // todo [akamel] have 'columns' crated at the source so we don't have to put this all over the place
         var columns = model.get('columns');
+        var select = model.get('select');
         var colSkipped = model.get('columns.skipped');
         var colRemaining = model.get('columns.remaining');
 
         var unlockedAt = Math.max(_.findIndex(select, function (col) {
-          return !columns[col].$lock;
+          return columns[col] && !columns[col].$lock;
         }), 0);
 
         var hasLess = _.size(colSkipped);

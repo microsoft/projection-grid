@@ -140,10 +140,7 @@ require(['projection-grid', 'underscore', 'jquery'], function (pgrid, _, $) {
   var group = new ColumnGroup({
     'column.group': {
       'OrderDate': ['RequiredDate', 'ShippedDate']
-    },
-    'column.select': ['OrderID', 'CustomerID', 'EmployeeID', 'OrderDate', 'ShipVia',
-      'Freight', 'ShipName', 'ShipAddress', 'ShipCity', 'ShipRegion',
-      'ShipPostalCode', 'ShipCountry']
+    }
   });
 
   var colshifter = new ColumnShifterProjection();

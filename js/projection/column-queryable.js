@@ -56,9 +56,10 @@ define([
         // end query
 
         _.each(col, function(element) {
-          if (lookup[element] != null) {
-            lookup[element]['$lock'] = _.contains(lock, element);
+          if (lookup[element] == null) {
+            lookup[element] = {property: element};
           }
+          lookup[element]['$lock'] = _.contains(lock, element);
         });
 
         this.patch({
