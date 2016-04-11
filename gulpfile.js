@@ -10,8 +10,8 @@ var esprima = require('esprima');
 var escodegen = require('escodegen');
 var del = require('del');
 var http = require('http');
-var fs = require('fs'); 
-var path = require('path'); 
+var fs = require('fs');
+var path = require('path');
 var os = require('os');
 
 var pkg = require('./package');
@@ -138,9 +138,12 @@ gulp.task('example:requirejs', function () {
       esprima.parse(
         'var require = ' + JSON.stringify({
           baseUrl: path.relative('examples/requirejs', '.'),
-          paths: _.defaults(_.mapValues(pkg.peerDependencies, function (value, key) {
+          paths: _.assignIn(_.mapValues(pkg.peerDependencies, function (value, key) {
             return path.relative('.', require.resolve(key)).replace(/\.js$/, '');
-          }), { 'projection-grid': 'dist/projection-grid' }),
+          }), {
+            'projection-grid': 'dist/projection-grid',
+            'bluebird': 'node_modules/bluebird/js/browser/bluebird.min',
+          }),
         }) + ';'
       ),
       _.set({}, 'format.indent.style', '  ')

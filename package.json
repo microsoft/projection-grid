@@ -69,6 +69,7 @@
   },
   "peerDependencies": {
     "backbone": "^1.3.2",
+    "bluebird": "^3.3.4",
     "jquery": "^2.2.2",
     "knockout": "^3.4.0",
     "pagination-control": "git+ssh://git@github.com/Microsoft/pagination-control.git#publish",
