@@ -4,6 +4,7 @@ define([
 ], function (_, BaseProjection) {
   var Model = BaseProjection.extend({
     defaults: {
+      'jsdata.query': undefined,
       entity: undefined,
       options: undefined,
       skip: undefined,
@@ -48,6 +49,12 @@ define([
 
       if (filter) {
         op.where = filter;
+      }
+
+      var query = this.get('jsdata.query');
+
+      if (query) {
+        op.query = query;
       }
 
       var orderby = this.get('orderby');
