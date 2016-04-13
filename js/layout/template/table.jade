@@ -1,15 +1,4 @@
-mixin columnHeader(column)
-  if column.$orderby
-    if column.$orderby.dir > 0
-      span.grid-asc
-    else
-      span.grid-des
-  if (column && column.$html)
-    != column.$html
-  else
-    = (typeof column.$text != 'undefined')? column.$text : (column.property || column)
-
-mixin th(column, hasGroup, isSubColumn)
+mixin th(column)
   - var attr = (column.$metadata || {})['attr.head'] || {}
   - var cls = [];
   if column.sortable
@@ -18,21 +7,16 @@ mixin th(column, hasGroup, isSubColumn)
     - cls.push('orderby');
 
   - cls = cls.join(' ');
-  if isSubColumn 
-    - var colspan = 1, rowspan = 1;
-    th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
-      +columnHeader(column)
-  else if hasGroup && column.groupExpansion
-    - var colspan = column.group.length, rowspan = 1;
-    th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
-      +columnHeader(column)
-  else if hasGroup 
-    - var colspan = 1, rowspan = 2;
-    th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
-      +columnHeader(column)
-  else 
-    th(class=cls)&attributes(attributes)&attributes(attr)
-      +columnHeader(column)
+  th(class=cls)&attributes(attributes)&attributes(attr)
+    if column.$orderby
+      if column.$orderby.dir > 0
+        span.grid-asc
+      else
+        span.grid-des
+    if (column && column.$html)
+      != column.$html
+    else
+      = (typeof column.$text != 'undefined')? column.$text : (column.property || column)
 
 mixin td(row, column)
   - var attr = (column.$metadata || {})['attr.body'] || {}
@@ -46,24 +30,12 @@ mixin td(row, column)
 
 table.table.table-hover.grid&attributes($metadata || {})
   thead
-    if isApplyGroup && subSelect.length === 0
-      tr.table__row--header
-        each columnName in locals['select'] || []
-          +th(columns[columnName], true)
-    else if isApplyGroup
-      tr.table__row--header
-        each columnName in locals['select'] || []
-          +th(columns[columnName], true)
-      tr.table__row--header.table__row--sub-header
-        each columnName in locals['subSelect']
-          +th(columns[columnName], true, true)
-    else
-      tr.table__row--header
-        each columnName in locals['select'] || []
-          +th(columns[columnName])
+    tr.table__row--header
+      each column, index in locals['columns'] || []
+        +th(column)
   tbody
     each row, i in value
       - var attr = (row.$metadata || {}).attr
       tr.table__row--body&attributes(attr)
-        each columnName in locals['selectExpand'] || []
-          +td(row, columns[columnName])
+        each column, j in locals['columns'] || []
+          +td(row, column)

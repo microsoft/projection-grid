@@ -20,9 +20,7 @@ require([
   var RowCheckboxProjection = pgrid.projections.RowCheckbox;
   var RowIndexProjection = pgrid.projections.RowIndex;
   var AggregateRow = pgrid.projections.AggregateRow;
-  var ColumnGroup = pgrid.projections.ColumnGroup;
   var EditableProjection = pgrid.projections.Editable;
-
   // layout
   var TableLayout = pgrid.layout.TableLayout;
   var tmplJade = pgrid.layout.templates.table;
@@ -100,7 +98,6 @@ require([
   var odata = new OdataSource({
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
   });
-
   var map = new MapProjection({
     map: function (item) {
       var names = (item.name || item.ContactName || item.ShipName).split(' ');
@@ -143,14 +140,6 @@ require([
       },
     },
   });
-
-  var group = new ColumnGroup({
-    'column.group': {
-      'OrderDate': ['RequiredDate', 'ShippedDate']
-    },
-    'column.groupExpansion': ['OrderDate']
-  });
-
   var colshifter = new ColumnShifterProjection();
   var proptmpl = new PropertyTemplateProjection({
     'property.template': {
@@ -213,8 +202,7 @@ require([
   // TODO [akamel] remove demo pipes
   // mock.pipe(memquery).pipe(map).pipe(proptmpl).pipe(colq).pipe(coli18n)
   // mock.pipe(memquery).pipe(map).pipe(colq).pipe(coli18n).pipe(proptmpl)
-  src = odata.pipe(map).pipe(coli18n).pipe(page).pipe(colq).pipe(proptmpl)
-    .pipe(colshifter).pipe(group).pipe(checkbox).pipe(rowindex).pipe(aggregateRow).pipe(editable);
+  src = odata.pipe(map).pipe(coli18n).pipe(page).pipe(colq).pipe(proptmpl).pipe(colshifter).pipe(checkbox).pipe(rowindex).pipe(aggregateRow).pipe(editable);
 
   $(function () {
     // $('#grid_toolbar_host_a').append(createToolbar().render().$el);

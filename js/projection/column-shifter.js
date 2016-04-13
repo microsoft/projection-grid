@@ -17,13 +17,14 @@ define([
       if (Model.__super__.update.call(this, options)) {
         var model = this.src.data;
         // todo [akamel] have 'columns' crated at the source so we don't have to put this all over the place
-        var columns = model.get('columns');
-        var select = model.get('select');
+        var columns = model.get('columns') || _.map(model.get('select'), function (i) {
+          return { property: i };
+        });
         var colSkipped = model.get('columns.skipped');
         var colRemaining = model.get('columns.remaining');
 
-        var unlockedAt = Math.max(_.findIndex(select, function (col) {
-          return columns[col] && !columns[col].$lock;
+        var unlockedAt = Math.max(_.findIndex(columns, function (col) {
+          return !col.$lock;
         }), 0);
 
         var hasLess = _.size(colSkipped);
@@ -54,15 +55,10 @@ define([
           colMore.$metadata['attr.head'].class.push('disabled');
         }
 
-        select.splice(unlockedAt, 0, colLess.property);
-        columns[colLess.property] = colLess;
-        select.push(colMore.property);
-        columns[colMore.property] = colMore;
+        columns.splice(unlockedAt, 0, colLess);
+        columns.push(colMore);
 
-        this.patch({
-          columns: columns,
-          select: select
-        });
+        this.patch({ columns: columns });
       } else {
         // todo [akamel] unset our properties only
         // this.unset();
