@@ -26,7 +26,6 @@ describe('projection ColumnShifter', function () {
     model.get = sinon.stub().returns(1);
     sinon.spy(model, 'set');
 
-    console.log(model.get('column.skip'));
     model.thClick({}, {
       column: {$metadata: {enabled: true}},
       property: 'column.skip.less'
