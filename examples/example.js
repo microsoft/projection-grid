@@ -212,6 +212,7 @@ require([
       Layout: TableLayout.partial({
         template: tmplJade,
         renderers: [Virtualization, FixedHeader],
+        hideHeaders: true,
         columns: {
           name: {},
           first: {
