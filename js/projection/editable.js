@@ -2,7 +2,7 @@ define([
   'lib/underscore',
   'lib/jquery',
   'component/grid/projection/base',
-  'component/grid/layout/template/editable',
+  'component/grid/layout/template/editable.jade',
   'component/popup-editor/index',
 ], function (_, $, BaseProjection, editableTemplate, PopupEditor) {
   'use strict';
@@ -27,18 +27,21 @@ define([
       var editable = function () {
         return true;
       };
-      var conditions = _.reduce(local['column.editable'], function (conds, editableColumn) {
-        if (_.isString(editableColumn)) {
-          conds[editableColumn] = editable;
-        } else if (_.isObject(editableColumn) && _.isString(editableColumn.name)) {
-          conds[editableColumn.name] = _.isFunction(editableColumn.condition) ? editableColumn.condition : editable;
-        }
-        return conds;
-      }, {});
 
-      this.isEditable = function (key, item) {
-        return _.isFunction(conditions[key]) && conditions[key](item);
-      };
+      if (_.has(local, 'column.editable')) {
+        var conditions = _.reduce(local['column.editable'], function (conds, editableColumn) {
+          if (_.isString(editableColumn)) {
+            conds[editableColumn] = editable;
+          } else if (_.isObject(editableColumn) && _.isString(editableColumn.name)) {
+            conds[editableColumn.name] = _.isFunction(editableColumn.condition) ? editableColumn.condition : editable;
+          }
+          return conds;
+        }, {});
+
+        this.isEditable = function (key, item) {
+          return _.isFunction(conditions[key]) && conditions[key](item);
+        };
+      }
     },
 
     update: function (options) {

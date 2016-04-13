@@ -5,4 +5,5 @@ module.exports = {
   'lib/backbone': 'backbone',
   'lib/jquery': 'jquery',
   'component/grid': path.resolve('./js'),
+  'component/popup-editor': path.resolve('./js/popup-editor'),
 };

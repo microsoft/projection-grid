@@ -6,6 +6,7 @@ module.exports = {
   ColumnShifter: require('./column-shifter'),
   ColumnTemplate: require('./column-template'),
   EditableString: require('./editable-string'),
+  Editable: require('./editable'),
   JSData: require('./jsdata'),
   Map: require('./map'),
   MemoryQueryable: require('./memory-queryable'),

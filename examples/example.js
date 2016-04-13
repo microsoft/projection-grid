@@ -1,5 +1,11 @@
-require(['projection-grid', 'underscore', 'jquery'], function (pgrid, _, $) {
+require([
+  'projection-grid',
+  'underscore',
+  'jquery',
+  'pagination-control',
+], function (pgrid, _, $, pager) {
   var Grid = pgrid.GridView;
+  var PaginationView = pager.PaginationView;
 
   // projections
   // var MemoryQueryableProjection = pgrid.projections.MemoryQueryable;
@@ -15,6 +21,7 @@ require(['projection-grid', 'underscore', 'jquery'], function (pgrid, _, $) {
   var RowIndexProjection = pgrid.projections.RowIndex;
   var AggregateRow = pgrid.projections.AggregateRow;
   var ColumnGroup = pgrid.projections.ColumnGroup;
+  var EditableProjection = pgrid.projections.Editable;
 
   // layout
   var TableLayout = pgrid.layout.TableLayout;
@@ -194,6 +201,9 @@ require(['projection-grid', 'underscore', 'jquery'], function (pgrid, _, $) {
       }];
     },
   });
+  var editable = new EditableProjection({
+    'column.editable': ['OrderID', 'Freight'],
+  });
 
   _.templateSettings = {
     interpolate: /\{\{(.+?)\}\}/g,
@@ -204,7 +214,7 @@ require(['projection-grid', 'underscore', 'jquery'], function (pgrid, _, $) {
   // mock.pipe(memquery).pipe(map).pipe(proptmpl).pipe(colq).pipe(coli18n)
   // mock.pipe(memquery).pipe(map).pipe(colq).pipe(coli18n).pipe(proptmpl)
   src = odata.pipe(map).pipe(coli18n).pipe(page).pipe(colq).pipe(proptmpl)
-    .pipe(colshifter).pipe(group).pipe(checkbox).pipe(rowindex).pipe(aggregateRow);
+    .pipe(colshifter).pipe(group).pipe(checkbox).pipe(rowindex).pipe(aggregateRow).pipe(editable);
 
   $(function () {
     // $('#grid_toolbar_host_a').append(createToolbar().render().$el);
@@ -253,6 +263,21 @@ require(['projection-grid', 'underscore', 'jquery'], function (pgrid, _, $) {
 
     grid.render({
       fetch: true,
+    });
+
+    var pager = new PaginationView({ el: '#pager', pageSize: 200, pageNumber: 0 });
+    pager.render();
+
+    grid.once('change:data', function(model) {
+      pager.itemCount = model.get('count');
+    });
+
+    pager.on('change:page-number', function(pageNumber) {
+      grid.projection.set('page.number', pageNumber);
+    });
+
+    pager.on('change:page-size', function(pageSize) {
+      grid.projection.set('page.size', pageSize);
     });
 
     // window.paginationConnector = new PaginationConnector(grid, pagination).connect();
