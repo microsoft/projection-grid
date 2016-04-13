@@ -28,21 +28,27 @@ define([
       if (Model.__super__.update.call(this, options)) {
         var model = this.src.data;
         var colOptions = this.get('column.i18n');
-        var columns = model.get('columns') || {};
-        var select = _.size(columns) ? _.keys(columns) : model.get('select');
+        var select = _.size(model.get('columns')) ? _.map(model.get('columns'), function (i) {
+          return i.property;
+        }) : model.get('select');
+        var lookup = {};
         var $default = colOptions[''];
 
-        var i18nColumns = {};
-        _.each(select, function (element) {
+        // todo [akamel] use indexBy from underscore 1.5.x
+        _.each(model.get('columns'), function (element) {
+          lookup[element.property] = element;
+        });
+
+        var i18nColumns = _.map(select, function (element) {
           var opt = colOptions[element];
           if (_.isUndefined(opt)) {
             opt = $default;
           }
 
-          i18nColumns[element] = _.defaults({
+          return _.defaults({
             $text: _.isFunction(opt) ? opt(element) : opt,
             property: element,
-          }, columns[element]);
+          }, lookup[element]);
         });
 
         this.patch({
