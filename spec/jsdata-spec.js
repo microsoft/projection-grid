@@ -8,9 +8,8 @@ chai.use(require('sinon-chai'));
 var expect = chai.expect;
 
 describe('JSData Projection', function () {
-
   var MockEntity = function () {
-    this.findAll = sinon.spy(function() {
+    this.findAll = sinon.spy(function () {
       return Promise.resolve([]);
     });
   };
