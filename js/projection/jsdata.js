@@ -5,13 +5,13 @@ define([
   var Model = BaseProjection.extend({
     defaults: {
       'jsdata.query': undefined,
-      entity: undefined,
-      options: undefined,
-      skip: undefined,
-      take: undefined,
-      filter: undefined,
-      orderby: [],
-      select: [],
+      'jsdata.entity': undefined,
+      'jsdata.options': undefined,
+      'jsdata.skip': undefined,
+      'jsdata.take': undefined,
+      'jsdata.filter': undefined,
+      'jsdata.orderby': [],
+      'jsdata.select': [],
     },
     name: 'jsdata',
 
@@ -27,25 +27,25 @@ define([
 
     doUpdate: function () {
       var self = this;
-      var entity = this.get('entity');
-      var options = _.defaults(this.get('options'), { all: true });
+      var entity = this.get('jsdata.entity');
+      var options = _.defaults(this.get('jsdata.options'), { all: true });
       var op = {};
 
       this.trigger('update:beginning');
 
-      var take = this.get('take');
+      var take = this.get('jsdata.take');
 
       if (take) {
         op.limit = take;
       }
 
-      var skip = this.get('skip');
+      var skip = this.get('jsdata.skip');
 
       if (skip) {
         op.offset = skip;
       }
 
-      var filter = this.get('filter');
+      var filter = this.get('jsdata.filter');
 
       if (filter) {
         op.where = filter;
@@ -57,7 +57,7 @@ define([
         op.query = query;
       }
 
-      var orderby = this.get('orderby');
+      var orderby = this.get('jsdata.orderby');
 
       if (orderby && orderby.length) {
         op.orderBy = _.chain(orderby)
