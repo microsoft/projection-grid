@@ -21,13 +21,13 @@ describe('JSData Projection', function () {
   beforeEach(function () {
     entity = new MockEntity();
     projection = new JSDataProjection({
-      entity: entity,
-      options: {},
-      skip: 10,
-      take: 10,
-      filter: {},
-      orderby: [],
-      select: [],
+      'jsdata.entity': entity,
+      'jsdata.options': {},
+      'jsdata.skip': 10,
+      'jsdata.take': 10,
+      'jsdata.filter': {},
+      'jsdata.orderby': [],
+      'jsdata.select': [],
     });
   });
 
