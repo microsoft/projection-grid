@@ -23,9 +23,11 @@ define([
       if (Model.__super__.update.call(this, options)) {
         var model = this.src.data;
         var columnGroup = this.get('column.group') || {};
-        var groupExpansion = this.get('column.groupExpansion') || [];
+        var groupExpansion = {};
+        _.each(this.get('column.groupExpansion') || [], function(columnName) {
+          groupExpansion[columnName] = true;
+        });
         var select = this.get('column.select') || model.get('select');
-        var selectExpand = select.slice(0);
         var columns = model.get('columns');
         var subSelect = [], isApplyGroup = false;
 
@@ -35,10 +37,15 @@ define([
           columns[name].group = subColumns;
           // remove the columns that appear in the select
           select = _.difference(select, subColumns);
-          selectExpand = _.difference(selectExpand, subColumns);
-          var isExpand = columns[name].groupExpansion = _.contains(groupExpansion, name);
-          if (_.contains(select, name) && isExpand) {
-            var nameIndex = selectExpand.indexOf(name);
+          columns[name].groupExpansion = _.has(groupExpansion, name);
+        }, this);
+        var selectExpand = select.slice(0);
+
+        _.each(select, function(columnName) {
+          var column = columns[columnName];
+          var subColumns = column.group;
+          if (column.groupExpansion) {
+            var nameIndex = selectExpand.indexOf(columnName);
             selectExpand.splice.apply(selectExpand, [nameIndex, 1].concat(subColumns));
             subSelect = subSelect.concat(subColumns);
           }
