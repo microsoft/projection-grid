@@ -224,6 +224,7 @@ require([
       Layout: TableLayout.partial({
         template: tmplJade,
         renderers: [Virtualization, FixedHeader],
+        hideHeaders: true,
         columns: {
           name: {},
           first: {
@@ -268,15 +269,15 @@ require([
     var pager = new PaginationView({ el: '#pager', pageSize: 200, pageNumber: 0 });
     pager.render();
 
-    grid.once('change:data', function(model) {
+    grid.once('change:data', function (model) {
       pager.itemCount = model.get('count');
     });
 
-    pager.on('change:page-number', function(pageNumber) {
+    pager.on('change:page-number', function (pageNumber) {
       grid.projection.set('page.number', pageNumber);
     });
 
-    pager.on('change:page-size', function(pageSize) {
+    pager.on('change:page-size', function (pageSize) {
       grid.projection.set('page.size', pageSize);
     });
 
