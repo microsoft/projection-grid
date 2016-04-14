@@ -174,6 +174,7 @@ define([
           return col.property;
         }),
         '$metadata': this.options.$metadata,
+        'hideHeaders': this.options.hideHeaders,
       };
 
       this.data = _.defaults(delta, model.toJSON());
