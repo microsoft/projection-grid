@@ -145,10 +145,10 @@ require([
   });
 
   var group = new ColumnGroup({
-    'column.group': {
-      'OrderDate': ['RequiredDate', 'ShippedDate']
+    "column.group": {
+      OrderDate: ['RequiredDate', 'ShippedDate'],
     },
-    'column.groupExpansion': ['OrderDate']
+    'column.groupExpansion': ['OrderDate'],
   });
 
   var colshifter = new ColumnShifterProjection();

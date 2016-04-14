@@ -61,7 +61,7 @@ define([
 
         this.patch({
           columns: columns,
-          select: select
+          select: select,
         });
       } else {
         // todo [akamel] unset our properties only
