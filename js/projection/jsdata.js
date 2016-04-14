@@ -33,19 +33,19 @@ define([
 
       this.trigger('update:beginning');
 
-      var take = this.get('jsdata.take');
+      var take = this.get('take');
 
       if (take) {
         op.limit = take;
       }
 
-      var skip = this.get('jsdata.skip');
+      var skip = this.get('skip');
 
       if (skip) {
         op.offset = skip;
       }
 
-      var filter = this.get('jsdata.filter');
+      var filter = this.get('filter');
 
       if (filter) {
         op.where = filter;
@@ -57,7 +57,7 @@ define([
         op.query = query;
       }
 
-      var orderby = this.get('jsdata.orderby');
+      var orderby = this.get('orderby');
 
       if (orderby && orderby.length) {
         op.orderBy = _.chain(orderby)
