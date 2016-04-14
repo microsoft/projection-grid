@@ -65,6 +65,9 @@ define([
     },
 
     onClickHeader: function (e, arg) {
+      if (!e.target.classList.contains('glyphicon')) {
+        return;
+      }
       var column = arg.column;
       if (_.isArray(column.group)) {
         var groupExpansion = this.get('column.groupExpansion') || [];

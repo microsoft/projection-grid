@@ -22,14 +22,23 @@ mixin th(column, hasGroup, isSubColumn)
     - var colspan = 1, rowspan = 1;
     th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
       +columnHeader(column)
-  else if hasGroup && column.groupExpansion
-    - var colspan = column.group.length, rowspan = 1;
-    th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
-      +columnHeader(column)
   else if hasGroup 
-    - var colspan = 1, rowspan = 2;
-    th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
-      +columnHeader(column)
+    if column.groupExpansion
+      - var colspan = column.group.length, rowspan = 1;
+      th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
+        span.pop-collapse.glyphicon.glyphicon-minus
+        div
+          +columnHeader(column)
+    else if column.group
+      - var colspan = 1, rowspan = 2;
+      th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
+        span.pop-collapse.glyphicon.glyphicon-plus
+        div
+          +columnHeader(column)
+    else
+      - var colspan = 1, rowspan = 2;
+      th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
+        +columnHeader(column)
   else 
     th(class=cls)&attributes(attributes)&attributes(attr)
       +columnHeader(column)
