@@ -8,9 +8,8 @@ chai.use(require('sinon-chai'));
 var expect = chai.expect;
 
 describe('JSData Projection', function () {
-
   var MockEntity = function () {
-    this.findAll = sinon.spy(function() {
+    this.findAll = sinon.spy(function () {
       return Promise.resolve([]);
     });
   };
@@ -21,13 +20,13 @@ describe('JSData Projection', function () {
   beforeEach(function () {
     entity = new MockEntity();
     projection = new JSDataProjection({
-      entity: entity,
-      options: {},
-      skip: 10,
-      take: 10,
-      filter: {},
-      orderby: [],
-      select: [],
+      'jsdata.entity': entity,
+      'jsdata.options': {},
+      'skip': 10,
+      'take': 10,
+      'filter': {},
+      'orderby': [],
+      'select': [],
     });
   });
 

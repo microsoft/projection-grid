@@ -1,6 +1,7 @@
 var expect = require('chai').expect;
 
-describe('webdriver.io page', function() {
+/* global browser */
+describe('webdriver.io page', function () {
   it('should have the right title - the fancy generator way', function () {
     browser.url('http://webdriver.io');
     var title = browser.getTitle();

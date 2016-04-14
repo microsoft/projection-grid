@@ -29,10 +29,11 @@ mixin td(row, column)
       = res
 
 table.table.table-hover.grid&attributes($metadata || {})
-  thead
-    tr.table__row--header
-      each column, index in locals['columns'] || []
-        +th(column)
+  if !hideHeaders
+    thead
+      tr.table__row--header
+        each column, index in locals['columns'] || []
+          +th(column)
   tbody
     each row, i in value
       - var attr = (row.$metadata || {}).attr
