@@ -15,13 +15,13 @@ describe('projection ColumnI18n', function () {
     });
     var originalData = new Base();
     originalData.data = new Response({
-      columns: [
-        { name: 'hello', property: 'name' },
-        { id: '007', property: 'id' },
-      ],
+      columns: {
+        name: { name: 'hello', property: 'name' },
+        id: { id: '007', property: 'id' },
+      },
     });
     originalData.pipe(model);
-    expect(model.data.get('columns')[0].$text).to.be.equal('Name');
-    expect(model.data.get('columns')[1].$text).to.be.equal('$id');
+    expect(model.data.get('columns').name.$text).to.be.equal('Name');
+    expect(model.data.get('columns').id.$text).to.be.equal('$id');
   });
 });

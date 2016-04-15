@@ -29,14 +29,9 @@ define([
           return i.property;
         }) : model.get('select');
         var unlocked = _.isFunction(filter) ? _.filter($in || select, filter) : ($in || select);
-        var lookup = {};
+        var lookup = model.get('columns');
         var set = _.chain(unlocked).difference(lock).value();
         var col = set;
-
-        // todo [akamel] use indexBy from underscore 1.5.x
-        _.each(model.get('columns'), function (element) {
-          lookup[element.property] = element;
-        });
 
         if (!_.isNumber(take)) {
           take = Number.MAX_VALUE;
@@ -60,16 +55,15 @@ define([
         col = _.union(lock, _.first(col, take));
         // end query
 
-        // todo [akamel] [perf] this used a contains within a loop
-        var res = _.map(col, function (element) {
-          return _.defaults({
-            $lock: _.contains(lock, element),
-            property: element,
-          }, lookup[element]);
+        _.each(col, function (element) {
+          if (!lookup[element]) {
+            lookup[element] = { property: element };
+          }
+          lookup[element].$lock = _.contains(lock, element);
         });
 
         this.patch({
-          'columns': res,
+          'select': col,
           // todo [akamel] rename to column.in???
           // , 'columns.select'  : set
           'columns.skipped': skipped,

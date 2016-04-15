@@ -22,11 +22,11 @@ describe('JSData Projection', function () {
     projection = new JSDataProjection({
       'jsdata.entity': entity,
       'jsdata.options': {},
-      'skip': 10,
-      'take': 10,
-      'filter': {},
-      'orderby': [],
-      'select': [],
+      'jsdata.skip': 10,
+      'jsdata.take': 10,
+      'jsdata.filter': {},
+      'jsdata.orderby': [],
+      'jsdata.select': [],
     });
   });
 

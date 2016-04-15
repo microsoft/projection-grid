@@ -48,13 +48,12 @@ define([
       if (BaseProjection.prototype.update.call(this, options)) {
         var model = this.src.data;
         var columns = model.get('columns');
-        var columnIndex = _.mapObject(_.groupBy(columns, 'property'), _.first);
         var iconClasses = this.get('editable.icon.class') || ['glyphicon', 'glyphicon-pencil'];
 
         _.each(this.get('column.editable'), function (editableColumn) {
           var key = _.isString(editableColumn) ? editableColumn : editableColumn.name;
           if (key) {
-            var column = columnIndex[key] || { property: key };
+            var column = columns[key] || { property: key };
             var $metadata = column.$metadata = column.$metadata || {};
             var attrBody = $metadata['attr.body'] = $metadata['attr.body'] || {};
             var className = attrBody.class || [];
@@ -64,9 +63,7 @@ define([
             }
             attrBody.class = _.union(className, ['grid-editable-cell']);
 
-            if (!columnIndex[key]) {
-              columns.push(column);
-            }
+            columns[key] = column;
           }
         });
 
