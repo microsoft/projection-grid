@@ -2,16 +2,9 @@ define([
   'lib/underscore',
   'lib/backbone',
   'component/grid/projection/base',
-  'component/grid/layout/template/row.tri-state-checked',
-],
-function(_, Backbone, BaseProjection, defaultRowCheckTemp) {
+  'component/grid/layout/template/row.tri-state-checked.jade',
+], function (_, Backbone, BaseProjection, defaultRowCheckTemp) {
   'use strict';
-
-  var CheckState = {
-    unchecked: 'unchecked',
-    indeterminate: 'indeterminate',
-    checked: 'checked'
-  };
 
   var CheckTransitionRule = {};
 
@@ -22,48 +15,65 @@ function(_, Backbone, BaseProjection, defaultRowCheckTemp) {
   // Two directions of transition are available:
   // ... -> indeterminate -> checked -> unchecked -> ...
   // ... -> indeterminate -> unchecked -> checked -> ...
-  CheckTransitionRule.indeterminateToChecked = function(shortCycle, currentState) {
-    return currentState === CheckState.unchecked ? (!shortCycle ? CheckState.indeterminate : CheckState.checked) :
-      currentState === CheckState.indeterminate ? CheckState.checked :
-        CheckState.unchecked;
-  };
+  CheckTransitionRule.indeterminateToChecked = (function () {
+    var nextState = {
+      unchecked: function (shortCycle) {
+        return shortCycle ? 'checked' : 'indeterminate';
+      },
+      checked: _.constant('unchecked'),
+      indeterminate: _.constant('checked'),
+    };
 
-  CheckTransitionRule.indeterminateToUnchecked = function(shortCycle, currentState) {
-    return currentState === CheckState.unchecked ?  CheckState.checked :
-      currentState === CheckState.indeterminate ? CheckState.unchecked :
-        (!shortCycle ? CheckState.indeterminate : CheckState.unchecked);
-  };
+    return function (shortCycle, currentState) {
+      return _.has(nextState, currentState) && nextState[currentState](shortCycle) || 'unchecked';
+    };
+  })();
 
-  CheckTransitionRule.indeterminateToCheckedFullCycle = function(currentState) {
+  CheckTransitionRule.indeterminateToUnchecked = (function () {
+    var nextState = {
+      unchecked: _.constant('checked'),
+      checked: function (shortCycle) {
+        return shortCycle ? 'unchecked' : 'indeterminate';
+      },
+      indeterminate: _.constant('unchecked'),
+    };
+
+    return function (shortCycle, currentState) {
+      return _.has(nextState, currentState) && nextState[currentState](shortCycle) || 'unchecked';
+    };
+  })();
+
+  CheckTransitionRule.indeterminateToCheckedFullCycle = function (currentState) {
     return CheckTransitionRule.indeterminateToChecked(false, currentState);
   };
 
-  CheckTransitionRule.indeterminateToUncheckedFullCycle = function(currentState) {
+  CheckTransitionRule.indeterminateToUncheckedFullCycle = function (currentState) {
     return CheckTransitionRule.indeterminateToUnchecked(false, currentState);
   };
 
-  CheckTransitionRule.indeterminateToCheckedShortCycle = function(currentState) {
+  CheckTransitionRule.indeterminateToCheckedShortCycle = function (currentState) {
     return CheckTransitionRule.indeterminateToChecked(true, currentState);
   };
 
-  CheckTransitionRule.indeterminateToUncheckedShortCycle = function(currentState) {
+  CheckTransitionRule.indeterminateToUncheckedShortCycle = function (currentState) {
     return CheckTransitionRule.indeterminateToUnchecked(true, currentState);
   };
 
   function getAllCheckState(checkStateCounters, count) {
-    return checkStateCounters[CheckState.unchecked] === count ? CheckState.unchecked :
-      checkStateCounters[CheckState.checked] === count ? CheckState.checked :
-        checkStateCounters[CheckState.indeterminate] === count ? CheckState.indeterminate :
-          CheckState.unchecked;
+    return _.findKey(checkStateCounters, function (c) {
+      return c === count;
+    }) || 'unchecked';
   }
 
   var Model = BaseProjection.extend({
     defaults: {
-      'column.checked': 'checkbox',  //the checkbox column
+      'column.checked': 'checkbox',  // the checkbox column
       'row.check.id': 'Id',
       'row.check.map': {},
-      'row.check.all': {state: CheckState.unchecked},    //used to store user's check value for the special case no rows or all rows is disabled
-      'row.check.allow': function() { return true; },
+      'row.check.all': { state: 'unchecked' },    // used to store user's check value for the special case no rows or all rows is disabled
+      'row.check.allow': function () {
+        return true;
+      },
       'row.check.click-anywhere': false,
       'row.check.transition': CheckTransitionRule.indeterminateToCheckedShortCycle,
       'row.check.all.transition': CheckTransitionRule.indeterminateToCheckedShortCycle,
@@ -71,16 +81,16 @@ function(_, Backbone, BaseProjection, defaultRowCheckTemp) {
     },
     name: 'row-check',
     events: {
-      'layout:click:cell': 'td_click',
-      'layout:click:header': 'th_click',
+      'layout:click:cell': 'tdClick',
+      'layout:click:header': 'thClick',
     },
-    reset: function() {
+    reset: function () {
       this.set({
         'row.check.checked.all': false,
         'row.check.map': {},
       });
     },
-    update: function(options){
+    update: function (options) {
       if (!Model.__super__.update.call(this, options)) {
         return;
       }
@@ -91,21 +101,23 @@ function(_, Backbone, BaseProjection, defaultRowCheckTemp) {
       var col = this.get('column.checked');
       var columns = _.clone(this.src.data.get('columns'));
       var checkStateCounters = _.object(
-          [CheckState.unchecked, CheckState.checked, CheckState.indeterminate],
+          ['unchecked', 'checked', 'indeterminate'],
           [0, 0, 0]
         );
       var hasCheckboxable = false;
       var checkboxAllow = this.get('row.check.allow');
-      var checkboxColumn = _.find(columns, function(item) { return item.property === col; });
+      var checkboxColumn = _.find(columns, function (item) {
+        return item.property === col;
+      });
       var rowCheckTemp = this.get('row.check.template');
 
-      var value = _.map(this.src.data.get('value'), function(item) {
+      var value = _.map(this.src.data.get('value'), function (item) {
         var ret = _.clone(item);
-        var check = checkMap[ret[checkId]] || { state: CheckState.unchecked };
+        var check = checkMap[ret[checkId]] || { state: 'unchecked' };
         var disabled = true;
         var isAllowed = _.isFunction(checkboxAllow) ? checkboxAllow(ret) : checkboxAllow;
 
-        checkStateCounters[check.state] = checkStateCounters[check.state] + 1;
+        checkStateCounters[check.state]++;
 
         if (isAllowed) {
           disabled = false;
@@ -113,23 +125,23 @@ function(_, Backbone, BaseProjection, defaultRowCheckTemp) {
         }
 
         ret[col] = _.extend({}, ret[col], {
-          $html: rowCheckTemp({checkState: check.state, disabled: disabled})
+          $html: rowCheckTemp({ checkState: check.state, disabled: disabled }),
         });
 
         return ret;
       });
 
-      //set the checkbox in th
+      // set the checkbox in th
       if (!_.isUndefined(checkboxColumn)) {
         var disabledAllCheck = _.size(ids) === 0;
 
         if (hasCheckboxable) {
           var checkState = getAllCheckState(checkStateCounters, ids.length);
 
-          checkboxColumn.$html = rowCheckTemp({checkState: checkState, disabled: disabledAllCheck});
-          this.attributes['row.check.all'] = _.extend(this.attributes['row.check.all'], {state: checkState });
+          checkboxColumn.$html = rowCheckTemp({ checkState: checkState, disabled: disabledAllCheck });
+          this.attributes['row.check.all'] = _.extend(this.attributes['row.check.all'], { state: checkState });
         } else {
-          checkboxColumn.$html = rowCheckTemp({checkState : this.get('row.check.all').state, disabled: disabledAllCheck});
+          checkboxColumn.$html = rowCheckTemp({ checkState: this.get('row.check.all').state, disabled: disabledAllCheck });
         }
       }
 
@@ -138,8 +150,7 @@ function(_, Backbone, BaseProjection, defaultRowCheckTemp) {
         columns: columns,
       });
     },
-    td_click: function(e, arg) {
-      var $el = $(e.currentTarget);
+    tdClick: function (e, arg) {
       var checkboxProperty = this.get('column.checked');
       var clickAnywhere = this.get('row.check.click-anywhere');
 
@@ -147,7 +158,7 @@ function(_, Backbone, BaseProjection, defaultRowCheckTemp) {
         var checkMap = _.clone(this.get('row.check.map'));
         var id = arg.model[this.get('row.check.id')];
         var defaultTransition = this.get('row.check.transition');
-        var check = _.extend({transition: defaultTransition, state: CheckState.unchecked}, checkMap[id]);
+        var check = _.extend({ transition: defaultTransition, state: 'unchecked' }, checkMap[id]);
 
         check.state = check.transition(check.state);
         checkMap[id] = check;
@@ -157,7 +168,7 @@ function(_, Backbone, BaseProjection, defaultRowCheckTemp) {
         });
       }
     },
-    th_click: function(e, arg) {
+    thClick: function (e, arg) {
       var checkboxProperty = this.get('column.checked');
 
       if (arg.property === checkboxProperty) {
@@ -172,8 +183,8 @@ function(_, Backbone, BaseProjection, defaultRowCheckTemp) {
 
         checkMap = _.object(
           this.data.get('value')
-          .map(function(item) {
-            var check = _.extend({transition: CheckTransitionRule}, checkMap[item[checkId]], {state: allCheck.state});
+          .map(function (item) {
+            var check = _.extend({ transition: CheckTransitionRule }, checkMap[item[checkId]], { state: allCheck.state });
 
             return [item[checkId], check];
           })
@@ -184,17 +195,17 @@ function(_, Backbone, BaseProjection, defaultRowCheckTemp) {
           'row.check.all': allCheck,
         });
       }
-    }
+    },
   });
 
   function diffCheckMap(before, after, defaultState) {
-    defaultState = defaultState || {state: CheckState.unchecked};
+    defaultState = defaultState || { state: 'unchecked' };
     var added = {};
     var changed = {};
     var removed = {};
     var unchanged = {};
 
-    _.keys(before).map(function(key) {
+    _.keys(before).forEach(function (key) {
       var beforeState = before[key];
       var afterState = after[key];
 
@@ -203,11 +214,11 @@ function(_, Backbone, BaseProjection, defaultRowCheckTemp) {
       } else if (beforeState.state === afterState.state) {
         unchanged[key] = afterState;
       } else {
-        changed[key] = {before: beforeState, after: afterState};
+        changed[key] = { before: beforeState, after: afterState };
       }
     });
 
-    _.keys(after).map(function(key) {
+    _.keys(after).forEach(function (key) {
       var afterState = after[key];
       var beforeState = before[key];
 
@@ -225,17 +236,17 @@ function(_, Backbone, BaseProjection, defaultRowCheckTemp) {
   }
 
   function statCheckMap(checkMap, defaultState) {
-    defaultState = defaultState || {state: CheckState.unchecked};
+    defaultState = defaultState || { state: 'unchecked' };
     var checked = [];
     var indeterminate = [];
     var unchecked = [];
 
-    _.keys(checkMap).map(function(key) {
+    _.keys(checkMap).forEach(function (key) {
       var check = checkMap[key];
 
-      if (check.state === CheckState.checked && check.state !== defaultState.state) {
+      if (check.state === 'checked' && check.state !== defaultState.state) {
         checked.push(check);
-      } else if (check.state === CheckState.unchecked && check.state !== defaultState.state) {
+      } else if (check.state === 'unchecked' && check.state !== defaultState.state) {
         unchecked.push(check);
       } else if (check.state !== defaultState.state) {
         indeterminate.push(check);
@@ -253,7 +264,6 @@ function(_, Backbone, BaseProjection, defaultRowCheckTemp) {
     return _.extend(statCheckMap(after, defaultState), diffCheckMap(before, after, defaultState));
   }
 
-  Model.CheckState = CheckState;
   Model.CheckTransitionRule = CheckTransitionRule;
   Model.fullStatCheckMap = fullStatCheckMap;
   Model.statCheckMap = statCheckMap;
