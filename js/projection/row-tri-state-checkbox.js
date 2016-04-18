@@ -198,23 +198,32 @@ define([
     },
   });
 
+  function CheckDiff(added, changed, removed, unchanged) {
+    this.added = added || {};
+    this.changed = changed || {};
+    this.removed = removed || {};
+    this.unchanged = unchanged || {};
+  }
+
+  CheckDiff.prototype.hasChanges = function () {
+    return _.keys(this.changed).length + _.keys(this.added).length > 0;
+  };
+
   function diffCheckMap(before, after, defaultState) {
     defaultState = defaultState || { state: 'unchecked' };
-    var added = {};
-    var changed = {};
-    var removed = {};
-    var unchanged = {};
+
+    var checkDiff = new CheckDiff();
 
     _.keys(before).forEach(function (key) {
       var beforeState = before[key];
       var afterState = after[key];
 
       if (!afterState) {
-        removed[key] = beforeState;
+        checkDiff.removed[key] = beforeState;
       } else if (beforeState.state === afterState.state) {
-        unchanged[key] = afterState;
+        checkDiff.unchanged[key] = afterState;
       } else {
-        changed[key] = { before: beforeState, after: afterState };
+        checkDiff.changed[key] = { before: beforeState, after: afterState };
       }
     });
 
@@ -223,16 +232,11 @@ define([
       var beforeState = before[key];
 
       if (!beforeState && defaultState.state !== afterState.state) {
-        added[key] = afterState;
+        checkDiff.added[key] = afterState;
       }
     });
 
-    return {
-      added: added,
-      changed: changed,
-      removed: removed,
-      unchanged: unchanged,
-    };
+    return checkDiff;
   }
 
   function statCheckMap(checkMap, defaultState) {
