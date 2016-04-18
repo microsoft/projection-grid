@@ -32,7 +32,9 @@ define([
 
       // c. get newly rendered header
       var $thead = $el.find('thead');
-      var $headTD = $el.find('thead > tr').children();
+      var $headTR = $el.find('thead > tr');
+      var $headTD = $headTR.first().children();
+      var $secondHeadTD = $headTR.eq(1).children();
       var $bodyTD = $el.find('tbody > tr:first-child').children();
 
       var $ref = $bodyTD;
@@ -47,8 +49,23 @@ define([
       // todo [akamel] [perf] 12% -- consider replacing with css rule generation
       // e. freeze column width
       // e.1 freeze col width
+      var colIndex = 0, secondHeadTDIndex = 0;
       _.each($target, function (td, index) {
-        $(td).width(px.pixelify(this.colWidth[index]));
+        var colspan = parseInt($(td).attr('colspan'));
+        var rowspan = parseInt($(td).attr('rowspan'));
+        var width = 0;
+        for (i = 0; i < colspan; ++i) {
+          var colWidth = px.pixelify(this.colWidth[colIndex + i]);
+          width += colWidth;
+          if (rowspan === 1) {
+            $secondHeadTD.eq(secondHeadTDIndex + i).width(colWidth);
+          }
+        }
+        $(td).width(width);
+        colIndex += colspan;
+        if (rowspan === 1) {
+          secondHeadTDIndex += colspan;
+        }
       }.bind(this));
 
       _.each($ref, function (td, index) {
@@ -56,10 +73,9 @@ define([
       }.bind(this));
 
       // f. set position 'fixed' and lock header at top of table
-      $thead.find('tr').css({
+      $thead.css({
         'position': this.layout.container.el === window ? 'fixed' : 'absolute',
         'top': px.pixelify(this.layout.container.el === window ? 0 : this.layout.container.$el.scrollTop()),
-        'display': 'flex',
         'margin-left': px.pixelify(-data.vpMeasures.offsetLeft),
         'z-index': 1000,
       });
