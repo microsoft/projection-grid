@@ -1,30 +1,59 @@
-define([], function() {
-  return {
-    'title': 'Northwind Schema',
-    'type': 'object',
-    'properties': {
-      'CustomerID': {
-        'type': 'String',
-        'filterable': true,
-        'nullable': false,
-        'required': true,
-        'aggregateType': 'count',
-      },
-      'EmployeeID': {
-        'type': 'Number',
-        'filterable': true,
-        'nullable': false,
-        'required': true,
-        'aggregateType': 'count',
-      },
-      'ShipName': {
-        'type': 'String',
-        'filterable': true,
-        'nullable': false,
-        'required': true,
-        'aggregateType': 'count',
-      },
+define({
+  title: 'Northwind Schema',
+  type: 'object',
+  properties: {
+    CustomerID: {
+      type: 'string',
+      filterable: true,
+      nullable: false,
+      required: true,
+      aggregateType: 'count',
     },
-    'required': ['CustomerID'],
-  };
+    EmployeeID: {
+      type: 'number',
+      filterable: true,
+      nullable: false,
+      required: true,
+      aggregateType: 'count',
+    },
+    ShipName: {
+      type: 'string',
+      filterable: true,
+      nullable: false,
+      required: true,
+      aggregateType: 'count',
+    },
+    OrderID: {
+      type: 'integer',
+    },
+    Freight: {
+      type: 'number',
+    },
+    ShipCountry: {
+      type: 'string',
+      enum: [
+        'France',
+        'Germany',
+        'Brazil',
+        'Belgium',
+        'Switzerland',
+        'Venezuela',
+        'Austria',
+        'Mexico',
+        'USA',
+        'Sweden',
+        'Finland',
+        'Spain',
+        'UK',
+        'Italy',
+        'Ireland',
+        'Portugal',
+        'Canada',
+        'Poland',
+        'Norway',
+        'Denmark',
+      ],
+    },
+  },
+  required: ['CustomerID'],
 });
