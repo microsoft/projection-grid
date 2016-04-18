@@ -32,7 +32,7 @@ mixin th(column, hasGroup, isSubColumn)
     else if column.group
       - var colspan = 1, rowspan = 2;
       th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
-        span.pop-collapse.glyphicon.glyphicon-plus
+        span.pop-expand.glyphicon.glyphicon-plus
         div
           +columnHeader(column)
     else
