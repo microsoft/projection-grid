@@ -34,7 +34,9 @@ function getSeleniumFilePath() {
 gulp.task('download-selenium', function (cb) {
   var filePath = getSeleniumFilePath();
   fs.stat(filePath, function (err) {
-    !err && cb(null);
+    if (!err) {
+      return cb(null);
+    }
     var file = fs.createWriteStream(filePath);
     var URL = "http://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.0.jar";
     http.get(URL, function (response) {
@@ -54,8 +56,21 @@ function startSeleniumServer() {
   return require('child_process').spawn('java', ['-jar', filePath], { stdio: 'inherit' });
 }
 
-gulp.task('run-selenium', function (cb) {
+function startExamplePageServer() {
+  var nodeStatic = require('node-static');
+
+  var fileServer = new nodeStatic.Server('./');
+
+  return require('http').createServer(function (request, response) {
+    request.addListener('end', function () {
+      fileServer.serve(request, response);
+    }).resume();
+  }).listen(8080);
+}
+
+gulp.task('run-selenium', ['download-selenium'], function (cb) {
   var cp = startSeleniumServer();
+  var exampleServer = startExamplePageServer();
   cp.on('error', cb);
   cp.on('exit', cb);
   var wdioCmd = path.resolve(__dirname, './node_modules/.bin/wdio');
@@ -64,9 +79,11 @@ gulp.task('run-selenium', function (cb) {
   }
   var testProcess = spawn(wdioCmd, ['wdio.conf.js'], { stdio: 'inherit' });
   testProcess.on('exit', function () {
+    exampleServer.close();
     cp.kill();
   });
   testProcess.on('error', function () {
+    exampleServer.close();
     cp.kill();
   });
 });
@@ -109,18 +126,6 @@ gulp.task('test', function (cb) {
     'start',
     '--single-run',
   ], { stdio: 'inherit' }).on('close', handler);
-});
-
-gulp.task('selenium-test', ['example:webpack'], function (/* cb */) {
-  var nodeStatic = require('node-static');
-
-  var fileServer = new nodeStatic.Server('./examples/webpack/');
-
-  require('http').createServer(function (request, response) {
-    request.addListener('end', function () {
-      fileServer.serve(request, response);
-    }).resume();
-  }).listen(8080);
 });
 
 gulp.task('static', function () {
