@@ -49,12 +49,13 @@ define([
       // todo [akamel] [perf] 12% -- consider replacing with css rule generation
       // e. freeze column width
       // e.1 freeze col width
-      var colIndex = 0, secondHeadTDIndex = 0;
-      _.each($target, function (td, index) {
-        var colspan = parseInt($(td).attr('colspan'));
-        var rowspan = parseInt($(td).attr('rowspan'));
+      var colIndex = 0;
+      var secondHeadTDIndex = 0;
+      _.each($target, function (td) {
+        var colspan = parseInt($(td).attr('colspan'), 10);
+        var rowspan = parseInt($(td).attr('rowspan'), 10);
         var width = 0;
-        for (i = 0; i < colspan; ++i) {
+        for (var i = 0; i < colspan; ++i) {
           var colWidth = px.pixelify(this.colWidth[colIndex + i]);
           width += colWidth;
           if (rowspan === 1) {
