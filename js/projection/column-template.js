@@ -17,18 +17,16 @@ define([
       if (Model.__super__.update.call(this, options)) {
         var model = this.src.data;
         var colTemplate = this.get('column.template');
-        var columns = _.map(model.get('columns') || _.map(model.get('select'), function (i) {
-          return { property: i };
-        }), function (item) {
+        var columns = model.get('columns');
+        _.each(columns, function (item, property) {
           var ret = _.clone(item);
-          var property = ret.property;
           var templateValue = colTemplate[property];
 
           if (_.has(colTemplate, property)) {
             ret.$html = _.isFunction(templateValue) ? templateValue(ret) : templateValue;
           }
 
-          return ret;
+          columns[property] = ret;
         });
 
         this.patch({ columns: columns });
