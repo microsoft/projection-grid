@@ -1,15 +1,29 @@
 define({
-  name: 'Order',
-  title: 'Order Schema',
+  title: 'Northwind Schema',
   type: 'object',
   properties: {
-    OrderID: {
-      type: 'integer',
-    },
     CustomerID: {
       type: 'string',
+      filterable: true,
+      nullable: false,
+      required: true,
+      aggregateType: 'count',
     },
     EmployeeID: {
+      type: 'number',
+      filterable: true,
+      nullable: false,
+      required: true,
+      aggregateType: 'count',
+    },
+    ShipName: {
+      type: 'string',
+      filterable: true,
+      nullable: false,
+      required: true,
+      aggregateType: 'count',
+    },
+    OrderID: {
       type: 'integer',
     },
     Freight: {
@@ -41,5 +55,5 @@ define({
       ],
     },
   },
-  required: ['OrderID', 'CustomerID', 'EmployeeID'],
+  required: ['CustomerID'],
 });
