@@ -3,8 +3,8 @@ require([
   'underscore',
   'jquery',
   'pagination-control',
-  './order-schema',
-], function (pgrid, _, $, pager, s$Order) {
+  './northwind-schema',
+], function (pgrid, _, $, pager, s$Northwind) {
   var Grid = pgrid.GridView;
   var PaginationView = pager.PaginationView;
 
@@ -319,7 +319,7 @@ require([
           },
         },
       }),
-      schema: s$Order,
+      schema: s$Northwind,
     });
 
     grid.on('all', function () {

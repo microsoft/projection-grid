@@ -13,3 +13,5 @@ dist
 # generated code for example pages
 examples/requirejs/require.config.js
 examples/webpack/dist
+
+errorShots
