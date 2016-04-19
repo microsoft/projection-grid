@@ -57,7 +57,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = {
 	  GridView: __webpack_require__(1),
 	  projections: __webpack_require__(9),
-	  layout: __webpack_require__(39),
+	  layout: __webpack_require__(40),
 	};
 
 
@@ -307,6 +307,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  RowCheckbox: __webpack_require__(35),
 	  RowIndex: __webpack_require__(37),
 	  Sink: __webpack_require__(38),
+	  ColumnGroup: __webpack_require__(39),
 	};
 
 
@@ -589,27 +590,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (Model.__super__.update.call(this, options)) {
 	        var model = this.src.data;
 	        var colOptions = this.get('column.i18n');
-	        var select = _.size(model.get('columns')) ? _.map(model.get('columns'), function (i) {
-	          return i.property;
-	        }) : model.get('select');
-	        var lookup = {};
+	        var columns = model.get('columns') || {};
+	        var select = _.size(columns) ? _.keys(columns) : model.get('select');
 	        var $default = colOptions[''];
 	
-	        // todo [akamel] use indexBy from underscore 1.5.x
-	        _.each(model.get('columns'), function (element) {
-	          lookup[element.property] = element;
-	        });
-	
-	        var i18nColumns = _.map(select, function (element) {
+	        var i18nColumns = {};
+	        _.each(select, function (element) {
 	          var opt = colOptions[element];
 	          if (_.isUndefined(opt)) {
 	            opt = $default;
 	          }
 	
-	          return _.defaults({
+	          i18nColumns[element] = _.defaults({
 	            $text: _.isFunction(opt) ? opt(element) : opt,
 	            property: element,
-	          }, lookup[element]);
+	          }, columns[element]);
 	        });
 	
 	        this.patch({
@@ -678,14 +673,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return i.property;
 	        }) : model.get('select');
 	        var unlocked = _.isFunction(filter) ? _.filter($in || select, filter) : ($in || select);
-	        var lookup = {};
+	        var lookup = model.get('columns');
 	        var set = _.chain(unlocked).difference(lock).value();
 	        var col = set;
-	
-	        // todo [akamel] use indexBy from underscore 1.5.x
-	        _.each(model.get('columns'), function (element) {
-	          lookup[element.property] = element;
-	        });
 	
 	        if (!_.isNumber(take)) {
 	          take = Number.MAX_VALUE;
@@ -709,16 +699,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        col = _.union(lock, _.first(col, take));
 	        // end query
 	
-	        // todo [akamel] [perf] this used a contains within a loop
-	        var res = _.map(col, function (element) {
-	          return _.defaults({
-	            $lock: _.contains(lock, element),
-	            property: element,
-	          }, lookup[element]);
+	        _.each(col, function (element) {
+	          if (!lookup[element]) {
+	            lookup[element] = { property: element };
+	          }
+	          lookup[element].$lock = _.contains(lock, element);
 	        });
 	
 	        this.patch({
-	          'columns': res,
+	          'select': col,
 	          // todo [akamel] rename to column.in???
 	          // , 'columns.select'  : set
 	          'columns.skipped': skipped,
@@ -761,14 +750,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (Model.__super__.update.call(this, options)) {
 	        var model = this.src.data;
 	        // todo [akamel] have 'columns' crated at the source so we don't have to put this all over the place
-	        var columns = model.get('columns') || _.map(model.get('select'), function (i) {
-	          return { property: i };
-	        });
+	        var columns = model.get('columns');
+	        var select = model.get('select');
 	        var colSkipped = model.get('columns.skipped');
 	        var colRemaining = model.get('columns.remaining');
 	
-	        var unlockedAt = Math.max(_.findIndex(columns, function (col) {
-	          return !col.$lock;
+	        var unlockedAt = Math.max(_.findIndex(select, function (col) {
+	          return columns[col] && !columns[col].$lock;
 	        }), 0);
 	
 	        var hasLess = _.size(colSkipped);
@@ -799,10 +787,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	          colMore.$metadata['attr.head'].class.push('disabled');
 	        }
 	
-	        columns.splice(unlockedAt, 0, colLess);
-	        columns.push(colMore);
+	        select.splice(unlockedAt, 0, colLess.property);
+	        columns[colLess.property] = colLess;
+	        select.push(colMore.property);
+	        columns[colMore.property] = colMore;
 	
-	        this.patch({ columns: columns });
+	        this.patch({
+	          columns: columns,
+	          select: select,
+	        });
 	      } else {
 	        // todo [akamel] unset our properties only
 	        // this.unset();
@@ -863,10 +856,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }), function (item) {
 	          var ret = _.clone(item);
 	          var property = ret.property;
+	          var templateValue = colTemplate[property];
 	
 	          if (_.has(colTemplate, property)) {
-	            colTemplate = colTemplate[property];
-	            ret.$html = _.isFunction(colTemplate) ? colTemplate(ret) : colTemplate;
+	            ret.$html = _.isFunction(templateValue) ? templateValue(ret) : templateValue;
 	          }
 	
 	          return ret;
@@ -1280,13 +1273,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (BaseProjection.prototype.update.call(this, options)) {
 	        var model = this.src.data;
 	        var columns = model.get('columns');
-	        var columnIndex = _.mapObject(_.groupBy(columns, 'property'), _.first);
 	        var iconClasses = this.get('editable.icon.class') || ['glyphicon', 'glyphicon-pencil'];
 	
 	        _.each(this.get('column.editable'), function (editableColumn) {
 	          var key = _.isString(editableColumn) ? editableColumn : editableColumn.name;
 	          if (key) {
-	            var column = columnIndex[key] || { property: key };
+	            var column = columns[key] || { property: key };
 	            var $metadata = column.$metadata = column.$metadata || {};
 	            var attrBody = $metadata['attr.body'] = $metadata['attr.body'] || {};
 	            var className = attrBody.class || [];
@@ -1296,9 +1288,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            attrBody.class = _.union(className, ['grid-editable-cell']);
 	
-	            if (!columnIndex[key]) {
-	              columns.push(column);
-	            }
+	            columns[key] = column;
 	          }
 	        });
 	
@@ -1465,13 +1455,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, BaseProjection) {
 	  var Model = BaseProjection.extend({
 	    defaults: {
-	      entity: undefined,
-	      options: undefined,
-	      skip: undefined,
-	      take: undefined,
-	      filter: undefined,
-	      orderby: [],
-	      select: [],
+	      'jsdata.query': undefined,
+	      'jsdata.entity': undefined,
+	      'jsdata.options': undefined,
+	      'skip': undefined,
+	      'take': undefined,
+	      'filter': undefined,
+	      'orderby': [],
+	      'select': [],
 	    },
 	    name: 'jsdata',
 	
@@ -1487,8 +1478,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    doUpdate: function () {
 	      var self = this;
-	      var entity = this.get('entity');
-	      var options = _.defaults(this.get('options'), { all: true });
+	      var entity = this.get('jsdata.entity');
+	      var options = _.defaults(this.get('jsdata.options'), { all: true });
 	      var op = {};
 	
 	      this.trigger('update:beginning');
@@ -1509,6 +1500,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      if (filter) {
 	        op.where = filter;
+	      }
+	
+	      var query = this.get('jsdata.query');
+	
+	      if (query) {
+	        op.query = query;
 	      }
 	
 	      var orderby = this.get('orderby');
@@ -1573,7 +1570,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        this.patch({
 	          value: value,
-	          select: schemaProperties.from(value),
+	          select: _.without(schemaProperties.from(value), '$metadata'),
 	        });
 	      } else {
 	        // todo [akamel] unset our properties only
@@ -2218,17 +2215,108 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = {
-	  TableLayout: __webpack_require__(40),
-	  templates: {
-	    table: __webpack_require__(41),
-	  },
-	  renderers: __webpack_require__(42),
-	};
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+	  __webpack_require__(2),
+	  __webpack_require__(3),
+	  __webpack_require__(11),
+	  __webpack_require__(12),
+	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection) {
+	  var Model = BaseProjection.extend({
+	    defaults: {
+	      'column.group': {},
+	      'column.groupExpansion': [],
+	      'column.select': null,
+	    },
+	    name: 'column-group',
+	
+	    events: {
+	      'layout:click:header': 'onClickHeader',
+	    },
+	
+	    update: function (options) {
+	      if (Model.__super__.update.call(this, options)) {
+	        var model = this.src.data;
+	        var columnGroup = this.get('column.group') || {};
+	        var groupExpansion = {};
+	        _.each(this.get('column.groupExpansion') || [], function (columnName) {
+	          groupExpansion[columnName] = true;
+	        });
+	        var select = this.get('column.select') || model.get('select');
+	        var columns = model.get('columns');
+	        var subSelect = [];
+	        var isApplyGroup = false;
+	
+	        _.each(columnGroup, function (subColumns, name) {
+	          if (!_.has(columns, name)) {
+	            return;
+	          }
+	          isApplyGroup = true;
+	          columns[name].group = subColumns;
+	          // remove the columns that appear in the select
+	          select = _.difference(select, subColumns);
+	          columns[name].groupExpansion = _.has(groupExpansion, name);
+	        }, this);
+	        var selectExpand = select.slice(0);
+	
+	        _.each(select, function (columnName) {
+	          var column = columns[columnName];
+	          var subColumns = column.group;
+	          if (column.groupExpansion) {
+	            var nameIndex = selectExpand.indexOf(columnName);
+	            selectExpand.splice.apply(selectExpand, [nameIndex, 1].concat(subColumns));
+	            subSelect = subSelect.concat(subColumns);
+	          }
+	        }, this);
+	
+	        this.patch({
+	          columns: columns,
+	          select: select,
+	          subSelect: subSelect,
+	          selectExpand: selectExpand,
+	          isApplyGroup: isApplyGroup,
+	        });
+	      } else {
+	        // todo [akamel] unset our properties only
+	        // this.unset();
+	      }
+	    },
+	
+	    onClickHeader: function (e, arg) {
+	      if (!e.target.classList.contains('glyphicon')) {
+	        return;
+	      }
+	      var column = arg.column;
+	      if (_.isArray(column.group)) {
+	        var groupExpansion = this.get('column.groupExpansion') || [];
+	        if (column.groupExpansion) {
+	          groupExpansion = _.without(groupExpansion, column.property);
+	        } else {
+	          groupExpansion = _.union(groupExpansion, [column.property]);
+	        }
+	        this.set({ 'column.groupExpansion': groupExpansion });
+	      }
+	    },
+	  });
+	
+	  return Model;
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
 /***/ },
 /* 40 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = {
+	  TableLayout: __webpack_require__(41),
+	  templates: {
+	    table: __webpack_require__(42),
+	  },
+	  renderers: __webpack_require__(43),
+	};
+
+
+/***/ },
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -2324,9 +2412,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!isHeader) {
 	        ret.model = this.data.value[i];
 	      }
+	      if (isHeader && i === 0) {
+	        ret.property = this.data.select[j];
+	      } else if (isHeader && i === 1) {
+	        ret.property = this.data.subSelect[j];
+	      } else {
+	        ret.property = this.data.selectExpand[j];
+	      }
 	
-	      ret.column = this.data.columns[j];
-	      ret.property = this.data.columns[j].property;
+	      ret.column = this.data.columns[ret.property];
 	      if (ret.property === this.grid.projection.get('column.checked')) {
 	        // TODO [akamel] this shouldn't be here
 	        var checkbox = $el.find('.column-checkbox');
@@ -2368,9 +2462,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // TODO [akamel] consider moving this to a projection
 	      var value = model.get('value');
 	      // TODO [akamel] is this overriding the values we got from the projection //see column extend below
-	      var columns = model.get('columns') || _.map(model.get('select'), function (i) {
-	        return { property: i };
-	      });
+	      var columns = model.get('columns');
 	      var colOptions = this.options.columns || {};
 	      var orderby = {};
 	
@@ -2382,18 +2474,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        };
 	      });
 	
-	      columns = _.filter(columns, function (col) {
-	        return col.property.charAt(0) !== '$';
-	      });
-	
-	      columns = _.map(columns, function (col) {
+	      _.each(columns, function (col, property) {
 	      // TODO [akamel] consider filtering which props to copy/override
 	        var delta = {};
-	        if (orderby[col.property]) {
-	          delta.$orderby = orderby[col.property];
+	        if (orderby[property]) {
+	          delta.$orderby = orderby[property];
 	        }
 	
-	        return _.extend(col, colOptions[col.property], delta);
+	        columns[property] = _.extend(col, colOptions[property], delta);
 	      });
 	
 	      if (_.has(this.options.$metadata, 'class') && _.isArray(this.options.$metadata.class)) {
@@ -2407,6 +2495,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return col.property;
 	        }),
 	        '$metadata': this.options.$metadata,
+	        'hideHeaders': this.options.hideHeaders,
 	      };
 	
 	      this.data = _.defaults(delta, model.toJSON());
@@ -2498,7 +2587,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var jade = __webpack_require__(20);
@@ -2507,21 +2596,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var buf = [];
 	var jade_mixins = {};
 	var jade_interp;
-	;var locals_for_with = (locals || {});(function ($metadata, undefined, value) {
-	jade_mixins["th"] = jade_interp = function(column){
+	;var locals_for_with = (locals || {});(function ($metadata, columns, hideHeaders, isApplyGroup, subSelect, undefined, value) {
+	jade_mixins["columnHeader"] = jade_interp = function(column){
 	var block = (this && this.block), attributes = (this && this.attributes) || {};
-	var attr = (column.$metadata || {})['attr.head'] || {}
-	var cls = [];
-	if ( column.sortable)
-	{
-	cls.push('sortable');
-	}
-	if ( column.$orderby)
-	{
-	cls.push('orderby');
-	}
-	cls = cls.join(' ');
-	buf.push("<th" + (jade.attrs(jade.merge([{"class": (jade_interp = [true], jade.joinClasses([cls].map(jade.joinClasses).map(function (cls, i) {   return jade_interp[i] ? jade.escape(cls) : cls })))},attributes,attr]), true)) + ">");
 	if ( column.$orderby)
 	{
 	if ( column.$orderby.dir > 0)
@@ -2541,7 +2618,57 @@ return /******/ (function(modules) { // webpackBootstrap
 	{
 	buf.push(jade.escape(null == (jade_interp = (typeof column.$text != 'undefined')? column.$text : (column.property || column)) ? "" : jade_interp));
 	}
+	};
+	jade_mixins["th"] = jade_interp = function(column, hasGroup, isSubColumn){
+	var block = (this && this.block), attributes = (this && this.attributes) || {};
+	var attr = (column.$metadata || {})['attr.head'] || {}
+	var cls = [];
+	if ( column.sortable)
+	{
+	cls.push('sortable');
+	}
+	if ( column.$orderby)
+	{
+	cls.push('orderby');
+	}
+	cls = cls.join(' ');
+	if ( isSubColumn )
+	{
+	var colspan = 1, rowspan = 1;
+	buf.push("<th" + (jade.attrs(jade.merge([{"colspan": jade.escape(colspan),"rowspan": jade.escape(rowspan),"class": (jade_interp = [true], jade.joinClasses([cls].map(jade.joinClasses).map(function (cls, i) {   return jade_interp[i] ? jade.escape(cls) : cls })))},attributes,attr]), true)) + ">");
+	jade_mixins["columnHeader"](column);
 	buf.push("</th>");
+	}
+	else if ( hasGroup )
+	{
+	if ( column.groupExpansion)
+	{
+	var colspan = column.group.length, rowspan = 1;
+	buf.push("<th" + (jade.attrs(jade.merge([{"colspan": jade.escape(colspan),"rowspan": jade.escape(rowspan),"class": (jade_interp = [true], jade.joinClasses([cls].map(jade.joinClasses).map(function (cls, i) {   return jade_interp[i] ? jade.escape(cls) : cls })))},attributes,attr]), true)) + "><span class=\"pop-collapse glyphicon glyphicon-minus\"></span><div>");
+	jade_mixins["columnHeader"](column);
+	buf.push("</div></th>");
+	}
+	else if ( column.group)
+	{
+	var colspan = 1, rowspan = 2;
+	buf.push("<th" + (jade.attrs(jade.merge([{"colspan": jade.escape(colspan),"rowspan": jade.escape(rowspan),"class": (jade_interp = [true], jade.joinClasses([cls].map(jade.joinClasses).map(function (cls, i) {   return jade_interp[i] ? jade.escape(cls) : cls })))},attributes,attr]), true)) + "><span class=\"pop-expand glyphicon glyphicon-plus\"></span><div>");
+	jade_mixins["columnHeader"](column);
+	buf.push("</div></th>");
+	}
+	else
+	{
+	var colspan = 1, rowspan = 2;
+	buf.push("<th" + (jade.attrs(jade.merge([{"colspan": jade.escape(colspan),"rowspan": jade.escape(rowspan),"class": (jade_interp = [true], jade.joinClasses([cls].map(jade.joinClasses).map(function (cls, i) {   return jade_interp[i] ? jade.escape(cls) : cls })))},attributes,attr]), true)) + ">");
+	jade_mixins["columnHeader"](column);
+	buf.push("</th>");
+	}
+	}
+	else
+	{
+	buf.push("<th" + (jade.attrs(jade.merge([{"class": (jade_interp = [true], jade.joinClasses([cls].map(jade.joinClasses).map(function (cls, i) {   return jade_interp[i] ? jade.escape(cls) : cls })))},attributes,attr]), true)) + ">");
+	jade_mixins["columnHeader"](column);
+	buf.push("</th>");
+	}
 	};
 	jade_mixins["td"] = jade_interp = function(row, column){
 	var block = (this && this.block), attributes = (this && this.attributes) || {};
@@ -2558,30 +2685,117 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	buf.push("</td>");
 	};
-	buf.push("<table" + (jade.attrs(jade.merge([{"class": "table table-hover grid"},$metadata || {}]), true)) + "><thead><tr class=\"table__row--header\">");
-	// iterate locals['columns'] || []
+	buf.push("<table" + (jade.attrs(jade.merge([{"class": "table table-hover grid"},$metadata || {}]), true)) + ">");
+	if ( !hideHeaders)
+	{
+	buf.push("<thead>");
+	if ( isApplyGroup && subSelect.length === 0)
+	{
+	buf.push("<tr class=\"table__row--header\">");
+	// iterate locals['select'] || []
 	;(function(){
-	  var $$obj = locals['columns'] || [];
+	  var $$obj = locals['select'] || [];
 	  if ('number' == typeof $$obj.length) {
 	
-	    for (var index = 0, $$l = $$obj.length; index < $$l; index++) {
-	      var column = $$obj[index];
+	    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+	      var columnName = $$obj[$index];
 	
-	jade_mixins["th"](column);
+	jade_mixins["th"](columns[columnName], true);
 	    }
 	
 	  } else {
 	    var $$l = 0;
-	    for (var index in $$obj) {
-	      $$l++;      var column = $$obj[index];
+	    for (var $index in $$obj) {
+	      $$l++;      var columnName = $$obj[$index];
 	
-	jade_mixins["th"](column);
+	jade_mixins["th"](columns[columnName], true);
 	    }
 	
 	  }
 	}).call(this);
 	
-	buf.push("</tr></thead><tbody>");
+	buf.push("</tr>");
+	}
+	else if ( isApplyGroup)
+	{
+	buf.push("<tr class=\"table__row--header\">");
+	// iterate locals['select'] || []
+	;(function(){
+	  var $$obj = locals['select'] || [];
+	  if ('number' == typeof $$obj.length) {
+	
+	    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+	      var columnName = $$obj[$index];
+	
+	jade_mixins["th"](columns[columnName], true);
+	    }
+	
+	  } else {
+	    var $$l = 0;
+	    for (var $index in $$obj) {
+	      $$l++;      var columnName = $$obj[$index];
+	
+	jade_mixins["th"](columns[columnName], true);
+	    }
+	
+	  }
+	}).call(this);
+	
+	buf.push("</tr><tr class=\"table__row--header table__row--sub-header\">");
+	// iterate locals['subSelect']
+	;(function(){
+	  var $$obj = locals['subSelect'];
+	  if ('number' == typeof $$obj.length) {
+	
+	    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+	      var columnName = $$obj[$index];
+	
+	jade_mixins["th"](columns[columnName], true, true);
+	    }
+	
+	  } else {
+	    var $$l = 0;
+	    for (var $index in $$obj) {
+	      $$l++;      var columnName = $$obj[$index];
+	
+	jade_mixins["th"](columns[columnName], true, true);
+	    }
+	
+	  }
+	}).call(this);
+	
+	buf.push("</tr>");
+	}
+	else
+	{
+	buf.push("<tr class=\"table__row--header\">");
+	// iterate locals['select'] || []
+	;(function(){
+	  var $$obj = locals['select'] || [];
+	  if ('number' == typeof $$obj.length) {
+	
+	    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+	      var columnName = $$obj[$index];
+	
+	jade_mixins["th"](columns[columnName]);
+	    }
+	
+	  } else {
+	    var $$l = 0;
+	    for (var $index in $$obj) {
+	      $$l++;      var columnName = $$obj[$index];
+	
+	jade_mixins["th"](columns[columnName]);
+	    }
+	
+	  }
+	}).call(this);
+	
+	buf.push("</tr>");
+	}
+	buf.push("</thead>");
+	}
+	buf.push("<tbody>");
 	// iterate value
 	;(function(){
 	  var $$obj = value;
@@ -2592,23 +2806,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var attr = (row.$metadata || {}).attr
 	buf.push("<tr" + (jade.attrs(jade.merge([{"class": "table__row--body"},attr]), true)) + ">");
-	// iterate locals['columns'] || []
+	// iterate locals['selectExpand'] || []
 	;(function(){
-	  var $$obj = locals['columns'] || [];
+	  var $$obj = locals['selectExpand'] || [];
 	  if ('number' == typeof $$obj.length) {
 	
-	    for (var j = 0, $$l = $$obj.length; j < $$l; j++) {
-	      var column = $$obj[j];
+	    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+	      var columnName = $$obj[$index];
 	
-	jade_mixins["td"](row, column);
+	jade_mixins["td"](row, columns[columnName]);
 	    }
 	
 	  } else {
 	    var $$l = 0;
-	    for (var j in $$obj) {
-	      $$l++;      var column = $$obj[j];
+	    for (var $index in $$obj) {
+	      $$l++;      var columnName = $$obj[$index];
 	
-	jade_mixins["td"](row, column);
+	jade_mixins["td"](row, columns[columnName]);
 	    }
 	
 	  }
@@ -2624,23 +2838,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var attr = (row.$metadata || {}).attr
 	buf.push("<tr" + (jade.attrs(jade.merge([{"class": "table__row--body"},attr]), true)) + ">");
-	// iterate locals['columns'] || []
+	// iterate locals['selectExpand'] || []
 	;(function(){
-	  var $$obj = locals['columns'] || [];
+	  var $$obj = locals['selectExpand'] || [];
 	  if ('number' == typeof $$obj.length) {
 	
-	    for (var j = 0, $$l = $$obj.length; j < $$l; j++) {
-	      var column = $$obj[j];
+	    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+	      var columnName = $$obj[$index];
 	
-	jade_mixins["td"](row, column);
+	jade_mixins["td"](row, columns[columnName]);
 	    }
 	
 	  } else {
 	    var $$l = 0;
-	    for (var j in $$obj) {
-	      $$l++;      var column = $$obj[j];
+	    for (var $index in $$obj) {
+	      $$l++;      var columnName = $$obj[$index];
 	
-	jade_mixins["td"](row, column);
+	jade_mixins["td"](row, columns[columnName]);
 	    }
 	
 	  }
@@ -2652,28 +2866,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	}).call(this);
 	
-	buf.push("</tbody></table>");}.call(this,"$metadata" in locals_for_with?locals_for_with.$metadata:typeof $metadata!=="undefined"?$metadata:undefined,"undefined" in locals_for_with?locals_for_with.undefined: false?undefined:undefined,"value" in locals_for_with?locals_for_with.value:typeof value!=="undefined"?value:undefined));;return buf.join("");
+	buf.push("</tbody></table>");}.call(this,"$metadata" in locals_for_with?locals_for_with.$metadata:typeof $metadata!=="undefined"?$metadata:undefined,"columns" in locals_for_with?locals_for_with.columns:typeof columns!=="undefined"?columns:undefined,"hideHeaders" in locals_for_with?locals_for_with.hideHeaders:typeof hideHeaders!=="undefined"?hideHeaders:undefined,"isApplyGroup" in locals_for_with?locals_for_with.isApplyGroup:typeof isApplyGroup!=="undefined"?isApplyGroup:undefined,"subSelect" in locals_for_with?locals_for_with.subSelect:typeof subSelect!=="undefined"?subSelect:undefined,"undefined" in locals_for_with?locals_for_with.undefined: false?undefined:undefined,"value" in locals_for_with?locals_for_with.value:typeof value!=="undefined"?value:undefined));;return buf.join("");
 	}
-
-/***/ },
-/* 42 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = {
-	  FixedHeader: __webpack_require__(43),
-	  Virtualization: __webpack_require__(46),
-	};
-
 
 /***/ },
 /* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
+	module.exports = {
+	  FixedHeader: __webpack_require__(44),
+	  Virtualization: __webpack_require__(47),
+	};
+
+
+/***/ },
+/* 44 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(6),
 	  __webpack_require__(2),
-	  __webpack_require__(44),
 	  __webpack_require__(45),
+	  __webpack_require__(46),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _, measure, px) {
 	  function Renderer(options) {
 	    this.options = options || {};
@@ -2703,7 +2917,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      // c. get newly rendered header
 	      var $thead = $el.find('thead');
-	      var $headTD = $el.find('thead > tr').children();
+	      var $headTR = $el.find('thead > tr');
+	      var $headTD = $headTR.first().children();
+	      var $secondHeadTD = $headTR.eq(1).children();
 	      var $bodyTD = $el.find('tbody > tr:first-child').children();
 	
 	      var $ref = $bodyTD;
@@ -2718,8 +2934,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // todo [akamel] [perf] 12% -- consider replacing with css rule generation
 	      // e. freeze column width
 	      // e.1 freeze col width
+	      var colIndex = 0, secondHeadTDIndex = 0;
 	      _.each($target, function (td, index) {
-	        $(td).width(px.pixelify(this.colWidth[index]));
+	        var colspan = parseInt($(td).attr('colspan'));
+	        var rowspan = parseInt($(td).attr('rowspan'));
+	        var width = 0;
+	        for (i = 0; i < colspan; ++i) {
+	          var colWidth = px.pixelify(this.colWidth[colIndex + i]);
+	          width += colWidth;
+	          if (rowspan === 1) {
+	            $secondHeadTD.eq(secondHeadTDIndex + i).width(colWidth);
+	          }
+	        }
+	        $(td).width(width);
+	        colIndex += colspan;
+	        if (rowspan === 1) {
+	          secondHeadTDIndex += colspan;
+	        }
 	      }.bind(this));
 	
 	      _.each($ref, function (td, index) {
@@ -2727,10 +2958,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }.bind(this));
 	
 	      // f. set position 'fixed' and lock header at top of table
-	      $thead.find('tr').css({
+	      $thead.css({
 	        'position': this.layout.container.el === window ? 'fixed' : 'absolute',
 	        'top': px.pixelify(this.layout.container.el === window ? 0 : this.layout.container.$el.scrollTop()),
-	        'display': 'flex',
 	        'margin-left': px.pixelify(-data.vpMeasures.offsetLeft),
 	        'z-index': 1000,
 	      });
@@ -2754,7 +2984,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 44 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -2839,7 +3069,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 45 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// todo [akamel] move to /component
@@ -2864,7 +3094,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 46 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// TODO [akamel] [bug] with large data set, jitters when scrolling to bottom
@@ -2872,8 +3102,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(6),
 	  __webpack_require__(2),
-	  __webpack_require__(44),
 	  __webpack_require__(45),
+	  __webpack_require__(46),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _, measure, px) {
 	  function rowHeight(row) {
 	    return _.isNumber(row.__height) ? row.__height : this.__measures.avgRowHeight;
