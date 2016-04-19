@@ -24,7 +24,7 @@ require([
   var AggregateRow = pgrid.projections.AggregateRow;
   var ColumnGroup = pgrid.projections.ColumnGroup;
   var EditableProjection = pgrid.projections.Editable;
-
+  var ColumnTemplate = pgrid.projections.ColumnTemplate;
   // layout
   var TableLayout = pgrid.layout.TableLayout;
   var tmplJade = pgrid.layout.templates.table;
@@ -277,6 +277,13 @@ require([
       });
     }
 
+    var columnTmpl = new ColumnTemplate({
+      'column.template': {
+        'rowIndex': function(item) {
+          return '<strong>RowIndex</strong>';
+        }
+      }
+    })
     _.templateSettings = {
       interpolate: /\{\{(.+?)\}\}/g,
     };
@@ -285,7 +292,9 @@ require([
     // TODO [akamel] remove demo pipes
     // mock.pipe(memquery).pipe(map).pipe(proptmpl).pipe(colq).pipe(coli18n)
     // mock.pipe(memquery).pipe(map).pipe(colq).pipe(coli18n).pipe(proptmpl)
-    src = odata.pipe(map).pipe(coli18n).pipe(page).pipe(colq).pipe(proptmpl).pipe(colshifter).pipe(group).pipe(checkbox).pipe(rowindex).pipe(aggregateRow).pipe(editable);
+    src = odata.pipe(map).pipe(coli18n).pipe(page).pipe(colq).pipe(proptmpl)
+      .pipe(colshifter).pipe(group).pipe(checkbox).pipe(rowindex)
+      .pipe(aggregateRow).pipe(editable).pipe(columnTmpl);
 
     return src;
   }
