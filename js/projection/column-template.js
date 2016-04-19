@@ -22,10 +22,10 @@ define([
         }), function (item) {
           var ret = _.clone(item);
           var property = ret.property;
+          var templateValue = colTemplate[property];
 
           if (_.has(colTemplate, property)) {
-            colTemplate = colTemplate[property];
-            ret.$html = _.isFunction(colTemplate) ? colTemplate(ret) : colTemplate;
+            ret.$html = _.isFunction(templateValue) ? templateValue(ret) : templateValue;
           }
 
           return ret;

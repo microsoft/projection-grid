@@ -20,7 +20,9 @@ require([
   var RowCheckboxProjection = pgrid.projections.RowCheckbox;
   var RowIndexProjection = pgrid.projections.RowIndex;
   var AggregateRow = pgrid.projections.AggregateRow;
+  var ColumnGroup = pgrid.projections.ColumnGroup;
   var EditableProjection = pgrid.projections.Editable;
+
   // layout
   var TableLayout = pgrid.layout.TableLayout;
   var tmplJade = pgrid.layout.templates.table;
@@ -98,6 +100,7 @@ require([
   var odata = new OdataSource({
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
   });
+
   var map = new MapProjection({
     map: function (item) {
       var names = (item.name || item.ContactName || item.ShipName).split(' ');
@@ -140,6 +143,14 @@ require([
       },
     },
   });
+
+  var group = new ColumnGroup({
+    "column.group": {
+      OrderDate: ['RequiredDate', 'ShippedDate'],
+    },
+    'column.groupExpansion': ['OrderDate'],
+  });
+
   var colshifter = new ColumnShifterProjection();
   var proptmpl = new PropertyTemplateProjection({
     'property.template': {
@@ -202,7 +213,8 @@ require([
   // TODO [akamel] remove demo pipes
   // mock.pipe(memquery).pipe(map).pipe(proptmpl).pipe(colq).pipe(coli18n)
   // mock.pipe(memquery).pipe(map).pipe(colq).pipe(coli18n).pipe(proptmpl)
-  src = odata.pipe(map).pipe(coli18n).pipe(page).pipe(colq).pipe(proptmpl).pipe(colshifter).pipe(checkbox).pipe(rowindex).pipe(aggregateRow).pipe(editable);
+  src = odata.pipe(map).pipe(coli18n).pipe(page).pipe(colq).pipe(proptmpl)
+    .pipe(colshifter).pipe(group).pipe(checkbox).pipe(rowindex).pipe(aggregateRow).pipe(editable);
 
   $(function () {
     // $('#grid_toolbar_host_a').append(createToolbar().render().$el);
@@ -212,6 +224,7 @@ require([
       Layout: TableLayout.partial({
         template: tmplJade,
         renderers: [Virtualization, FixedHeader],
+        hideHeaders: false,
         columns: {
           name: {},
           first: {
@@ -256,15 +269,15 @@ require([
     var pager = new PaginationView({ el: '#pager', pageSize: 200, pageNumber: 0 });
     pager.render();
 
-    grid.once('change:data', function(model) {
+    grid.once('change:data', function (model) {
       pager.itemCount = model.get('count');
     });
 
-    pager.on('change:page-number', function(pageNumber) {
+    pager.on('change:page-number', function (pageNumber) {
       grid.projection.set('page.number', pageNumber);
     });
 
-    pager.on('change:page-size', function(pageSize) {
+    pager.on('change:page-size', function (pageSize) {
       grid.projection.set('page.size', pageSize);
     });
 
