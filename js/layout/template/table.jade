@@ -22,25 +22,21 @@ mixin th(column, hasGroup, isSubColumn)
     - var colspan = 1, rowspan = 1;
     th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
       +columnHeader(column)
-  else if hasGroup 
-    if column.groupExpansion
+  else if hasGroup && column.groupExpansion
       - var colspan = column.group.length, rowspan = 1;
       th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
         span.pop-collapse.glyphicon.glyphicon-minus
         div
           +columnHeader(column)
-    else if column.group
-      - var colspan = 1, rowspan = 2;
-      th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
-        span.pop-expand.glyphicon.glyphicon-plus
-        div
-          +columnHeader(column)
-    else
-      - var colspan = 1, rowspan = 2;
-      th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
+  else if hasGroup && column.group
+    - var colspan = 1, rowspan = 2;
+    th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
+      span.pop-expand.glyphicon.glyphicon-plus
+      div
         +columnHeader(column)
-  else 
-    th(class=cls)&attributes(attributes)&attributes(attr)
+  else
+    - var colspan = 1, rowspan = 2;
+    th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
       +columnHeader(column)
 
 mixin td(row, column)
@@ -75,5 +71,5 @@ table.table.table-hover.grid&attributes($metadata || {})
     each row, i in value
       - var attr = (row.$metadata || {}).attr
       tr.table__row--body&attributes(attr)
-        each columnName in locals['selectExpand'] || []
+        each columnName in locals['selectExpand'] || locals.select
           +td(row, columns[columnName])
