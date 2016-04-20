@@ -5,6 +5,7 @@ var gutil = require('gulp-util');
 var eslint = require('gulp-eslint');
 var excludeGitignore = require('gulp-exclude-gitignore');
 var file = require('gulp-file');
+var democase = require('gulp-democase');
 var webpack = require('webpack');
 var esprima = require('esprima');
 var escodegen = require('escodegen');
@@ -12,10 +13,12 @@ var del = require('del');
 var http = require('http');
 var fs = require('fs');
 var os = require('os');
+var resolve = require('resolve');
 
 var pkg = require('./package');
 
-var spawn = require('child_process').spawn;
+var childProcess = require('child_process');
+var spawn = childProcess.spawn;
 
 function webpackBuild(configFilePath) {
   return function (cb) {
@@ -158,6 +161,26 @@ gulp.task('example:requirejs', function () {
       _.set({}, 'format.indent.style', '  ')
     )
   ).pipe(gulp.dest('./examples/requirejs/'));
+});
+
+gulp.task('demos', function () {
+  return gulp.src('./demos').pipe(democase());
+});
+
+gulp.task('test:demos', ['download-selenium'], function (done) {
+  var pathCli = path.resolve(path.dirname(resolve.sync('webdriverio', {
+    basedir: '.',
+  })), 'lib/cli');
+  var cp = startSeleniumServer();
+
+  childProcess.fork(pathCli, [path.join(__dirname, 'wdio.conf.js')], {
+    env: { DEMOCASE_HTTP_PORT: 8081 },
+  }).on('close', function (code) {
+    cp.kill();
+    if (code) {
+      done(new Error('selenium test failue'));
+    }
+  });
 });
 
 gulp.task('examples', ['example:webpack', 'example:requirejs']);
