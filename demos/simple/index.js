@@ -4,6 +4,8 @@ require([
   'jquery',
   'pagination-control',
   './northwind-schema',
+  'bootstrap-webpack',
+  'style!css!./example.css',
 ], function (pgrid, _, $, pager, s$Northwind) {
   var Grid = pgrid.GridView;
   var PaginationView = pager.PaginationView;
@@ -279,11 +281,11 @@ require([
 
     var columnTmpl = new ColumnTemplate({
       'column.template': {
-        'rowIndex': function(item) {
+        rowIndex: function () {
           return '<strong>RowIndex</strong>';
-        }
-      }
-    })
+        },
+      },
+    });
     _.templateSettings = {
       interpolate: /\{\{(.+?)\}\}/g,
     };
