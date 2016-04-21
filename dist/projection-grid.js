@@ -852,18 +852,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (Model.__super__.update.call(this, options)) {
 	        var model = this.src.data;
 	        var colTemplate = this.get('column.template');
-	        var columns = _.map(model.get('columns') || _.map(model.get('select'), function (i) {
-	          return { property: i };
-	        }), function (item) {
+	        var columns = model.get('columns');
+	        _.each(columns, function (item, property) {
 	          var ret = _.clone(item);
-	          var property = ret.property;
 	          var templateValue = colTemplate[property];
 	
 	          if (_.has(colTemplate, property)) {
 	            ret.$html = _.isFunction(templateValue) ? templateValue(ret) : templateValue;
 	          }
 	
-	          return ret;
+	          columns[property] = ret;
 	        });
 	
 	        this.patch({ columns: columns });
@@ -2938,16 +2936,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	jade_mixins["columnHeader"](column);
 	buf.push("</th>");
 	}
-	else if ( hasGroup )
-	{
-	if ( column.groupExpansion)
+	else if ( hasGroup && column.groupExpansion)
 	{
 	var colspan = column.group.length, rowspan = 1;
 	buf.push("<th" + (jade.attrs(jade.merge([{"colspan": jade.escape(colspan),"rowspan": jade.escape(rowspan),"class": (jade_interp = [true], jade.joinClasses([cls].map(jade.joinClasses).map(function (cls, i) {   return jade_interp[i] ? jade.escape(cls) : cls })))},attributes,attr]), true)) + "><span class=\"pop-collapse glyphicon glyphicon-minus\"></span><div>");
 	jade_mixins["columnHeader"](column);
 	buf.push("</div></th>");
 	}
-	else if ( column.group)
+	else if ( hasGroup && column.group)
 	{
 	var colspan = 1, rowspan = 2;
 	buf.push("<th" + (jade.attrs(jade.merge([{"colspan": jade.escape(colspan),"rowspan": jade.escape(rowspan),"class": (jade_interp = [true], jade.joinClasses([cls].map(jade.joinClasses).map(function (cls, i) {   return jade_interp[i] ? jade.escape(cls) : cls })))},attributes,attr]), true)) + "><span class=\"pop-expand glyphicon glyphicon-plus\"></span><div>");
@@ -2958,13 +2954,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	{
 	var colspan = 1, rowspan = 2;
 	buf.push("<th" + (jade.attrs(jade.merge([{"colspan": jade.escape(colspan),"rowspan": jade.escape(rowspan),"class": (jade_interp = [true], jade.joinClasses([cls].map(jade.joinClasses).map(function (cls, i) {   return jade_interp[i] ? jade.escape(cls) : cls })))},attributes,attr]), true)) + ">");
-	jade_mixins["columnHeader"](column);
-	buf.push("</th>");
-	}
-	}
-	else
-	{
-	buf.push("<th" + (jade.attrs(jade.merge([{"class": (jade_interp = [true], jade.joinClasses([cls].map(jade.joinClasses).map(function (cls, i) {   return jade_interp[i] ? jade.escape(cls) : cls })))},attributes,attr]), true)) + ">");
 	jade_mixins["columnHeader"](column);
 	buf.push("</th>");
 	}
@@ -3105,9 +3094,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var attr = (row.$metadata || {}).attr
 	buf.push("<tr" + (jade.attrs(jade.merge([{"class": "table__row--body"},attr]), true)) + ">");
-	// iterate locals['selectExpand'] || []
+	// iterate locals['selectExpand'] || locals.select
 	;(function(){
-	  var $$obj = locals['selectExpand'] || [];
+	  var $$obj = locals['selectExpand'] || locals.select;
 	  if ('number' == typeof $$obj.length) {
 	
 	    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
@@ -3137,9 +3126,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var attr = (row.$metadata || {}).attr
 	buf.push("<tr" + (jade.attrs(jade.merge([{"class": "table__row--body"},attr]), true)) + ">");
-	// iterate locals['selectExpand'] || []
+	// iterate locals['selectExpand'] || locals.select
 	;(function(){
-	  var $$obj = locals['selectExpand'] || [];
+	  var $$obj = locals['selectExpand'] || locals.select;
 	  if ('number' == typeof $$obj.length) {
 	
 	    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
