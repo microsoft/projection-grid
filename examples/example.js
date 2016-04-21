@@ -279,11 +279,12 @@ require([
 
     var columnTmpl = new ColumnTemplate({
       'column.template': {
-        'rowIndex': function(item) {
+        rowIndex: function () {
           return '<strong>RowIndex</strong>';
-        }
-      }
-    })
+        },
+      },
+    });
+
     _.templateSettings = {
       interpolate: /\{\{(.+?)\}\}/g,
     };
