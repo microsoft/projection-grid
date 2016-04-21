@@ -17,13 +17,13 @@ define([
       },
     },
 
-    initialize(options) {
+    initialize: function (options) {
       this.position = options.position;
       this.model = options.model;
       this.property = options.fields[0].property;
     },
 
-    render() {
+    render: function () {
       this.$el.html(template({ value: this.model[this.property] }));
       this.$el.css({
         position: 'absolute',
@@ -40,7 +40,7 @@ define([
       return this;
     },
 
-    remove() {
+    remove: function () {
       $(window).off('click', this.dismiss);
       Backbone.View.prototype.remove.apply(this, arguments);
     },
