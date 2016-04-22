@@ -74,6 +74,7 @@
     "underscore": "^1.8.3",
     "url-loader": "^0.5.7",
     "wdio-dot-reporter": "0.0.5",
+    "wdio-junit-reporter": "0.0.2",
     "wdio-mocha-framework": "^0.2.12",
     "webdriverio": "^4.0.5",
     "webpack": "^1.12.14",
