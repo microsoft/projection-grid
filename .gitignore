@@ -3,18 +3,15 @@ node_modules
 
 # test results
 test-results
+errorShots
 
 # code coverage
 coverage
 
 # npm logs
 node-debug.log
+npm-debug.log
 
 # dist
 dist
 
-# generated code for example pages
-examples/requirejs/require.config.js
-examples/webpack/dist
-
-errorShots
