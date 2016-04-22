@@ -1,9 +1,9 @@
 var expect = require('chai').expect;
 
 /* global browser */
+/* eslint no-unused-expressions: 0 */
 describe('webdriver.io page', function () {
   beforeEach(function (cb) {
-    browser.url('localhost:8080/examples/webpack/index.html');
     browser.waitForExist('.table.grid', cb);
   });
 

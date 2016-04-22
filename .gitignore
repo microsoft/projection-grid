@@ -1,6 +1,9 @@
 # npm packages
 node_modules
 
+# test results
+test-results
+
 # code coverage
 coverage
 
