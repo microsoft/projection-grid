@@ -5,8 +5,34 @@ html(lang="en")
   body
     .container
       .row
+        .panel.panel-info
+          .panel-heading Commands you can run in the console
+          .panel-body
+            pre.
+              -- skip and take only work when pagination control is not connected [for now]
+              // window.grid.projection.set({ skip : 20, take : 100, filter : function(i){ return i.age &lt; 5; } });
+              -- select is being overriden by the column shifter's options
+              // window.grid.projection.set({ select : ['age', 'age', 'name', 'index', 'name', 'age', 'index', 'age'] });
+              -- call to column.take should work fine on this page
+              // window.grid.projection.set({ 'column.take' : 4, 'column.skip' : 3 });
+              // --- only used to change column settings / dimensions; window.grid.set('columns', [{ property : 'name', title : 'My Name' }, { property : 'age', title : 'Cat Age' }]);
+        .panel.panel-info
+          .panel-heading Notes
+          .panel-body
+            ul
+              li Column 'ContactName' is sortable
+              li Shift Columns right and left
+              li Use Pager to navigate OData Source
+      .row
         #grid_toolbar_host_a
         #pagination_host_a
         #grid_host_a
         #pager
+          
+      .row
+        .panel.panel-info
+          .panel-heading Footer Space
+          .panel-body
+            ul
+              li Used to make sure that grid virtualization renders correctly at the end of page
     script(type='text/javascript', src=bundle)
