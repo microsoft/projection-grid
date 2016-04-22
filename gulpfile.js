@@ -1,21 +1,15 @@
-var _ = require('lodash');
 var path = require('path');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var eslint = require('gulp-eslint');
 var excludeGitignore = require('gulp-exclude-gitignore');
-var file = require('gulp-file');
 var democase = require('gulp-democase');
 var webpack = require('webpack');
-var esprima = require('esprima');
-var escodegen = require('escodegen');
 var del = require('del');
 var http = require('http');
 var fs = require('fs');
 var os = require('os');
 var resolve = require('resolve');
-
-var pkg = require('./package');
 
 var childProcess = require('child_process');
 var spawn = childProcess.spawn;
@@ -109,28 +103,6 @@ gulp.task('static', function () {
 
 gulp.task('webpack', webpackBuild('./webpack.config'));
 
-gulp.task('example:webpack', ['webpack'], webpackBuild('./examples/webpack/webpack.config'));
-
-gulp.task('example:requirejs', function () {
-  return file(
-    'require.config.js',
-    escodegen.generate(
-      esprima.parse(
-        'var require = ' + JSON.stringify({
-          baseUrl: path.relative('examples/requirejs', '.'),
-          paths: _.assignIn(_.mapValues(pkg.peerDependencies, function (value, key) {
-            return path.relative('.', require.resolve(key)).replace(/\.js$/, '');
-          }), {
-            'projection-grid': 'dist/projection-grid',
-            'bluebird': 'node_modules/bluebird/js/browser/bluebird.min',
-          }),
-        }) + ';'
-      ),
-      _.set({}, 'format.indent.style', '  ')
-    )
-  ).pipe(gulp.dest('./examples/requirejs/'));
-});
-
 gulp.task('demos', function () {
   return gulp.src('./demos').pipe(democase());
 });
@@ -153,25 +125,19 @@ gulp.task('test:demos', ['download-selenium'], function (done) {
 
 gulp.task('test', ['test:unit', 'test:demos']);
 
-gulp.task('examples', ['example:webpack', 'example:requirejs']);
-
 gulp.task('prepublish', ['webpack']);
 
-gulp.task('clean:examples', function () {
-  return del([
-    'examples/webpack/dist',
-    'examples/requirejs/require.config.js',
-  ]);
-});
-
 gulp.task('clean:test', function () {
-  return del(['coverage']);
+  return del([
+    'test-results',
+    'coverage',
+  ]);
 });
 
 gulp.task('clean:build', function () {
   return del(['dist']);
 });
 
-gulp.task('clean', ['clean:build', 'clean:test', 'clean:examples']);
+gulp.task('clean', ['clean:build', 'clean:test']);
 
-gulp.task('default', ['static', 'webpack', 'examples']);
+gulp.task('default', ['static', 'webpack']);
