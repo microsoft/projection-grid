@@ -49,8 +49,7 @@ gulp.task('download-selenium', function (cb) {
 
 function startSeleniumServer() {
   var filePath = getSeleniumFilePath();
-  console.log(filePath);
-  return require('child_process').spawn('java', ['-jar', filePath], { stdio: 'inherit' });
+  return childProcess.spawn('java', ['-jar', filePath], { stdio: 'inherit' });
 }
 
 //
@@ -111,15 +110,24 @@ gulp.task('test:demos', ['download-selenium'], function (done) {
   var pathCli = path.resolve(path.dirname(resolve.sync('webdriverio', {
     basedir: '.',
   })), 'lib/cli');
-  var cp = startSeleniumServer();
+  var cpSelenium = null;
+  var cpWdio = null;
 
-  childProcess.fork(pathCli, [path.join(__dirname, 'wdio.conf.js')], {
+  cpSelenium = startSeleniumServer().on('error', function () {
+    if (cpWdio) {
+      cpWdio.kill();
+    }
+    done(new Error('Failed to launch the selenium standalone server. Make sure you have JRE available'));
+  });
+
+  cpWdio = childProcess.fork(pathCli, [path.join(__dirname, 'wdio.conf.js')], {
     env: { DEMOCASE_HTTP_PORT: 8081 },
   }).on('close', function (code) {
-    cp.kill();
+    cpSelenium.kill();
     if (code) {
       done(new Error('selenium test failue'));
     }
+    done();
   });
 });
 
