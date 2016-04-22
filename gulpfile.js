@@ -59,38 +59,6 @@ function startSeleniumServer() {
   return require('child_process').spawn('java', ['-jar', filePath], { stdio: 'inherit' });
 }
 
-function startExamplePageServer() {
-  var nodeStatic = require('node-static');
-
-  var fileServer = new nodeStatic.Server('./');
-
-  return require('http').createServer(function (request, response) {
-    request.addListener('end', function () {
-      fileServer.serve(request, response);
-    }).resume();
-  }).listen(8080);
-}
-
-gulp.task('run-selenium', ['download-selenium'], function (cb) {
-  var cp = startSeleniumServer();
-  var exampleServer = startExamplePageServer();
-  cp.on('error', cb);
-  cp.on('exit', cb);
-  var wdioCmd = path.resolve(__dirname, './node_modules/.bin/wdio');
-  if (process.platform === 'win32') {
-    wdioCmd += '.cmd';
-  }
-  var testProcess = spawn(wdioCmd, ['wdio.conf.js'], { stdio: 'inherit' });
-  testProcess.on('exit', function () {
-    exampleServer.close();
-    cp.kill();
-  });
-  testProcess.on('error', function () {
-    exampleServer.close();
-    cp.kill();
-  });
-});
-
 //
 // Don't use Karma API for now
 // For karma version 0.13.19 - 0.13.22, there's issue 1788
@@ -101,7 +69,7 @@ gulp.task('run-selenium', ['download-selenium'], function (cb) {
 // var Server = require('karma').Server;
 //
 
-gulp.task('test', function (cb) {
+gulp.task('test:unit', function (cb) {
   var handler = function (code) {
     if (code) {
       cb(new Error('test failure'));
@@ -182,6 +150,8 @@ gulp.task('test:demos', ['download-selenium'], function (done) {
     }
   });
 });
+
+gulp.task('test', ['test:unit', 'test:demos']);
 
 gulp.task('examples', ['example:webpack', 'example:requirejs']);
 
