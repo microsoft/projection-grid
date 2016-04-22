@@ -41,9 +41,12 @@ module.exports = {
       { test: /\.jade$/, loader: 'jade-loader' },
       // jade-end
       // es2015
+      { test: /\.js$/, exclude: /\bnode_modules\b/, loader: 'babel-loader' },
+      // es2015-end
       // react
     ],
   },
+  babel: { presets: ['es2015'] },
   externals: [getExternals()],
   resolve: { alias: webpackAlias },
   devtool: 'source-map',
