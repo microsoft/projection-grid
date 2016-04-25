@@ -1,10 +1,10 @@
 var pgrid = require('projection-grid');
-var Customer = require('./js-data-resource');
 
-var jsdata = new pgrid.projections.JSData({
-  'jsdata.entity': Customer,
+var odata = new pgrid.projections.Odata({
+  url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Customers',
 });
-var projection = jsdata.pipe(
+
+var projection = odata.pipe(
   new pgrid.projections.ColumnI18n()
 ).pipe(new pgrid.projections.ColumnQueryable({
   'column.take': 10,
@@ -27,11 +27,11 @@ var grid = new pgrid.GridView({
   }),
 });
 
-jsdata.on('update:beginning', function () {
+odata.on('update:beginning', function () {
   console.log('begin update');
 });
 
-jsdata.on('update:finished', function () {
+odata.on('update:finished', function () {
   console.log('end update');
 });
 
