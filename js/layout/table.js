@@ -88,15 +88,17 @@ define([
       var ret = { header: isHeader };
 
       // we are not in header
-      if (!isHeader) {
-        ret.model = this.data.value[i];
-      }
-      if (isHeader && i === 0) {
-        ret.property = this.data.select[j];
-      } else if (isHeader && i === 1) {
-        ret.property = this.data.subSelect[j];
+      if (isHeader) {
+        if (i === 0) {
+          ret.property = this.data.select[j];
+        } else if (i === 1) {
+          ret.property = this.data.subSelect[j];
+        } else {
+          ret.property = this.data.selectExpand[j];
+        }
       } else {
-        ret.property = this.data.selectExpand[j];
+        ret.model = this.data.value[i];
+        ret.property = this.data.select[j];
       }
 
       ret.column = this.data.columns[ret.property];
