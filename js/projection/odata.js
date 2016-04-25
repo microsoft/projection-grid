@@ -1,11 +1,12 @@
 define([
+  'bluebird',
   'lib/underscore',
   'lib/backbone',
   'lib/jquery',
   'component/grid/projection/base',
   'component/grid/projection/mock',
   'component/grid/schema/properties',
-], function (_, Backbone, $, BaseProjection, MemoryMock, schemaProperties) {
+], function (Promise, _, Backbone, $, BaseProjection, MemoryMock, schemaProperties) {
   var Model = BaseProjection.extend({
     defaults: {
       verb: 'get',
@@ -18,7 +19,8 @@ define([
     },
     name: 'odata',
     update: function () {
-      this.trigger('update:beginning');
+      this.p$fetchData || this.trigger('update:beginning');
+
       var url = this.get('url');
 
       url = _.isFunction(url) ? url() : url;
@@ -49,25 +51,33 @@ define([
         op.$orderby = key + ' ' + (dir > 0 ? 'asc' : 'desc');
       }
 
-      $.getJSON(op.url, _.omit(op, 'url'))
-        .success(function (data) {
+      var p$fetchData = this.p$fetchData = new Promise(function (resolve, reject) {
+        $.getJSON(op.url, _.omit(op, 'url'))
+          .success(resolve)
+          .error(function (jqXHR, textStatus, errorThrown) {
+            reject(errorThrown);
+          });
+      }).then(function (data) {
+        if (p$fetchData === this.p$fetchData) {
           var delta = {
             value: data.value,
+            rawValue: data,
             select: schemaProperties.from(data.value),
             count: data['@odata.count'],
             error: undefined,
           };
-
           this.patch(delta);
-        }.bind(this))
-        .error(function (jqXHR, textStatus, errorThrown) {
-          var delta = { error: errorThrown };
-
-          this.patch(delta);
-        }.bind(this))
-        .complete(function () {
+        }
+      }.bind(this)).catch(function (error) {
+        if (p$fetchData === this.p$fetchData) {
+          this.patch({ error: error });
+        }
+      }).finally(function () {
+        if (p$fetchData === this.p$fetchData) {
           this.trigger('update:finished');
-        }.bind(this));
+          this.p$fetchData = null;
+        }
+      }.bind(this));
     },
   });
 

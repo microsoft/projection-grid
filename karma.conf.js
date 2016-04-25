@@ -42,7 +42,7 @@ module.exports = function (config) {
       },
     },
 
-    reporters: ['mocha', 'coverage'],
+    reporters: ['mocha', 'coverage', 'junit'],
 
     preprocessors: {
       'spec/$speclist.js': ['webpack'],
@@ -53,6 +53,10 @@ module.exports = function (config) {
     coverageReporter: {
       type: 'html',
       dir: 'coverage',
+    },
+
+    junitReporter: {
+      outputDir: './test-results/',
     },
 
     browsers: [
