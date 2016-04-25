@@ -98,7 +98,11 @@ define([
         }
       } else {
         ret.model = this.data.value[i];
-        ret.property = this.data.select[j];
+        if (this.data.selectExpand) {
+          ret.property = this.data.selectExpand[j];
+        } else {
+          ret.property = this.data.select[j];
+        }
       }
 
       ret.column = this.data.columns[ret.property];
