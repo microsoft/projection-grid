@@ -1,7 +1,9 @@
 define([
+  'bluebird',
   'lib/underscore',
   'component/grid/projection/base',
-], function (_, BaseProjection) {
+  'component/grid/schema/properties.js',
+], function (Promise, _, BaseProjection, schemaProperties) {
   var Model = BaseProjection.extend({
     defaults: {
       'jsdata.query': undefined,
@@ -16,22 +18,11 @@ define([
     name: 'jsdata',
 
     update: function () {
-      if (!this.isUpdating) {
-        this.isUpdating = true;
-        this.on('update:finished', function () {
-          this.isUpdating = false;
-        });
-        this.doUpdate();
-      }
-    },
-
-    doUpdate: function () {
-      var self = this;
       var entity = this.get('jsdata.entity');
       var options = _.defaults(this.get('jsdata.options'), { all: true });
       var op = {};
 
-      this.trigger('update:beginning');
+      this.p$fetchData || this.trigger('update:beginning');
 
       var take = this.get('take');
 
@@ -60,29 +51,37 @@ define([
       var orderby = this.get('orderby');
 
       if (orderby && orderby.length) {
-        op.orderBy = _.chain(orderby)
-          .map(_.pairs)
-          .map(function (pair) {
-            return [pair[0], pair[1] > 0 ? 'ASC' : 'DESC'];
-          })
-          .value();
+        op.orderBy = _.reduce(orderby, function (arr, obj) {
+          _.each(obj, function (value, key) {
+            arr.push([key, value > 0 ? 'ASC' : 'DESC']);
+          });
+          return arr;
+        }, []);
       }
 
-      entity.findAll(op, options)
+      var p$fetchData = this.p$fetchData = entity.findAll(op, options)
         .then(function (data) {
-          self.patch({
-            value: data,
-            count: data.totalCount,
-          });
-        })
+          if (this.p$fetchData === p$fetchData) {
+            this.patch({
+              value: data,
+              count: data.totalCount,
+              select: schemaProperties.from(data),
+            });
+          }
+        }.bind(this))
         .catch(function (jqXHR, textStatus, errorThrown) {
-          self.patch({
-            error: errorThrown,
-          });
-        })
+          if (this.p$fetchData === p$fetchData) {
+            this.patch({
+              error: errorThrown,
+            });
+          }
+        }.bind(this))
         .finally(function () {
-          self.trigger('update:finished');
-        });
+          if (this.p$fetchData === p$fetchData) {
+            this.trigger('update:finished');
+            this.p$fetchData = null;
+          }
+        }.bind(this));
     },
   });
 
