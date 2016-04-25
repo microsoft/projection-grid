@@ -42,6 +42,7 @@ module.exports = {
       // jade-end
       // es2015
       // react
+      { test: /\.less$/, loader: 'style!css!less' },
     ],
   },
   externals: [getExternals()],

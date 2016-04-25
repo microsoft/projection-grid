@@ -4,6 +4,7 @@ define([
   'component/grid/projection/base',
   'component/grid/layout/template/editable.jade',
   'component/popup-editor/index',
+  '../../less/editable.less',
 ], function (_, $, BaseProjection, editableTemplate, PopupEditor) {
   'use strict';
 
