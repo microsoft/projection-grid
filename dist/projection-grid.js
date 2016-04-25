@@ -57,7 +57,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = {
 	  GridView: __webpack_require__(1),
 	  projections: __webpack_require__(9),
-	  layout: __webpack_require__(42),
+	  layout: __webpack_require__(46),
 	};
 
 
@@ -296,19 +296,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	  ColumnTemplate: __webpack_require__(17),
 	  EditableString: __webpack_require__(18),
 	  Editable: __webpack_require__(22),
-	  JSData: __webpack_require__(27),
-	  Map: __webpack_require__(28),
-	  MemoryQueryable: __webpack_require__(29),
-	  Memory: __webpack_require__(30),
-	  Mock: __webpack_require__(31),
-	  Odata: __webpack_require__(32),
-	  Page: __webpack_require__(33),
-	  PropertyTemplate: __webpack_require__(34),
-	  RowCheckbox: __webpack_require__(35),
-	  RowTriStateCheckboxProjection: __webpack_require__(37),
-	  RowIndex: __webpack_require__(39),
-	  Sink: __webpack_require__(40),
-	  ColumnGroup: __webpack_require__(41),
+	  JSData: __webpack_require__(31),
+	  Map: __webpack_require__(32),
+	  MemoryQueryable: __webpack_require__(33),
+	  Memory: __webpack_require__(34),
+	  Mock: __webpack_require__(35),
+	  Odata: __webpack_require__(36),
+	  Page: __webpack_require__(37),
+	  PropertyTemplate: __webpack_require__(38),
+	  RowCheckbox: __webpack_require__(39),
+	  RowTriStateCheckboxProjection: __webpack_require__(41),
+	  RowIndex: __webpack_require__(43),
+	  Sink: __webpack_require__(44),
+	  ColumnGroup: __webpack_require__(45),
 	};
 
 
@@ -1228,6 +1228,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  __webpack_require__(11),
 	  __webpack_require__(23),
 	  __webpack_require__(24),
+	  __webpack_require__(27),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, $, BaseProjection, editableTemplate, PopupEditor) {
 	  'use strict';
 	
@@ -1448,10 +1449,360 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+	
+	// load the styles
+	var content = __webpack_require__(28);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(30)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/less-loader/index.js!./editable.less", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/less-loader/index.js!./editable.less");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(29)();
+	// imports
+	
+	
+	// module
+	exports.push([module.id, ".grid-editable-cell {\n  position: relative;\n}\n.grid-editable-cell .grid-edit-icon {\n  display: none;\n  position: absolute;\n  top: 2px;\n  right: 2px;\n  font-size: 10px;\n}\n.grid-editable-cell:hover .grid-edit-icon {\n  display: block;\n}\n", ""]);
+	
+	// exports
+
+
+/***/ },
+/* 29 */
+/***/ function(module, exports) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	// css base code, injected by the css-loader
+	module.exports = function() {
+		var list = [];
+	
+		// return the list of modules as css string
+		list.toString = function toString() {
+			var result = [];
+			for(var i = 0; i < this.length; i++) {
+				var item = this[i];
+				if(item[2]) {
+					result.push("@media " + item[2] + "{" + item[1] + "}");
+				} else {
+					result.push(item[1]);
+				}
+			}
+			return result.join("");
+		};
+	
+		// import a list of modules into the list
+		list.i = function(modules, mediaQuery) {
+			if(typeof modules === "string")
+				modules = [[null, modules, ""]];
+			var alreadyImportedModules = {};
+			for(var i = 0; i < this.length; i++) {
+				var id = this[i][0];
+				if(typeof id === "number")
+					alreadyImportedModules[id] = true;
+			}
+			for(i = 0; i < modules.length; i++) {
+				var item = modules[i];
+				// skip already imported module
+				// this implementation is not 100% perfect for weird media query combinations
+				//  when a module is imported multiple times with different media queries.
+				//  I hope this will never occur (Hey this way we have smaller bundles)
+				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+					if(mediaQuery && !item[2]) {
+						item[2] = mediaQuery;
+					} else if(mediaQuery) {
+						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+					}
+					list.push(item);
+				}
+			}
+		};
+		return list;
+	};
+
+
+/***/ },
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	var stylesInDom = {},
+		memoize = function(fn) {
+			var memo;
+			return function () {
+				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+				return memo;
+			};
+		},
+		isOldIE = memoize(function() {
+			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
+		}),
+		getHeadElement = memoize(function () {
+			return document.head || document.getElementsByTagName("head")[0];
+		}),
+		singletonElement = null,
+		singletonCounter = 0,
+		styleElementsInsertedAtTop = [];
+	
+	module.exports = function(list, options) {
+		if(false) {
+			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+		}
+	
+		options = options || {};
+		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+		// tags it will allow on a page
+		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+	
+		// By default, add <style> tags to the bottom of <head>.
+		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
+	
+		var styles = listToStyles(list);
+		addStylesToDom(styles, options);
+	
+		return function update(newList) {
+			var mayRemove = [];
+			for(var i = 0; i < styles.length; i++) {
+				var item = styles[i];
+				var domStyle = stylesInDom[item.id];
+				domStyle.refs--;
+				mayRemove.push(domStyle);
+			}
+			if(newList) {
+				var newStyles = listToStyles(newList);
+				addStylesToDom(newStyles, options);
+			}
+			for(var i = 0; i < mayRemove.length; i++) {
+				var domStyle = mayRemove[i];
+				if(domStyle.refs === 0) {
+					for(var j = 0; j < domStyle.parts.length; j++)
+						domStyle.parts[j]();
+					delete stylesInDom[domStyle.id];
+				}
+			}
+		};
+	}
+	
+	function addStylesToDom(styles, options) {
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			if(domStyle) {
+				domStyle.refs++;
+				for(var j = 0; j < domStyle.parts.length; j++) {
+					domStyle.parts[j](item.parts[j]);
+				}
+				for(; j < item.parts.length; j++) {
+					domStyle.parts.push(addStyle(item.parts[j], options));
+				}
+			} else {
+				var parts = [];
+				for(var j = 0; j < item.parts.length; j++) {
+					parts.push(addStyle(item.parts[j], options));
+				}
+				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+			}
+		}
+	}
+	
+	function listToStyles(list) {
+		var styles = [];
+		var newStyles = {};
+		for(var i = 0; i < list.length; i++) {
+			var item = list[i];
+			var id = item[0];
+			var css = item[1];
+			var media = item[2];
+			var sourceMap = item[3];
+			var part = {css: css, media: media, sourceMap: sourceMap};
+			if(!newStyles[id])
+				styles.push(newStyles[id] = {id: id, parts: [part]});
+			else
+				newStyles[id].parts.push(part);
+		}
+		return styles;
+	}
+	
+	function insertStyleElement(options, styleElement) {
+		var head = getHeadElement();
+		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+		if (options.insertAt === "top") {
+			if(!lastStyleElementInsertedAtTop) {
+				head.insertBefore(styleElement, head.firstChild);
+			} else if(lastStyleElementInsertedAtTop.nextSibling) {
+				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
+			} else {
+				head.appendChild(styleElement);
+			}
+			styleElementsInsertedAtTop.push(styleElement);
+		} else if (options.insertAt === "bottom") {
+			head.appendChild(styleElement);
+		} else {
+			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+		}
+	}
+	
+	function removeStyleElement(styleElement) {
+		styleElement.parentNode.removeChild(styleElement);
+		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+		if(idx >= 0) {
+			styleElementsInsertedAtTop.splice(idx, 1);
+		}
+	}
+	
+	function createStyleElement(options) {
+		var styleElement = document.createElement("style");
+		styleElement.type = "text/css";
+		insertStyleElement(options, styleElement);
+		return styleElement;
+	}
+	
+	function createLinkElement(options) {
+		var linkElement = document.createElement("link");
+		linkElement.rel = "stylesheet";
+		insertStyleElement(options, linkElement);
+		return linkElement;
+	}
+	
+	function addStyle(obj, options) {
+		var styleElement, update, remove;
+	
+		if (options.singleton) {
+			var styleIndex = singletonCounter++;
+			styleElement = singletonElement || (singletonElement = createStyleElement(options));
+			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+		} else if(obj.sourceMap &&
+			typeof URL === "function" &&
+			typeof URL.createObjectURL === "function" &&
+			typeof URL.revokeObjectURL === "function" &&
+			typeof Blob === "function" &&
+			typeof btoa === "function") {
+			styleElement = createLinkElement(options);
+			update = updateLink.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+				if(styleElement.href)
+					URL.revokeObjectURL(styleElement.href);
+			};
+		} else {
+			styleElement = createStyleElement(options);
+			update = applyToTag.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+			};
+		}
+	
+		update(obj);
+	
+		return function updateStyle(newObj) {
+			if(newObj) {
+				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+					return;
+				update(obj = newObj);
+			} else {
+				remove();
+			}
+		};
+	}
+	
+	var replaceText = (function () {
+		var textStore = [];
+	
+		return function (index, replacement) {
+			textStore[index] = replacement;
+			return textStore.filter(Boolean).join('\n');
+		};
+	})();
+	
+	function applyToSingletonTag(styleElement, index, remove, obj) {
+		var css = remove ? "" : obj.css;
+	
+		if (styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = replaceText(index, css);
+		} else {
+			var cssNode = document.createTextNode(css);
+			var childNodes = styleElement.childNodes;
+			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+			if (childNodes.length) {
+				styleElement.insertBefore(cssNode, childNodes[index]);
+			} else {
+				styleElement.appendChild(cssNode);
+			}
+		}
+	}
+	
+	function applyToTag(styleElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+	
+		if(media) {
+			styleElement.setAttribute("media", media)
+		}
+	
+		if(styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = css;
+		} else {
+			while(styleElement.firstChild) {
+				styleElement.removeChild(styleElement.firstChild);
+			}
+			styleElement.appendChild(document.createTextNode(css));
+		}
+	}
+	
+	function updateLink(linkElement, obj) {
+		var css = obj.css;
+		var sourceMap = obj.sourceMap;
+	
+		if(sourceMap) {
+			// http://stackoverflow.com/a/26603875
+			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+		}
+	
+		var blob = new Blob([css], { type: "text/css" });
+	
+		var oldSrc = linkElement.href;
+	
+		linkElement.href = URL.createObjectURL(blob);
+	
+		if(oldSrc)
+			URL.revokeObjectURL(oldSrc);
+	}
+
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+	  __webpack_require__(25),
 	  __webpack_require__(2),
 	  __webpack_require__(11),
-	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, BaseProjection) {
+	  __webpack_require__(14),
+	], __WEBPACK_AMD_DEFINE_RESULT__ = function (Promise, _, BaseProjection, schemaProperties) {
 	  var Model = BaseProjection.extend({
 	    defaults: {
 	      'jsdata.query': undefined,
@@ -1466,22 +1817,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    name: 'jsdata',
 	
 	    update: function () {
-	      if (!this.isUpdating) {
-	        this.isUpdating = true;
-	        this.on('update:finished', function () {
-	          this.isUpdating = false;
-	        });
-	        this.doUpdate();
-	      }
-	    },
-	
-	    doUpdate: function () {
-	      var self = this;
 	      var entity = this.get('jsdata.entity');
 	      var options = _.defaults(this.get('jsdata.options'), { all: true });
 	      var op = {};
 	
-	      this.trigger('update:beginning');
+	      this.p$fetchData || this.trigger('update:beginning');
 	
 	      var take = this.get('take');
 	
@@ -1510,29 +1850,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var orderby = this.get('orderby');
 	
 	      if (orderby && orderby.length) {
-	        op.orderBy = _.chain(orderby)
-	          .map(_.pairs)
-	          .map(function (pair) {
-	            return [pair[0], pair[1] > 0 ? 'ASC' : 'DESC'];
-	          })
-	          .value();
+	        op.orderBy = _.reduce(orderby, function (arr, obj) {
+	          _.each(obj, function (value, key) {
+	            arr.push([key, value > 0 ? 'ASC' : 'DESC']);
+	          });
+	          return arr;
+	        }, []);
 	      }
 	
-	      entity.findAll(op, options)
+	      var p$fetchData = this.p$fetchData = entity.findAll(op, options)
 	        .then(function (data) {
-	          self.patch({
-	            value: data,
-	            count: data.totalCount,
-	          });
-	        })
+	          if (this.p$fetchData === p$fetchData) {
+	            var delta = {
+	              value: data,
+	              count: data.totalCount,
+	              select: schemaProperties.from(data),
+	            };
+	            if (_.has(data, 'raw')) {
+	              delta.rawValue = data.raw;
+	            }
+	            this.patch(delta);
+	          }
+	        }.bind(this))
 	        .catch(function (jqXHR, textStatus, errorThrown) {
-	          self.patch({
-	            error: errorThrown,
-	          });
-	        })
+	          if (this.p$fetchData === p$fetchData) {
+	            this.patch({
+	              error: errorThrown,
+	            });
+	          }
+	        }.bind(this))
 	        .finally(function () {
-	          self.trigger('update:finished');
-	        });
+	          if (this.p$fetchData === p$fetchData) {
+	            this.trigger('update:finished');
+	            this.p$fetchData = null;
+	          }
+	        }.bind(this));
 	    },
 	  });
 	
@@ -1541,7 +1893,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 28 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -1583,7 +1935,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 29 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -1662,7 +2014,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 30 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(11)], __WEBPACK_AMD_DEFINE_RESULT__ = function (BaseProjection) {
@@ -1689,7 +2041,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 31 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -1737,17 +2089,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 32 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+	  __webpack_require__(25),
 	  __webpack_require__(2),
 	  __webpack_require__(3),
 	  __webpack_require__(6),
 	  __webpack_require__(11),
-	  __webpack_require__(31),
+	  __webpack_require__(35),
 	  __webpack_require__(14),
-	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, $, BaseProjection, MemoryMock, schemaProperties) {
+	], __WEBPACK_AMD_DEFINE_RESULT__ = function (Promise, _, Backbone, $, BaseProjection, MemoryMock, schemaProperties) {
 	  var Model = BaseProjection.extend({
 	    defaults: {
 	      verb: 'get',
@@ -1760,7 +2113,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	    name: 'odata',
 	    update: function () {
-	      this.trigger('update:beginning');
+	      this.p$fetchData || this.trigger('update:beginning');
+	
 	      var url = this.get('url');
 	
 	      url = _.isFunction(url) ? url() : url;
@@ -1791,25 +2145,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	        op.$orderby = key + ' ' + (dir > 0 ? 'asc' : 'desc');
 	      }
 	
-	      $.getJSON(op.url, _.omit(op, 'url'))
-	        .success(function (data) {
+	      var p$fetchData = this.p$fetchData = new Promise(function (resolve, reject) {
+	        $.getJSON(op.url, _.omit(op, 'url'))
+	          .success(resolve)
+	          .error(function (jqXHR, textStatus, errorThrown) {
+	            reject(errorThrown);
+	          });
+	      }).then(function (data) {
+	        if (p$fetchData === this.p$fetchData) {
 	          var delta = {
 	            value: data.value,
+	            rawValue: data,
 	            select: schemaProperties.from(data.value),
 	            count: data['@odata.count'],
 	            error: undefined,
 	          };
-	
 	          this.patch(delta);
-	        }.bind(this))
-	        .error(function (jqXHR, textStatus, errorThrown) {
-	          var delta = { error: errorThrown };
-	
-	          this.patch(delta);
-	        }.bind(this))
-	        .complete(function () {
+	        }
+	      }.bind(this)).catch(function (error) {
+	        if (p$fetchData === this.p$fetchData) {
+	          this.patch({ error: error });
+	        }
+	      }).finally(function () {
+	        if (p$fetchData === this.p$fetchData) {
 	          this.trigger('update:finished');
-	        }.bind(this));
+	          this.p$fetchData = null;
+	        }
+	      }.bind(this));
 	    },
 	  });
 	
@@ -1818,7 +2180,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 33 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -1885,7 +2247,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 34 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -1950,14 +2312,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 35 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
 	  __webpack_require__(11),
-	  __webpack_require__(36),
+	  __webpack_require__(40),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection, rowCheckTemp) {
 	  'use strict';
 	
@@ -2102,7 +2464,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 36 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var jade = __webpack_require__(20);
@@ -2137,14 +2499,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 37 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(2),
 	  __webpack_require__(3),
 	  __webpack_require__(11),
-	  __webpack_require__(38),
+	  __webpack_require__(42),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection, defaultRowCheckTemp) {
 	  'use strict';
 	
@@ -2420,7 +2782,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 38 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var jade = __webpack_require__(20);
@@ -2435,7 +2797,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 39 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -2471,7 +2833,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 40 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -2509,7 +2871,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 41 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -2600,20 +2962,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 42 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = {
-	  TableLayout: __webpack_require__(43),
+	  TableLayout: __webpack_require__(47),
 	  templates: {
-	    table: __webpack_require__(44),
+	    table: __webpack_require__(48),
 	  },
-	  renderers: __webpack_require__(45),
+	  renderers: __webpack_require__(49),
 	};
 
 
 /***/ },
-/* 43 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -2706,15 +3068,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var ret = { header: isHeader };
 	
 	      // we are not in header
-	      if (!isHeader) {
-	        ret.model = this.data.value[i];
-	      }
-	      if (isHeader && i === 0) {
-	        ret.property = this.data.select[j];
-	      } else if (isHeader && i === 1) {
-	        ret.property = this.data.subSelect[j];
+	      if (isHeader) {
+	        if (i === 0) {
+	          ret.property = this.data.select[j];
+	        } else if (i === 1) {
+	          ret.property = this.data.subSelect[j];
+	        } else {
+	          ret.property = this.data.selectExpand[j];
+	        }
 	      } else {
-	        ret.property = this.data.selectExpand[j];
+	        ret.model = this.data.value[i];
+	        if (this.data.selectExpand) {
+	          ret.property = this.data.selectExpand[j];
+	        } else {
+	          ret.property = this.data.select[j];
+	        }
 	      }
 	
 	      ret.column = this.data.columns[ret.property];
@@ -2884,7 +3252,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 44 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var jade = __webpack_require__(20);
@@ -3092,7 +3460,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    for (var i = 0, $$l = $$obj.length; i < $$l; i++) {
 	      var row = $$obj[i];
 	
-	var attr = (row.$metadata || {}).attr
+	var attr = (row.$metadata || {}).attr || {}
 	buf.push("<tr" + (jade.attrs(jade.merge([{"class": "table__row--body"},attr]), true)) + ">");
 	// iterate locals['selectExpand'] || locals.select
 	;(function(){
@@ -3124,7 +3492,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    for (var i in $$obj) {
 	      $$l++;      var row = $$obj[i];
 	
-	var attr = (row.$metadata || {}).attr
+	var attr = (row.$metadata || {}).attr || {}
 	buf.push("<tr" + (jade.attrs(jade.merge([{"class": "table__row--body"},attr]), true)) + ">");
 	// iterate locals['selectExpand'] || locals.select
 	;(function(){
@@ -3158,24 +3526,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 45 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = {
-	  FixedHeader: __webpack_require__(46),
-	  Virtualization: __webpack_require__(49),
+	  FixedHeader: __webpack_require__(50),
+	  Virtualization: __webpack_require__(53),
 	};
 
 
 /***/ },
-/* 46 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(6),
 	  __webpack_require__(2),
-	  __webpack_require__(47),
-	  __webpack_require__(48),
+	  __webpack_require__(51),
+	  __webpack_require__(52),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _, measure, px) {
 	  function Renderer(options) {
 	    this.options = options || {};
@@ -3273,7 +3641,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 47 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -3358,7 +3726,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 48 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// todo [akamel] move to /component
@@ -3383,7 +3751,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 49 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// TODO [akamel] [bug] with large data set, jitters when scrolling to bottom
@@ -3391,8 +3759,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	  __webpack_require__(6),
 	  __webpack_require__(2),
-	  __webpack_require__(47),
-	  __webpack_require__(48),
+	  __webpack_require__(51),
+	  __webpack_require__(52),
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _, measure, px) {
 	  function rowHeight(row) {
 	    return _.isNumber(row.__height) ? row.__height : this.__measures.avgRowHeight;
