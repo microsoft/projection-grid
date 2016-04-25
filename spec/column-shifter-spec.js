@@ -17,7 +17,6 @@ describe('projection ColumnShifter', function () {
       select: ['name', 'id'],
     });
     originalData.pipe(model);
-    console.log(model.data.get('select'));
     expect(model.data.get('select')[0]).to.be.equal('column.skip.less');
     expect(model.data.get('select')[3]).to.be.equal('column.skip.more');
   });
