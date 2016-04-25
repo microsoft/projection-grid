@@ -61,6 +61,7 @@ define([
         if (p$fetchData === this.p$fetchData) {
           var delta = {
             value: data.value,
+            rawValue: data,
             select: schemaProperties.from(data.value),
             count: data['@odata.count'],
             error: undefined,

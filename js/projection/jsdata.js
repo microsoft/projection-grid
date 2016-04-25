@@ -62,11 +62,15 @@ define([
       var p$fetchData = this.p$fetchData = entity.findAll(op, options)
         .then(function (data) {
           if (this.p$fetchData === p$fetchData) {
-            this.patch({
+            var delta = {
               value: data,
               count: data.totalCount,
               select: schemaProperties.from(data),
-            });
+            };
+            if (_.has(data, 'raw')) {
+              delta.rawValue = data.raw;
+            }
+            this.patch(delta);
           }
         }.bind(this))
         .catch(function (jqXHR, textStatus, errorThrown) {
