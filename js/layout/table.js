@@ -166,7 +166,7 @@ define([
         var orderName = colOption && _.isString(colOption.sortable) ? colOption.sortable : property;
 
         if (orderby[orderName]) {
-          delta.$orderby = orderby[property];
+          delta.$orderby = orderby[orderName];
         }
 
         columns[property] = _.extend(col, colOption, delta);
