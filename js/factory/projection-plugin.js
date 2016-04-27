@@ -39,7 +39,7 @@ const projectionConfigs = {
     }
 
     if (_.has(config.columnShifter, 'totalColumns')) {
-      colqConfig.take = config.columnShifter.totalColumns;
+      colqConfig['column.take'] = config.columnShifter.totalColumns;
     }
     return colqConfig;
   },

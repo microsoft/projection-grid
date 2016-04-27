@@ -13,7 +13,9 @@ var grid = pgrid.factory().create({
   scrollable: {
     virtual: true,
   },
-  // columnShifter: true,
+  columnShifter: {
+    totalColumns: 3,
+  },
   selectable: true,
   columns: [
     {
@@ -38,6 +40,9 @@ var grid = pgrid.factory().create({
       field: 'ContactName',
       title: 'Contact Name',
       sortable: true,
+    },
+    {
+      field: 'ContactTitle',
     },
   ],
 }).gridView;
