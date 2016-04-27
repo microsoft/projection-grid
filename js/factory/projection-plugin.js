@@ -40,6 +40,17 @@ const projectionConfigs = {
   },
 
   ColumnShifter() {},
+
+  ColumnTemplate(config) {
+    return {
+      'column.template': _.reduce(config.columns, (columnTmpl, column) => {
+        if (column.headerTemplate) {
+          columnTmpl[column.field] = column.headerTemplate;
+        }
+        return columnTmpl;
+      }, {}),
+    };
+  },
 };
 
 export default definePlugin => definePlugin('projection', [
@@ -69,6 +80,8 @@ export default definePlugin => definePlugin('projection', [
   pipeProjection('ColumnQueryable');
 
   _.has(config.columnShifter, 'totalColumns') && pipeProjection('ColumnShifter');
+
+  pipeProjection('ColumnTemplate');
 
   return projection;
 });

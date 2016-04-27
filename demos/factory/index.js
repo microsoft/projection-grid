@@ -1,5 +1,6 @@
 var pgrid = require('projection-grid');
 var Customer = require('./js-data-resource');
+var keyHeaderTemplate = require('./key-column-header.jade');
 require('bootstrap-webpack');
 
 var grid = pgrid.factory().create({
@@ -18,6 +19,7 @@ var grid = pgrid.factory().create({
       title: 'Customer ID',
       sortable: true,
       locked: true,
+      headerTemplate: keyHeaderTemplate,
     },
     {
       field: 'CompanyName',
