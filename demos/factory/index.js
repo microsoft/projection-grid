@@ -11,10 +11,26 @@ var grid = pgrid.factory().create({
     virtual: true,
   },
   columns: [
-    { field: 'CustomerID', sortable: true },
-    { field: 'CompanyName', sortable: true },
-    { field: 'City', sortable: true },
-    { field: 'ContactName', sortable: true },
+    {
+      field: 'CustomerID',
+      title: 'Customer ID',
+      sortable: true,
+    },
+    {
+      field: 'CompanyName',
+      title: 'Company Name',
+      sortable: true,
+    },
+    {
+      field: 'City',
+      title: 'City',
+      sortable: true,
+    },
+    {
+      field: 'ContactName',
+      title: 'Contact Name',
+      sortable: true,
+    },
   ],
 }).gridView;
 

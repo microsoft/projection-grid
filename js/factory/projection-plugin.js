@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import projections from '../projection/index';
 
 export default definePlugin => definePlugin('projection', [
@@ -15,7 +16,12 @@ export default definePlugin => definePlugin('projection', [
     throw new Error(`dataSource.type "${config.dataSource.type}" is not supported`);
   }
 
-  projection = projection.pipe(new projections.ColumnI18n());
+  projection = projection.pipe(new projections.ColumnI18n({
+    'column.i18n': _.reduce(config.columns, (columnI18n, column) => {
+      columnI18n[column.field] = column.title || column.field;
+      return columnI18n;
+    }, {}),
+  }));
   projection = projection.pipe(new projections.ColumnQueryable());
 
   return projection;
