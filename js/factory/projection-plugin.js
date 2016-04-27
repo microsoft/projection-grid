@@ -51,6 +51,17 @@ const projectionConfigs = {
       }, {}),
     };
   },
+
+  PropertyTemplate(config) {
+    return {
+      'property.template': _.reduce(config.columns, (propTmpl, column) => {
+        if (column.template) {
+          propTmpl[column.field] = column.template;
+        }
+        return propTmpl;
+      }, {}),
+    };
+  },
 };
 
 export default definePlugin => definePlugin('projection', [
@@ -82,6 +93,7 @@ export default definePlugin => definePlugin('projection', [
   _.has(config.columnShifter, 'totalColumns') && pipeProjection('ColumnShifter');
 
   pipeProjection('ColumnTemplate');
+  pipeProjection('PropertyTemplate');
 
   return projection;
 });
