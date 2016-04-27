@@ -1,5 +1,6 @@
 var pgrid = require('projection-grid');
 var Customer = require('./js-data-resource');
+require('bootstrap-webpack');
 
 var grid = pgrid.factory().create({
   el: '.grid-root',
@@ -10,11 +11,13 @@ var grid = pgrid.factory().create({
   scrollable: {
     virtual: true,
   },
+  // columnShifter: true,
   columns: [
     {
       field: 'CustomerID',
       title: 'Customer ID',
       sortable: true,
+      locked: true,
     },
     {
       field: 'CompanyName',
