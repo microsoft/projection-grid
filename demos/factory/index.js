@@ -2,9 +2,10 @@ var pgrid = require('projection-grid');
 var Customer = require('./js-data-resource');
 var keyHeaderTemplate = require('./key-column-header.jade');
 var companyNameTemplate = require('./company-name.jade');
+var pagerViewPlugin = require('./pager-view-plugin').default;
 require('bootstrap-webpack');
 
-var grid = pgrid.factory().create({
+var grid = pgrid.factory().use(pagerViewPlugin).create({
   el: '.grid-root',
   dataSource: {
     type: 'js-data',
@@ -29,6 +30,10 @@ var grid = pgrid.factory().create({
     totalColumns: 3,
   },
   selectable: true,
+  pageable: {
+    pageSize: 10,
+    pageSizes: [5, 10, 15, 20],
+  },
   columns: [
     {
       name: 'CustomerID',
@@ -61,7 +66,11 @@ var grid = pgrid.factory().create({
       sortable: true,
     },
   ],
-}).gridView;
+  pagerView: {
+    el: '.pager-root',
+    availablePageSizes: [5, 10, 15, 20],
+  },
+});
 
 // jsdata.on('update:beginning', function () {
 //   console.log('begin update');
@@ -71,4 +80,5 @@ var grid = pgrid.factory().create({
 //   console.log('end update');
 // });
 
-grid.render({ fetch: true });
+grid.gridView.render({ fetch: true });
+grid.pagerView.render();
