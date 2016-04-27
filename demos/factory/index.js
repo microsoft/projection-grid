@@ -10,6 +10,18 @@ var grid = pgrid.factory().create({
     type: 'js-data',
     resource: Customer,
   },
+  aggregate: {
+    top(/* data */) {
+      return [
+        { CustomerID: 'Total Top' },
+      ];
+    },
+    bottom(/* data */) {
+      return [
+        { CustomerID: 'Total Bottom' },
+      ];
+    },
+  },
   scrollable: {
     virtual: true,
   },

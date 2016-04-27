@@ -2,6 +2,20 @@ import _ from 'underscore';
 import projections from '../projection/index';
 
 const projectionConfigs = {
+  AggregateRow(config) {
+    const configAgg = {};
+
+    if (_.has(config.aggregate, 'top')) {
+      configAgg['aggregate.top'] = config.aggregate.top;
+    }
+
+    if (_.has(config.aggregate, 'bottom')) {
+      configAgg['aggregate.bottom'] = config.aggregate.bottom;
+    }
+
+    return configAgg;
+  },
+
   JSData(config) {
     return {
       'jsdata.entity': config.dataSource.resource,
@@ -118,6 +132,9 @@ export default definePlugin => definePlugin('projection', [
   }
 
   pipeProjection('Map');
+  if (config.aggregate) {
+    pipeProjection('AggregateRow');
+  }
   pipeProjection('ColumnI18n');
   pipeProjection('ColumnQueryable');
 
