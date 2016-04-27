@@ -21,17 +21,22 @@ const projectionConfigs = {
 
   ColumnQueryable(config) {
     const columnIn = _.chain(config.columns)
-    .reject(_.property('hidden'))
-    .map(_.property('field'))
-    .value();
+      .reject(_.property('hidden'))
+      .map(_.property('field'))
+      .value();
     const columnLock = _.chain(config.columns)
-    .filter(_.property('locked'))
-    .map(_.property('field'))
-    .value();
+      .filter(_.property('locked'))
+      .map(_.property('field'))
+      .value();
     const colqConfig = {
       'column.lock': columnLock,
       'column.in': columnIn,
     };
+
+    if (config.selectable) {
+      columnIn.unshift('checkbox');
+      columnLock.unshift('checkbox');
+    }
 
     if (_.has(config.columnShifter, 'totalColumns')) {
       colqConfig.take = config.columnShifter.totalColumns;
@@ -60,6 +65,15 @@ const projectionConfigs = {
         }
         return propTmpl;
       }, {}),
+    };
+  },
+
+  RowIndex() { },
+
+  RowCheckbox() {
+    return {
+      'row.check.id': 'rowIndex',
+      'column.checked': 'checkbox',
     };
   },
 };
@@ -94,6 +108,10 @@ export default definePlugin => definePlugin('projection', [
 
   pipeProjection('ColumnTemplate');
   pipeProjection('PropertyTemplate');
+  if (config.selectable) {
+    pipeProjection('RowIndex');
+    pipeProjection('RowCheckbox');
+  }
 
   return projection;
 });

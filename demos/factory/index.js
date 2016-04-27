@@ -14,6 +14,7 @@ var grid = pgrid.factory().create({
     virtual: true,
   },
   // columnShifter: true,
+  selectable: true,
   columns: [
     {
       field: 'CustomerID',
