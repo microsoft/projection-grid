@@ -37,12 +37,10 @@ var grid = pgrid.factory().create({
       sortable: true,
     },
     {
-      name: 'ContactName',
-      title: 'Contact Name',
+      name: 'Contact',
+      field: 'ContactName',
+      value: item => `${item.ContactName} (${item.ContactTitle})`,
       sortable: true,
-    },
-    {
-      name: 'ContactTitle',
     },
   ],
 }).gridView;

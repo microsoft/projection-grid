@@ -10,6 +10,22 @@ const projectionConfigs = {
     };
   },
 
+  Map(config) {
+    const properties = _.reduce(config.columns, (memo, { name, value, field }) => {
+      memo[name] = value || (item => _.reduce((field || name).split('/'), (memo, prop) => memo[prop], item));
+      return memo;
+    }, {});
+
+    return {
+      map(item) {
+        return _.reduce(config.columns, (memo, { name }) => {
+          memo[name] = properties[name](item);
+          return memo;
+        }, {});
+      },
+    };
+  },
+
   ColumnI18n(config) {
     return {
       'column.i18n': _.reduce(config.columns, (columnI18n, column) => {
@@ -101,10 +117,7 @@ export default definePlugin => definePlugin('projection', [
     throw new Error(`dataSource.type "${config.dataSource.type}" is not supported`);
   }
 
-  if (_.find(config.columns, _.property('originalField'))) {
-    pipeProjection('Map');
-  }
-
+  pipeProjection('Map');
   pipeProjection('ColumnI18n');
   pipeProjection('ColumnQueryable');
 
