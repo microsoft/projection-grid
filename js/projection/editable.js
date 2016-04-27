@@ -90,8 +90,15 @@ define([
 
     tdClick: function (e, arg) {
       var schema = null;
+      var metadata = arg.column.$metadata;
+      // TODO: wewei
+      // let's rethink this
+      var property = (metadata && metadata.map) || arg.property;
 
-      if (!isReadonlyRow(arg.model) && this.isEditable(arg.property, arg.model) && e.target.tagName !== 'A') {
+      if (!isReadonlyRow(arg.model) &&
+      this.isEditable(arg.property, arg.model) &&
+      e.target.tagName !== 'A' &&
+      $(e.target).closest('.is-not-trigger').length === 0) {
         schema = arg.grid.options.get('schema');
         PopupEditor.prompt({
           template: 'inline',
@@ -99,7 +106,7 @@ define([
           schema: schema,
           fields: [{
             showLabel: false,
-            property: arg.property,
+            property: property,
           }],
           position: $(e.target).closest('td').position(),
         }).then(function (model) {

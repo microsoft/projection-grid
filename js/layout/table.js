@@ -162,11 +162,14 @@ define([
       _.each(columns, function (col, property) {
       // TODO [akamel] consider filtering which props to copy/override
         var delta = {};
-        if (orderby[property]) {
-          delta.$orderby = orderby[property];
+        var colOption = colOptions[property];
+        var orderName = colOption && _.isString(colOption.sortable) ? colOption.sortable : property;
+
+        if (orderby[orderName]) {
+          delta.$orderby = orderby[orderName];
         }
 
-        columns[property] = _.extend(col, colOptions[property], delta);
+        columns[property] = _.extend(col, colOption, delta);
       });
 
       if (_.has(this.options.$metadata, 'class') && _.isArray(this.options.$metadata.class)) {
