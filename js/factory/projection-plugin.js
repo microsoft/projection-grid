@@ -106,6 +106,13 @@ const projectionConfigs = {
       'column.checked': 'checkbox',
     };
   },
+
+  Page(config) {
+    return {
+      'page.size': config.pageable.pageSize,
+      'page.number': 0,
+    };
+  },
 };
 
 export default definePlugin => definePlugin('projection', [
@@ -138,13 +145,19 @@ export default definePlugin => definePlugin('projection', [
   pipeProjection('ColumnI18n');
   pipeProjection('ColumnQueryable');
 
-  _.has(config.columnShifter, 'totalColumns') && pipeProjection('ColumnShifter');
+  if (_.has(config.columnShifter, 'totalColumns')) {
+    pipeProjection('ColumnShifter');
+  }
 
   pipeProjection('ColumnTemplate');
   pipeProjection('PropertyTemplate');
   if (config.selectable) {
     pipeProjection('RowIndex');
     pipeProjection('RowCheckbox');
+  }
+
+  if (_.has(config.pageable, 'pageSize')) {
+    pipeProjection('Page');
   }
 
   return projection;
