@@ -13,7 +13,7 @@ const projectionConfigs = {
   ColumnI18n(config) {
     return {
       'column.i18n': _.reduce(config.columns, (columnI18n, column) => {
-        columnI18n[column.field] = column.title || column.field;
+        columnI18n[column.name] = column.title || column.name;
         return columnI18n;
       }, {}),
     };
@@ -22,11 +22,11 @@ const projectionConfigs = {
   ColumnQueryable(config) {
     const columnIn = _.chain(config.columns)
       .reject(_.property('hidden'))
-      .map(_.property('field'))
+      .map(_.property('name'))
       .value();
     const columnLock = _.chain(config.columns)
       .filter(_.property('locked'))
-      .map(_.property('field'))
+      .map(_.property('name'))
       .value();
     const colqConfig = {
       'column.lock': columnLock,
@@ -50,7 +50,7 @@ const projectionConfigs = {
     return {
       'column.template': _.reduce(config.columns, (columnTmpl, column) => {
         if (column.headerTemplate) {
-          columnTmpl[column.field] = column.headerTemplate;
+          columnTmpl[column.name] = column.headerTemplate;
         }
         return columnTmpl;
       }, {}),
@@ -61,7 +61,7 @@ const projectionConfigs = {
     return {
       'property.template': _.reduce(config.columns, (propTmpl, column) => {
         if (column.template) {
-          propTmpl[column.field] = column.template;
+          propTmpl[column.name] = column.template;
         }
         return propTmpl;
       }, {}),
@@ -99,6 +99,10 @@ export default definePlugin => definePlugin('projection', [
     pipeProjection('JSData');
   } else {
     throw new Error(`dataSource.type "${config.dataSource.type}" is not supported`);
+  }
+
+  if (_.find(config.columns, _.property('originalField'))) {
+    pipeProjection('Map');
   }
 
   pipeProjection('ColumnI18n');

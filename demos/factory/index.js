@@ -19,30 +19,30 @@ var grid = pgrid.factory().create({
   selectable: true,
   columns: [
     {
-      field: 'CustomerID',
+      name: 'CustomerID',
       title: 'Customer ID',
       sortable: true,
       locked: true,
       headerTemplate: keyHeaderTemplate,
     },
     {
-      field: 'CompanyName',
+      name: 'CompanyName',
       title: 'Company Name',
       sortable: true,
       template: companyNameTemplate,
     },
     {
-      field: 'City',
+      name: 'City',
       title: 'City',
       sortable: true,
     },
     {
-      field: 'ContactName',
+      name: 'ContactName',
       title: 'Contact Name',
       sortable: true,
     },
     {
-      field: 'ContactTitle',
+      name: 'ContactTitle',
     },
   ],
 }).gridView;
