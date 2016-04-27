@@ -42,6 +42,12 @@ var grid = pgrid.factory().create({
       title: 'Company Name',
       sortable: true,
       template: companyNameTemplate,
+      attributes: {
+        class: 'company-name-cell',
+      },
+      headerAttributes: {
+        class: 'company-name-header',
+      },
     },
     {
       name: 'City',
