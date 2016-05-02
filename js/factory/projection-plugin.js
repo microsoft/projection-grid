@@ -87,6 +87,15 @@ const projectionConfigs = {
     };
   },
 
+  Editable(config) {
+    return {
+      'column.editable': _.chain(config.columns)
+        .filter(_.property('editable'))
+        .map(_.property('name'))
+        .value(),
+    };
+  },
+
   PropertyTemplate(config) {
     return {
       'property.template': _.reduce(config.columns, (propTmpl, column) => {
@@ -158,6 +167,9 @@ export default definePlugin => definePlugin('projection', [
 
   if (_.has(config.pageable, 'pageSize')) {
     pipeProjection('Page');
+  }
+  if (_.find(config.columns, _.property('editable'))) {
+    pipeProjection('Editable');
   }
 
   return projection;
