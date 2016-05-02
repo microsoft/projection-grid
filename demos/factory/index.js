@@ -46,6 +46,7 @@ var grid = pgrid.factory().use(pagerViewPlugin).create({
       name: 'CompanyName',
       title: 'Company Name',
       sortable: true,
+      editable: true,
       template: companyNameTemplate,
       attributes: {
         class: 'company-name-cell',
@@ -58,6 +59,7 @@ var grid = pgrid.factory().use(pagerViewPlugin).create({
       name: 'City',
       title: 'City',
       sortable: true,
+      editable: true,
     },
     {
       name: 'Contact',
@@ -79,6 +81,10 @@ var grid = pgrid.factory().use(pagerViewPlugin).create({
 // jsdata.on('update:finished', function () {
 //   console.log('end update');
 // });
+
+grid.gridView.on('data:edit', model => {
+  console.log(`[Edit] ${JSON.stringify(model)}`);
+});
 
 grid.gridView.render({ fetch: true });
 grid.pagerView.render();
