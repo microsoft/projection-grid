@@ -70,6 +70,7 @@
     "pagination-control": "git+ssh://git@github.com/Microsoft/pagination-control.git#publish",
     "phantomjs-prebuilt": "^2.1.7",
     "requirejs": "^2.2.0",
+    "resolve": "^1.1.7",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",
     "source-map-loader": "^0.1.5",
