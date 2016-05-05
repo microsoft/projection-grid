@@ -158,7 +158,7 @@ define([
         var checkMap = _.clone(this.get('row.check.map'));
         var id = arg.model[this.get('row.check.id')];
         var defaultTransition = this.get('row.check.transition');
-        var check = _.extend({ transition: defaultTransition, state: 'unchecked' }, checkMap[id]);
+        var check = _.extend({id: id, transition: defaultTransition, state: 'unchecked'}, checkMap[id]);
 
         check.state = check.transition(check.state);
         checkMap[id] = check;
@@ -184,9 +184,10 @@ define([
         checkMap = _.object(
           this.data.get('value')
           .map(function (item) {
-            var check = _.extend({ transition: CheckTransitionRule }, checkMap[item[checkId]], { state: allCheck.state });
+            var id = item[checkId];
+            var check = _.extend({id: id, transition: CheckTransitionRule}, checkMap[id], {state: allCheck.state});
 
-            return [item[checkId], check];
+            return [id, check];
           })
         );
 
