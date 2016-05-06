@@ -255,6 +255,7 @@ require([
       var preCheckMap = _.object(
         preCheckedIds.map(function (id) {
           return [id, {
+            id: id,
             state: 'indeterminate',
             transition: RowTriStateCheckboxProjection.CheckTransitionRule.indeterminateToCheckedFullCycle,
           }];
