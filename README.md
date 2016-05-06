@@ -301,32 +301,42 @@ export default definePlugin => definePlugin('pagerView', [
 
 1. Create your own fork of the project
 2. Clone your own fork of the project to local
-```bash
-git clone https://github.com/your-github-user-name/projection-grid
-```
+
+  ```bash
+  git clone https://github.com/your-github-user-name/projection-grid
+  ```
+
 3. Install dependencies
-```bash
-cd projection-grid
-npm install
-```
+
+  ```bash
+  cd projection-grid
+  npm install
+  ```
+
 4. Launch demo server which watch and build your changes automatically
-```bash
-gulp demos
-```
+
+  ```bash
+  gulp demos
+  ```
+
 5. Make changes with your favorite editor
 6. Add unit test cases under `spec`
 7. If necessary, add your own demo page under `demos`
 8. Add selenium test cases under `demos/your-demo-page/spec`
 9. Test your changes with
-```bash
-gulp test
-```
+
+  ```bash
+  gulp test
+  ```
+
 10. Commit your local changes and push to GitHub
-```bash
-git add .
-git commit
-git push
-```
+
+  ```bash
+  git add .
+  git commit
+  git push
+  ```
+
 11. Send pull request on GitHub and review it with the management team
 
 [js-data-resource]: http://www.js-data.io/docs/resources
