@@ -166,6 +166,8 @@ define([
         this.set({
           'row.check.map': checkMap,
         });
+
+        e.stopImmediatePropagation();
       }
     },
     thClick: function (e, arg) {
@@ -195,6 +197,8 @@ define([
           'row.check.map': checkMap,
           'row.check.all': allCheck,
         });
+
+        e.stopImmediatePropagation();
       }
     },
   });
