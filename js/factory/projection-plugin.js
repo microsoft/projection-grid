@@ -40,6 +40,29 @@ const projectionConfigs = {
     };
   },
 
+  Columns(config) {
+    return {
+      columns: _.reduce(config.columns, (columns, column) => {
+        const $metadata = {};
+
+        if (column.attributes) {
+          $metadata['attr.body'] = column.attributes;
+        }
+
+        if (column.headerAttributes) {
+          $metadata['attr.head'] = column.headerAttributes;
+        }
+
+        columns[column.name] = {
+          sortable: column.sortable,
+          $metadata,
+        };
+
+        return columns;
+      }, {}),
+    };
+  },
+
   ColumnI18n(config) {
     return {
       'column.i18n': _.reduce(config.columns, (columnI18n, column) => {
