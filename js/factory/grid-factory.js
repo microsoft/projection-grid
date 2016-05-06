@@ -1,7 +1,6 @@
 import _ from 'underscore';
 import renderersPlugin from './renderers-plugin';
 import projectionPlugin from './projection-plugin';
-import columnsPlugin from './columns-plugin';
 import gridViewPlugin from './grid-view-plugin';
 
 const configPlugin = definePlugin => definePlugin('config', [], function () {
@@ -16,7 +15,6 @@ class GridFactory {
       .use(configPlugin)
       .use(projectionPlugin)
       .use(renderersPlugin)
-      .use(columnsPlugin)
       .use(gridViewPlugin);
   }
 

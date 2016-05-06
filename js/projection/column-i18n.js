@@ -29,7 +29,7 @@ define([
         var model = this.src.data;
         var colOptions = this.get('column.i18n');
         var columns = model.get('columns') || {};
-        var select = _.size(columns) ? _.keys(columns) : model.get('select');
+        var select = model.get('select') || _.keys(columns);
         var $default = colOptions[''];
 
         var i18nColumns = {};

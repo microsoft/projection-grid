@@ -6,8 +6,7 @@ export default definePlugin => definePlugin('gridView', [
   'config',
   'projection',
   'renderers',
-  'columns',
-], function (config, projection, renderers, columns) {
+], function (config, projection, renderers) {
   return new GridView({
     projection,
     el: config.el,
@@ -21,7 +20,6 @@ export default definePlugin => definePlugin('gridView', [
       renderers,
       template: layout.templates.table,
       hideHeaders: config.hideHeaders,
-      columns,
     }),
   });
 });

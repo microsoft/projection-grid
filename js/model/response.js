@@ -5,7 +5,7 @@ define([
   return Backbone.Model.extend({
     defaults: {
       value: [],
-      select: [],
+      select: null,
       count: 0,
       aggregate: [],
     },
