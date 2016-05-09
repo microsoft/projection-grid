@@ -97,10 +97,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _projectionPlugin2 = _interopRequireDefault(_projectionPlugin);
 	
-	var _columnsPlugin = __webpack_require__(52);
-	
-	var _columnsPlugin2 = _interopRequireDefault(_columnsPlugin);
-	
 	var _gridViewPlugin = __webpack_require__(53);
 	
 	var _gridViewPlugin2 = _interopRequireDefault(_gridViewPlugin);
@@ -123,7 +119,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    this.pluginIndex = {};
 	    this.plugins = [];
-	    this.use(configPlugin).use(_projectionPlugin2.default).use(_renderersPlugin2.default).use(_columnsPlugin2.default).use(_gridViewPlugin2.default);
+	    this.use(configPlugin).use(_projectionPlugin2.default).use(_renderersPlugin2.default).use(_gridViewPlugin2.default);
 	  }
 	
 	  _createClass(GridFactory, [{
@@ -365,10 +361,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        renderer.update && renderer.update();
 	      });
 	
-	      // TODO [akamel] consider moving this to a projection
 	      var value = model.get('value');
-	      // TODO [akamel] is this overriding the values we got from the projection //see column extend below
 	      var columns = model.get('columns');
+	      var columnsDelta = {};
 	      var colOptions = this.options.columns || {};
 	      var orderby = {};
 	
@@ -384,13 +379,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // TODO [akamel] consider filtering which props to copy/override
 	        var delta = {};
 	        var colOption = colOptions[property];
-	        var orderName = colOption && _.isString(colOption.sortable) ? colOption.sortable : property;
+	        var orderName = property;
+	
+	        if (colOption && _.isString(colOption.sortable)) {
+	          orderName = colOption.sortable;
+	        } else if (col && _.isString(col.sortable)) {
+	          orderName = col.sortable;
+	        }
 	
 	        if (orderby[orderName]) {
 	          delta.$orderby = orderby[orderName];
 	        }
 	
-	        columns[property] = _.extend(col, colOption, delta);
+	        columnsDelta[property] = _.defaults(delta, colOption, col);
 	      });
 	
 	      if (_.has(this.options.$metadata, 'class') && _.isArray(this.options.$metadata.class)) {
@@ -399,7 +400,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      var delta = {
 	        'value': value,
-	        'columns': columns,
+	        'columns': columnsDelta,
 	        'columns.lookup': _.indexBy(columns, function (col) {
 	          return col.property;
 	        }),
@@ -1157,80 +1158,80 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 	
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _) {
-	  function viewport(el, container) {
-	    var $el = el ? $(el) : this.$el;
+	    function viewport(el, container) {
+	        var $el = el ? $(el) : this.$el;
 	
-	    container = container || this.container;
-	    var $viewport = container.$el;
+	        container = container || this.container;
+	        var $viewport = container.$el;
 	
-	    var viewportTop = $viewport.scrollTop();
-	    var viewportBottom = viewportTop + $viewport.height();
-	    var viewportLeft = $viewport.scrollLeft();
+	        var viewportTop = $viewport.scrollTop();
+	        var viewportBottom = viewportTop + $viewport.height();
+	        var viewportLeft = $viewport.scrollLeft();
 	
-	    var boundsTop = container.offset($el).top;
-	    var boundsBottom = boundsTop + $el.innerHeight();
-	    // var boundsLeft = $el.offset().left;
+	        var boundsTop = container.offset($el).top;
+	        var boundsBottom = boundsTop + $el.innerHeight();
+	        // var boundsLeft = $el.offset().left;
 	
-	    var visibleTop = Math.max(boundsTop, viewportTop);
-	    var visibleBottom = Math.min(boundsBottom, viewportBottom);
-	    // var visibleLeft = Math.max(boundsLeft, viewportLeft);
+	        var visibleTop = Math.max(boundsTop, viewportTop);
+	        var visibleBottom = Math.min(boundsBottom, viewportBottom);
+	        // var visibleLeft = Math.max(boundsLeft, viewportLeft);
+	
+	        return {
+	            top: visibleTop - boundsTop,
+	            bottom: visibleBottom - boundsTop,
+	            offsetLeft: viewportLeft
+	        };
+	    }
+	
+	    function dimensions(el) {
+	        var $el = el ? $(el) : this.$el;
+	
+	        // calculate heights
+	        // a. header
+	        var ret = {
+	            rows: [],
+	            thead: $el.find('thead > tr').outerHeight()
+	        };
+	
+	        // b. keep row info
+	        $el.find('tbody').children('tr').each(function () {
+	            ret.rows.push($(this).outerHeight());
+	        });
+	
+	        // c. update average row height
+	        var avg = _.reduce(ret.rows, function (memo, num) {
+	            return memo + num;
+	        }, 0) / (ret.rows.length === 0 ? 1 : ret.rows.length);
+	
+	        ret.avgRowHeight = avg;
+	        ret.estimateHeight = _.size(this.data.value) * avg + ret.thead;
+	
+	        return ret;
+	    }
+	
+	    function sample() {
+	        // a. render test pass
+	        var $tmpEl = $('<div style="visibility:hidden" />');
+	        var sample = _.first(this.data.value, 20);
+	
+	        this.$el.append($tmpEl);
+	
+	        $tmpEl[0].innerHTML = this.toHTML(sample);
+	
+	        // b. take measures
+	        var ret = dimensions.call(this, $tmpEl);
+	
+	        // c. clean-up
+	        $tmpEl.remove();
+	
+	        return ret;
+	    }
 	
 	    return {
-	      top: visibleTop - boundsTop,
-	      bottom: visibleBottom - boundsTop,
-	      offsetLeft: viewportLeft
+	        viewport: viewport,
+	        dimensions: dimensions,
+	        sample: sample
 	    };
-	  }
-	
-	  function dimensions(el) {
-	    var $el = el ? $(el) : this.$el;
-	
-	    // calculate heights
-	    // a. header
-	    var ret = {
-	      rows: [],
-	      thead: $el.find('thead > tr').outerHeight()
-	    };
-	
-	    // b. keep row info
-	    $el.find('tbody').children('tr').each(function () {
-	      ret.rows.push($(this).outerHeight());
-	    });
-	
-	    // c. update average row height
-	    var avg = _.reduce(ret.rows, function (memo, num) {
-	      return memo + num;
-	    }, 0) / (ret.rows.length === 0 ? 1 : ret.rows.length);
-	
-	    ret.avgRowHeight = avg;
-	    ret.estimateHeight = _.size(this.data.value) * avg + ret.thead;
-	
-	    return ret;
-	  }
-	
-	  function sample() {
-	    // a. render test pass
-	    var $tmpEl = $('<div style="visibility:hidden" />');
-	    var sample = _.first(this.data.value, 20);
-	
-	    this.$el.append($tmpEl);
-	
-	    $tmpEl[0].innerHTML = this.toHTML(sample);
-	
-	    // b. take measures
-	    var ret = dimensions.call(this, $tmpEl);
-	
-	    // c. clean-up
-	    $tmpEl.remove();
-	
-	    return ret;
-	  }
-	
-	  return {
-	    viewport: viewport,
-	    dimensions: dimensions,
-	    sample: sample
-	  };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
@@ -1459,6 +1460,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    };
 	  },
+	  Columns: function Columns(config) {
+	    return {
+	      columns: _underscore2.default.reduce(config.columns, function (columns, column) {
+	        var $metadata = {};
+	
+	        if (column.attributes) {
+	          $metadata['attr.body'] = column.attributes;
+	        }
+	
+	        if (column.headerAttributes) {
+	          $metadata['attr.head'] = column.headerAttributes;
+	        }
+	
+	        columns[column.name] = {
+	          sortable: column.sortable,
+	          $metadata: $metadata
+	        };
+	
+	        return columns;
+	      }, {})
+	    };
+	  },
 	  ColumnI18n: function ColumnI18n(config) {
 	    return {
 	      'column.i18n': _underscore2.default.reduce(config.columns, function (columnI18n, column) {
@@ -1494,6 +1517,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        return columnTmpl;
 	      }, {})
+	    };
+	  },
+	  Editable: function Editable(config) {
+	    return {
+	      'column.editable': _underscore2.default.chain(config.columns).filter(_underscore2.default.property('editable')).map(_underscore2.default.property('name')).value()
 	    };
 	  },
 	  PropertyTemplate: function PropertyTemplate(config) {
@@ -1564,6 +1592,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (_underscore2.default.has(config.pageable, 'pageSize')) {
 	      pipeProjection('Page');
 	    }
+	    if (_underscore2.default.find(config.columns, _underscore2.default.property('editable'))) {
+	      pipeProjection('Editable');
+	    }
 	
 	    return projection;
 	  });
@@ -1596,7 +1627,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  RowTriStateCheckboxProjection: __webpack_require__(47),
 	  RowIndex: __webpack_require__(49),
 	  Sink: __webpack_require__(50),
-	  ColumnGroup: __webpack_require__(51)
+	  ColumnGroup: __webpack_require__(51),
+	  Columns: __webpack_require__(52).default
 	};
 
 /***/ },
@@ -1831,7 +1863,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Backbone.Model.extend({
 	    defaults: {
 	      value: [],
-	      select: [],
+	      select: null,
 	      count: 0,
 	      aggregate: []
 	    }
@@ -1869,7 +1901,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var model = this.src.data;
 	        var colOptions = this.get('column.i18n');
 	        var columns = model.get('columns') || {};
-	        var select = _.size(columns) ? _.keys(columns) : model.get('select');
+	        var select = model.get('select') || _.keys(columns);
 	        var $default = colOptions[''];
 	
 	        var i18nColumns = {};
@@ -3601,7 +3633,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var checkMap = _.clone(this.get('row.check.map'));
 	        var id = arg.model[this.get('row.check.id')];
 	        var defaultTransition = this.get('row.check.transition');
-	        var check = _.extend({ transition: defaultTransition, state: 'unchecked' }, checkMap[id]);
+	        var check = _.extend({ id: id, transition: defaultTransition, state: 'unchecked' }, checkMap[id]);
 	
 	        check.state = check.transition(check.state);
 	        checkMap[id] = check;
@@ -3609,6 +3641,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.set({
 	          'row.check.map': checkMap
 	        });
+	
+	        e.stopImmediatePropagation();
 	      }
 	    },
 	    thClick: function thClick(e, arg) {
@@ -3625,15 +3659,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        allCheck.state = allCheckTransitionRule(checkState);
 	
 	        checkMap = _.object(this.data.get('value').map(function (item) {
-	          var check = _.extend({ transition: CheckTransitionRule }, checkMap[item[checkId]], { state: allCheck.state });
+	          var id = item[checkId];
+	          var check = _.extend({ id: id, transition: CheckTransitionRule }, checkMap[id], { state: allCheck.state });
 	
-	          return [item[checkId], check];
+	          return [id, check];
 	        }));
 	
 	        this.set({
 	          'row.check.map': checkMap,
 	          'row.check.all': allCheck
 	        });
+	
+	        e.stopImmediatePropagation();
 	      }
 	    }
 	  });
@@ -3894,34 +3931,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	var _underscore = __webpack_require__(2);
+	var _base = __webpack_require__(19);
 	
-	var _underscore2 = _interopRequireDefault(_underscore);
+	var _base2 = _interopRequireDefault(_base);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	exports.default = function (definePlugin) {
-	  return definePlugin('columns', ['config'], function (config) {
-	    return _underscore2.default.reduce(config.columns, function (columns, column) {
-	      var $metadata = {};
+	var ColumnsProjection = _base2.default.extend({
+	  defaults: {
+	    columns: {}
+	  },
 	
-	      if (column.attributes) {
-	        $metadata['attr.body'] = column.attributes;
-	      }
+	  name: 'columns',
 	
-	      if (column.headerAttributes) {
-	        $metadata['attr.head'] = column.headerAttributes;
-	      }
+	  update: function update(options) {
+	    if (_base2.default.prototype.update.call(this, options)) {
+	      this.patch({
+	        columns: this.get('columns')
+	      });
+	    }
+	  }
+	});
 	
-	      columns[column.name] = {
-	        sortable: column.sortable,
-	        $metadata: $metadata
-	      };
-	
-	      return columns;
-	    }, {});
-	  });
-	};
+	exports.default = ColumnsProjection;
 
 /***/ },
 /* 53 */
@@ -3932,6 +3964,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	
+	var _underscore = __webpack_require__(2);
+	
+	var _underscore2 = _interopRequireDefault(_underscore);
 	
 	var _gridView = __webpack_require__(54);
 	
@@ -3944,17 +3980,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	exports.default = function (definePlugin) {
-	  return definePlugin('gridView', ['config', 'projection', 'renderers', 'columns'], function (config, projection, renderers, columns) {
+	  return definePlugin('gridView', ['config', 'projection', 'renderers'], function (config, projection, renderers) {
 	    return new _gridView2.default({
 	      projection: projection,
 	      el: config.el,
-	      container: config.container,
+	      container: _underscore2.default.chain(config).result('scrollable').result('fixedHeader').result('container').value(),
 	      schema: config.dataSource.schema,
 	      Layout: _index2.default.TableLayout.partial({
 	        renderers: renderers,
 	        template: _index2.default.templates.table,
-	        hideHeaders: config.hideHeaders,
-	        columns: columns
+	        hideHeaders: config.hideHeaders
 	      })
 	    });
 	  });
