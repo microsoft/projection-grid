@@ -20,4 +20,5 @@ module.exports = {
   RowIndex: require('./row-index'),
   Sink: require('./sink'),
   ColumnGroup: require('./column-group'),
+  Columns: require('./columns').default,
 };

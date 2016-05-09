@@ -144,10 +144,9 @@ define([
         renderer.update && renderer.update();
       });
 
-      // TODO [akamel] consider moving this to a projection
       var value = model.get('value');
-      // TODO [akamel] is this overriding the values we got from the projection //see column extend below
       var columns = model.get('columns');
+      var columnsDelta = {};
       var colOptions = this.options.columns || {};
       var orderby = {};
 
@@ -163,13 +162,19 @@ define([
       // TODO [akamel] consider filtering which props to copy/override
         var delta = {};
         var colOption = colOptions[property];
-        var orderName = colOption && _.isString(colOption.sortable) ? colOption.sortable : property;
+        var orderName = property;
+
+        if (colOption && _.isString(colOption.sortable)) {
+          orderName = colOption.sortable;
+        } else if (col && _.isString(col.sortable)) {
+          orderName = col.sortable;
+        }
 
         if (orderby[orderName]) {
           delta.$orderby = orderby[orderName];
         }
 
-        columns[property] = _.extend(col, colOption, delta);
+        columnsDelta[property] = _.defaults(delta, colOption, col);
       });
 
       if (_.has(this.options.$metadata, 'class') && _.isArray(this.options.$metadata.class)) {
@@ -178,7 +183,7 @@ define([
 
       var delta = {
         'value': value,
-        'columns': columns,
+        'columns': columnsDelta,
         'columns.lookup': _.indexBy(columns, function (col) {
           return col.property;
         }),
