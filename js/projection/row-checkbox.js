@@ -2,8 +2,9 @@ define([
   'lib/underscore',
   'lib/backbone',
   'component/grid/projection/base',
-  'component/grid/layout/template/row.checked.jade',
-], function (_, Backbone, BaseProjection, rowCheckTemp) {
+  // 'component/grid/layout/template/row.checked.jade',
+  'component/grid/layout/template/selectable.jade',
+], function (_, Backbone, BaseProjection, /* rowCheckTemp, */selectableTemplate) {
   'use strict';
 
   var Model = BaseProjection.extend({
@@ -12,6 +13,7 @@ define([
       'row.check.id': 'Id',
       'row.check.list': [],
       'row.check.checked.all': false, // used to store user's check value for the special case no rows or all rows is disabled
+      'row.check.single': false,
       'row.check.allow': function () {
         return true;
       },
@@ -43,6 +45,7 @@ define([
         var checkboxColumn = _.find(columns, function (item) {
           return item.property === col;
         });
+        var isSingle = this.get('row.check.single');
 
         this.set('row.check.list', checked, { silent: true });
 
@@ -58,32 +61,39 @@ define([
             checkedAll = checkedAll && checked;
             disabled = false;
             hasCheckboxable = true;
-          }
 
-          ret[col] = _.extend({}, ret[col], {
-            $html: rowCheckTemp({
-              checked: checked,
-              disabled: disabled,
-            }),
-          });
+            ret[col] = _.extend({}, ret[col], {
+              $html: selectableTemplate({
+                type: isSingle ? 'radio' : 'checkbox',
+                checked: checked,
+                disabled: disabled,
+              }),
+            });
+          }
 
           return ret;
         });
 
         // set the checkbox in th
         if (!_.isUndefined(checkboxColumn)) {
-          var disabled = _.size(ids) === 0;
-          if (hasCheckboxable) {
-            checkboxColumn.$html = rowCheckTemp({
-              checked: checkedAll,
-              disabled: disabled,
-            });
-            this.attributes['row.check.checked.all'] = checkedAll;
+          if (isSingle) {
+            checkboxColumn.$html = '<span/>';
           } else {
-            checkboxColumn.$html = rowCheckTemp({
-              checked: this.get('row.check.checked.all'),
-              disabled: disabled,
-            });
+            var disabled = _.size(ids) === 0;
+            if (hasCheckboxable) {
+              checkboxColumn.$html = selectableTemplate({
+                type: 'checkbox',
+                checked: checkedAll,
+                disabled: disabled,
+              });
+              this.attributes['row.check.checked.all'] = checkedAll;
+            } else {
+              checkboxColumn.$html = selectableTemplate({
+                type: 'checkbox',
+                checked: this.get('row.check.checked.all'),
+                disabled: disabled,
+              });
+            }
           }
         }
 
@@ -98,14 +108,19 @@ define([
     },
     tdClick: function (e, arg) {
       var checkboxProperty = this.get('column.checked');
+      var isSingle = this.get('row.check.single');
 
       if (arg.property === checkboxProperty) {
         var list = this.get('row.check.list');
         var id = arg.model[this.get('row.check.id')];
 
-        this.set({
-          'row.check.list': arg.checked ? list.concat([id]) : _.without(list, id),
-        });
+        if (isSingle) {
+          this.set({ 'row.check.list': [id] });
+        } else {
+          this.set({
+            'row.check.list': arg.checked ? list.concat([id]) : _.without(list, id),
+          });
+        }
 
         this.update();
       }

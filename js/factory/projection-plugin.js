@@ -132,10 +132,19 @@ const projectionConfigs = {
 
   RowIndex() { },
 
-  RowCheckbox() {
+  RowCheckbox(config) {
     return {
       'row.check.id': 'rowIndex',
+      'row.check.single': config.selectable === 'single',
       'column.checked': 'checkbox',
+      'row.check.allow': function (model) {
+        var type = _.chain(model).result('$metadata').result('type').value();
+
+        return !_.contains([
+          'segmentation',
+          'aggregate',
+        ], type);
+      },
     };
   },
 
