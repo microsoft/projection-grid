@@ -2,9 +2,8 @@ define([
   'lib/underscore',
   'lib/backbone',
   'component/grid/projection/base',
-  // 'component/grid/layout/template/row.checked.jade',
   'component/grid/layout/template/selectable.jade',
-], function (_, Backbone, BaseProjection, /* rowCheckTemp, */selectableTemplate) {
+], function (_, Backbone, BaseProjection, selectableTemplate) {
   'use strict';
 
   var Model = BaseProjection.extend({
