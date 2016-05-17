@@ -134,7 +134,11 @@ const projectionConfigs = {
 
   RowCheckbox(config) {
     return {
-      'row.check.id': 'rowIndex',
+      'row.check.id': _.chain(config)
+        .result('dataSource')
+        .result('schema')
+        .result('key', 'rowIndex')
+        .value(),
       'row.check.single': config.selectable === 'single',
       'column.checked': 'checkbox',
       'row.check.allow': function (model) {

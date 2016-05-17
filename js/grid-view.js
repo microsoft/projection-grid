@@ -83,6 +83,10 @@ define([
       return this;
     },
 
+    getSelection: function () {
+      return this.projection.get('row.check.list') || [];
+    },
+
   });
 
   function selectContainer(userContainer) {
