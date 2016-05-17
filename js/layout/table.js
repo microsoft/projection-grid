@@ -108,7 +108,7 @@ define([
       ret.column = this.data.columns[ret.property];
       if (ret.property === this.grid.projection.get('column.checked')) {
         // TODO [akamel] this shouldn't be here
-        var checkbox = $el.find('.column-checkbox');
+        var checkbox = $el.find('.column-selection');
         if (checkbox.length) {
           ret.checked = checkbox[0].checked;
         }

@@ -158,8 +158,10 @@ The default page size.
 An array of available page sizes.
 
 ### `selectable`
-A boolean value telling whether or not the grid rows can be selected. If it's
-true, a checkbox column will be added to the left.
+Boolean or string value. Available values are
+* `false`, no selection support
+* `true`, multiple selection, show a checkbox column to the left
+* `'single'`, single selection, show a radio button column to the left
 
 ### `scrollable`
 Scroll behavior configurations.
