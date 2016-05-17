@@ -10,6 +10,7 @@ var grid = pgrid.factory().use(pagerViewPlugin).create({
   dataSource: {
     type: 'js-data',
     resource: Customer,
+    schema: { key: 'CustomerID' },
   },
   aggregate: {
     top(/* data */) {
