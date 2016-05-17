@@ -325,7 +325,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      ret.column = this.data.columns[ret.property];
 	      if (ret.property === this.grid.projection.get('column.checked')) {
 	        // TODO [akamel] this shouldn't be here
-	        var checkbox = $el.find('.column-checkbox');
+	        var checkbox = $el.find('.column-selection');
 	        if (checkbox.length) {
 	          ret.checked = checkbox[0].checked;
 	        }
@@ -1158,80 +1158,80 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 	
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _) {
-	    function viewport(el, container) {
-	        var $el = el ? $(el) : this.$el;
+	  function viewport(el, container) {
+	    var $el = el ? $(el) : this.$el;
 	
-	        container = container || this.container;
-	        var $viewport = container.$el;
+	    container = container || this.container;
+	    var $viewport = container.$el;
 	
-	        var viewportTop = $viewport.scrollTop();
-	        var viewportBottom = viewportTop + $viewport.height();
-	        var viewportLeft = $viewport.scrollLeft();
+	    var viewportTop = $viewport.scrollTop();
+	    var viewportBottom = viewportTop + $viewport.height();
+	    var viewportLeft = $viewport.scrollLeft();
 	
-	        var boundsTop = container.offset($el).top;
-	        var boundsBottom = boundsTop + $el.innerHeight();
-	        // var boundsLeft = $el.offset().left;
+	    var boundsTop = container.offset($el).top;
+	    var boundsBottom = boundsTop + $el.innerHeight();
+	    // var boundsLeft = $el.offset().left;
 	
-	        var visibleTop = Math.max(boundsTop, viewportTop);
-	        var visibleBottom = Math.min(boundsBottom, viewportBottom);
-	        // var visibleLeft = Math.max(boundsLeft, viewportLeft);
-	
-	        return {
-	            top: visibleTop - boundsTop,
-	            bottom: visibleBottom - boundsTop,
-	            offsetLeft: viewportLeft
-	        };
-	    }
-	
-	    function dimensions(el) {
-	        var $el = el ? $(el) : this.$el;
-	
-	        // calculate heights
-	        // a. header
-	        var ret = {
-	            rows: [],
-	            thead: $el.find('thead > tr').outerHeight()
-	        };
-	
-	        // b. keep row info
-	        $el.find('tbody').children('tr').each(function () {
-	            ret.rows.push($(this).outerHeight());
-	        });
-	
-	        // c. update average row height
-	        var avg = _.reduce(ret.rows, function (memo, num) {
-	            return memo + num;
-	        }, 0) / (ret.rows.length === 0 ? 1 : ret.rows.length);
-	
-	        ret.avgRowHeight = avg;
-	        ret.estimateHeight = _.size(this.data.value) * avg + ret.thead;
-	
-	        return ret;
-	    }
-	
-	    function sample() {
-	        // a. render test pass
-	        var $tmpEl = $('<div style="visibility:hidden" />');
-	        var sample = _.first(this.data.value, 20);
-	
-	        this.$el.append($tmpEl);
-	
-	        $tmpEl[0].innerHTML = this.toHTML(sample);
-	
-	        // b. take measures
-	        var ret = dimensions.call(this, $tmpEl);
-	
-	        // c. clean-up
-	        $tmpEl.remove();
-	
-	        return ret;
-	    }
+	    var visibleTop = Math.max(boundsTop, viewportTop);
+	    var visibleBottom = Math.min(boundsBottom, viewportBottom);
+	    // var visibleLeft = Math.max(boundsLeft, viewportLeft);
 	
 	    return {
-	        viewport: viewport,
-	        dimensions: dimensions,
-	        sample: sample
+	      top: visibleTop - boundsTop,
+	      bottom: visibleBottom - boundsTop,
+	      offsetLeft: viewportLeft
 	    };
+	  }
+	
+	  function dimensions(el) {
+	    var $el = el ? $(el) : this.$el;
+	
+	    // calculate heights
+	    // a. header
+	    var ret = {
+	      rows: [],
+	      thead: $el.find('thead > tr').outerHeight()
+	    };
+	
+	    // b. keep row info
+	    $el.find('tbody').children('tr').each(function () {
+	      ret.rows.push($(this).outerHeight());
+	    });
+	
+	    // c. update average row height
+	    var avg = _.reduce(ret.rows, function (memo, num) {
+	      return memo + num;
+	    }, 0) / (ret.rows.length === 0 ? 1 : ret.rows.length);
+	
+	    ret.avgRowHeight = avg;
+	    ret.estimateHeight = _.size(this.data.value) * avg + ret.thead;
+	
+	    return ret;
+	  }
+	
+	  function sample() {
+	    // a. render test pass
+	    var $tmpEl = $('<div style="visibility:hidden" />');
+	    var sample = _.first(this.data.value, 20);
+	
+	    this.$el.append($tmpEl);
+	
+	    $tmpEl[0].innerHTML = this.toHTML(sample);
+	
+	    // b. take measures
+	    var ret = dimensions.call(this, $tmpEl);
+	
+	    // c. clean-up
+	    $tmpEl.remove();
+	
+	    return ret;
+	  }
+	
+	  return {
+	    viewport: viewport,
+	    dimensions: dimensions,
+	    sample: sample
+	  };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
@@ -1535,10 +1535,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	  },
 	  RowIndex: function RowIndex() {},
-	  RowCheckbox: function RowCheckbox() {
+	  RowCheckbox: function RowCheckbox(config) {
 	    return {
-	      'row.check.id': 'rowIndex',
-	      'column.checked': 'checkbox'
+	      'row.check.id': _underscore2.default.chain(config).result('dataSource').result('schema').result('key', 'rowIndex').value(),
+	      'row.check.single': config.selectable === 'single',
+	      'column.checked': 'checkbox',
+	      'row.check.allow': function rowCheckAllow(model) {
+	        var type = _underscore2.default.chain(model).result('$metadata').result('type').value();
+	
+	        return !_underscore2.default.contains(['segmentation', 'aggregate'], type);
+	      }
 	    };
 	  },
 	  Page: function Page(config) {
@@ -1642,7 +1648,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var rows = fn(data);
 	
 	    _.each(rows, function (row) {
-	      row.$metadata = _.extend(row.$metadata, { type: 'aggregate' });
+	      row.$metadata = _.extend({}, row.$metadata, { type: 'aggregate' });
 	    });
 	
 	    return rows;
@@ -3301,7 +3307,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 	
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(7), __webpack_require__(19), __webpack_require__(46)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection, rowCheckTemp) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(7), __webpack_require__(19), __webpack_require__(46)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, BaseProjection, selectableTemplate) {
 	  'use strict';
 	
 	  var Model = BaseProjection.extend({
@@ -3310,6 +3316,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      'row.check.id': 'Id',
 	      'row.check.list': [],
 	      'row.check.checked.all': false, // used to store user's check value for the special case no rows or all rows is disabled
+	      'row.check.single': false,
 	      'row.check.allow': function rowCheckAllow() {
 	        return true;
 	      }
@@ -3341,6 +3348,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var checkboxColumn = _.find(columns, function (item) {
 	          return item.property === col;
 	        });
+	        var isSingle = this.get('row.check.single');
 	
 	        this.set('row.check.list', checked, { silent: true });
 	
@@ -3356,32 +3364,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	            checkedAll = checkedAll && checked;
 	            disabled = false;
 	            hasCheckboxable = true;
-	          }
 	
-	          ret[col] = _.extend({}, ret[col], {
-	            $html: rowCheckTemp({
-	              checked: checked,
-	              disabled: disabled
-	            })
-	          });
+	            ret[col] = _.extend({}, ret[col], {
+	              $html: selectableTemplate({
+	                type: isSingle ? 'radio' : 'checkbox',
+	                checked: checked,
+	                disabled: disabled
+	              })
+	            });
+	          }
 	
 	          return ret;
 	        });
 	
 	        // set the checkbox in th
 	        if (!_.isUndefined(checkboxColumn)) {
-	          var disabled = _.size(ids) === 0;
-	          if (hasCheckboxable) {
-	            checkboxColumn.$html = rowCheckTemp({
-	              checked: checkedAll,
-	              disabled: disabled
-	            });
-	            this.attributes['row.check.checked.all'] = checkedAll;
+	          if (isSingle) {
+	            checkboxColumn.$html = '<span/>';
 	          } else {
-	            checkboxColumn.$html = rowCheckTemp({
-	              checked: this.get('row.check.checked.all'),
-	              disabled: disabled
-	            });
+	            var disabled = _.size(ids) === 0;
+	            if (hasCheckboxable) {
+	              checkboxColumn.$html = selectableTemplate({
+	                type: 'checkbox',
+	                checked: checkedAll,
+	                disabled: disabled
+	              });
+	              this.attributes['row.check.checked.all'] = checkedAll;
+	            } else {
+	              checkboxColumn.$html = selectableTemplate({
+	                type: 'checkbox',
+	                checked: this.get('row.check.checked.all'),
+	                disabled: disabled
+	              });
+	            }
 	          }
 	        }
 	
@@ -3396,14 +3411,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	    tdClick: function tdClick(e, arg) {
 	      var checkboxProperty = this.get('column.checked');
+	      var isSingle = this.get('row.check.single');
 	
 	      if (arg.property === checkboxProperty) {
 	        var list = this.get('row.check.list');
 	        var id = arg.model[this.get('row.check.id')];
 	
-	        this.set({
-	          'row.check.list': arg.checked ? list.concat([id]) : _.without(list, id)
-	        });
+	        if (isSingle) {
+	          this.set({ 'row.check.list': [id] });
+	        } else {
+	          this.set({
+	            'row.check.list': arg.checked ? list.concat([id]) : _.without(list, id)
+	          });
+	        }
 	
 	        this.update();
 	      }
@@ -3450,29 +3470,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var buf = [];
 	var jade_mixins = {};
 	var jade_interp;
-	;var locals_for_with = (locals || {});(function (checked, disabled) {
-	if ( checked)
-	{
-	if ( disabled)
-	{
-	buf.push("<input type=\"checkbox\" checked disabled class=\"column-checkbox\">");
-	}
-	else
-	{
-	buf.push("<input type=\"checkbox\" checked class=\"column-checkbox\">");
-	}
-	}
-	else
-	{
-	if ( disabled)
-	{
-	buf.push("<input type=\"checkbox\" disabled class=\"column-checkbox\">");
-	}
-	else
-	{
-	buf.push("<input type=\"checkbox\" class=\"column-checkbox\">");
-	}
-	}}.call(this,"checked" in locals_for_with?locals_for_with.checked:typeof checked!=="undefined"?checked:undefined,"disabled" in locals_for_with?locals_for_with.disabled:typeof disabled!=="undefined"?disabled:undefined));;return buf.join("");
+	;var locals_for_with = (locals || {});(function (checked, disabled, type) {
+	buf.push("<input" + (jade.attr("type", type, true, true)) + (jade.attr("checked", checked, true, true)) + (jade.attr("disabled", disabled, true, true)) + " class=\"column-selection\">");}.call(this,"checked" in locals_for_with?locals_for_with.checked:typeof checked!=="undefined"?checked:undefined,"disabled" in locals_for_with?locals_for_with.disabled:typeof disabled!=="undefined"?disabled:undefined,"type" in locals_for_with?locals_for_with.type:typeof type!=="undefined"?type:undefined));;return buf.join("");
 	}
 
 /***/ },
@@ -4078,6 +4077,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	
 	      return this;
+	    },
+	
+	    getSelection: function getSelection() {
+	      return this.projection.get('row.check.list') || [];
 	    }
 	
 	  });
