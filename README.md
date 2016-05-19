@@ -132,6 +132,14 @@ A template function to generate the HTML in cells.
 ### `columns[].headerTemplate`
 A template function to generate the HTML in column header.
 
+### `columns[].View`
+A Backbone view class to render the data cells. It will be instantiated with
+`{ model: dataOfTheRow }`. Within the view, you can access the row data with
+`this.model`.
+
+### `columns[].HeaderView`
+A Backbone view class to render the header cell.
+
 ### `columns[].attributes`
 User defined attributes attached to the cells (`TD`).
 

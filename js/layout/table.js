@@ -25,6 +25,8 @@ define([
         return new Renderer({ layout: this });
       }.bind(this));
 
+      this.subviews = [];
+
       // TODO [akamel] make this conditional if these renderes are enabled
       this.onViewPortChange = this.onViewPortChange.bind(this);
       this.listenTo(this.container, 'scroll:container', this.onViewPortChange);
@@ -35,7 +37,15 @@ define([
       this.scheduleDraw();
     },
 
+    removeSubviews: function () {
+      _.each(this.subviews, function (subview) {
+        subview.remove();
+      });
+      this.subviews = [];
+    },
+
     remove: function () {
+      this.removeSubviews();
       this.container.stopListening(this.container);
       Backbone.View.prototype.remove.apply(this, arguments);
     },
@@ -256,9 +266,30 @@ define([
           throw err;
         }
 
+        this.removeSubviews();
+
         if (res.canSkipDraw !== true) {
           this.el.innerHTML = this.toHTML(res.rows);
         }
+
+        _.each(this.data.columns, function (column) {
+          if (column.config) {
+            if (_.isFunction(column.config.View)) {
+              this.$('td.col-' + column.config.name).each(function (index, el) {
+                var cellView = new column.config.View({ model: this.dataFor(el).model });
+                this.$(el).html(cellView.render().el);
+                this.subviews.push(cellView);
+              }.bind(this));
+            }
+            if (_.isFunction(column.config.HeaderView)) {
+              this.$('th.col-' + column.config.name).each(function (index, el) {
+                var headerView = new column.config.HeaderView();
+                this.$(el).html(headerView.render().el);
+                this.subviews.push(headerView);
+              }.bind(this));
+            }
+          }
+        }, this);
       }.bind(this));
 
       this.trigger('render:finished');
