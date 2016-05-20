@@ -27,7 +27,7 @@ require(['projection-grid'], function (pgrid) {
 });
 ```
 
-### As CMD
+### As CommonJS
 ```javascript
 var pgrid = require('projection-grid');
 
@@ -132,6 +132,14 @@ A template function to generate the HTML in cells.
 ### `columns[].headerTemplate`
 A template function to generate the HTML in column header.
 
+### `columns[].View`
+A Backbone view class to render the data cells. It will be instantiated with
+`{ model: dataOfTheRow }`. Within the view, you can access the row data with
+`this.model`.
+
+### `columns[].HeaderView`
+A Backbone view class to render the header cell.
+
 ### `columns[].attributes`
 User defined attributes attached to the cells (`TD`).
 
@@ -141,6 +149,9 @@ User defined attributes attached to the column header (`TH`).
 ### `columns[].locked`
 A boolean value specifies whether or not the column is locked.
 Locked columns are always visible when column shifter is on.
+
+### `columns[].hidden`
+A boolean value specifies whether or not the column is hide.
 
 ### `columns[].sortable`
 A boolean value specifies whether the column is sortable by clicking the header.

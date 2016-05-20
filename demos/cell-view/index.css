@@ -1,0 +1,7 @@
+.container-map {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 500px;
+  height: 500px;
+}
