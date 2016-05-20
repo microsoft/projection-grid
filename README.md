@@ -27,7 +27,7 @@ require(['projection-grid'], function (pgrid) {
 });
 ```
 
-### As CMD
+### As CommonJS
 ```javascript
 var pgrid = require('projection-grid');
 
