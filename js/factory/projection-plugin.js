@@ -56,6 +56,7 @@ const projectionConfigs = {
         columns[column.name] = {
           sortable: column.sortable,
           $metadata,
+          config: column,
         };
 
         return columns;
@@ -183,6 +184,7 @@ export default definePlugin => definePlugin('projection', [
     throw new Error(`dataSource.type "${config.dataSource.type}" is not supported`);
   }
 
+  pipeProjection('Columns');
   pipeProjection('Map');
   if (config.aggregate) {
     pipeProjection('AggregateRow');
