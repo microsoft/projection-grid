@@ -242,6 +242,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return new Renderer({ layout: this });
 	      }.bind(this));
 	
+	      this.subviews = [];
+	
 	      // TODO [akamel] make this conditional if these renderes are enabled
 	      this.onViewPortChange = this.onViewPortChange.bind(this);
 	      this.listenTo(this.container, 'scroll:container', this.onViewPortChange);
@@ -252,7 +254,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.scheduleDraw();
 	    },
 	
+	    removeSubviews: function removeSubviews() {
+	      _.each(this.subviews, function (subview) {
+	        subview.remove();
+	      });
+	      this.subviews = [];
+	    },
+	
 	    remove: function remove() {
+	      this.removeSubviews();
 	      this.container.stopListening(this.container);
 	      Backbone.View.prototype.remove.apply(this, arguments);
 	    },
@@ -473,9 +483,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	          throw err;
 	        }
 	
+	        this.removeSubviews();
+	
 	        if (res.canSkipDraw !== true) {
 	          this.el.innerHTML = this.toHTML(res.rows);
 	        }
+	
+	        _.each(this.data.columns, function (column) {
+	          if (column.config) {
+	            if (_.isFunction(column.config.View)) {
+	              this.$('td.col-' + column.config.name).each(function (index, el) {
+	                var cellView = new column.config.View({ model: this.dataFor(el).model });
+	                this.$(el).html(cellView.render().el);
+	                this.subviews.push(cellView);
+	              }.bind(this));
+	            }
+	            if (_.isFunction(column.config.HeaderView)) {
+	              this.$('th.col-' + column.config.name).each(function (index, el) {
+	                var headerView = new column.config.HeaderView();
+	                this.$(el).html(headerView.render().el);
+	                this.subviews.push(headerView);
+	              }.bind(this));
+	            }
+	          }
+	        }, this);
 	      }.bind(this));
 	
 	      this.trigger('render:finished');
@@ -543,7 +574,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	jade_mixins["th"] = jade_interp = function(column, hasGroup, isSubColumn){
 	var block = (this && this.block), attributes = (this && this.attributes) || {};
 	var attr = (column.$metadata || {})['attr.head'] || {}
+	var colName = column.config && column.config.name || '';
 	var cls = [];
+	if ( (colName))
+	{
+	cls.push('col-' + colName);
+	}
 	if ( column.sortable)
 	{
 	cls.push('sortable');
@@ -585,7 +621,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	jade_mixins["td"] = jade_interp = function(row, column){
 	var block = (this && this.block), attributes = (this && this.attributes) || {};
 	var attr = (column.$metadata || {})['attr.body'] || {}
-	buf.push("<td" + (jade.attrs(jade.merge([attributes,attr]), true)) + ">");
+	var colName = column.config && column.config.name || '';
+	var cls = colName ? 'col-' + colName : '';
+	buf.push("<td" + (jade.attrs(jade.merge([{"class": (jade_interp = [true], jade.joinClasses([cls].map(jade.joinClasses).map(function (cls, i) {   return jade_interp[i] ? jade.escape(cls) : cls })))},attributes,attr]), true)) + ">");
 	var res = row[column.property]
 	if ( (res && res.$html))
 	{
@@ -1158,80 +1196,80 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 	
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _) {
-	  function viewport(el, container) {
-	    var $el = el ? $(el) : this.$el;
+	    function viewport(el, container) {
+	        var $el = el ? $(el) : this.$el;
 	
-	    container = container || this.container;
-	    var $viewport = container.$el;
+	        container = container || this.container;
+	        var $viewport = container.$el;
 	
-	    var viewportTop = $viewport.scrollTop();
-	    var viewportBottom = viewportTop + $viewport.height();
-	    var viewportLeft = $viewport.scrollLeft();
+	        var viewportTop = $viewport.scrollTop();
+	        var viewportBottom = viewportTop + $viewport.height();
+	        var viewportLeft = $viewport.scrollLeft();
 	
-	    var boundsTop = container.offset($el).top;
-	    var boundsBottom = boundsTop + $el.innerHeight();
-	    // var boundsLeft = $el.offset().left;
+	        var boundsTop = container.offset($el).top;
+	        var boundsBottom = boundsTop + $el.innerHeight();
+	        // var boundsLeft = $el.offset().left;
 	
-	    var visibleTop = Math.max(boundsTop, viewportTop);
-	    var visibleBottom = Math.min(boundsBottom, viewportBottom);
-	    // var visibleLeft = Math.max(boundsLeft, viewportLeft);
+	        var visibleTop = Math.max(boundsTop, viewportTop);
+	        var visibleBottom = Math.min(boundsBottom, viewportBottom);
+	        // var visibleLeft = Math.max(boundsLeft, viewportLeft);
+	
+	        return {
+	            top: visibleTop - boundsTop,
+	            bottom: visibleBottom - boundsTop,
+	            offsetLeft: viewportLeft
+	        };
+	    }
+	
+	    function dimensions(el) {
+	        var $el = el ? $(el) : this.$el;
+	
+	        // calculate heights
+	        // a. header
+	        var ret = {
+	            rows: [],
+	            thead: $el.find('thead > tr').outerHeight()
+	        };
+	
+	        // b. keep row info
+	        $el.find('tbody').children('tr').each(function () {
+	            ret.rows.push($(this).outerHeight());
+	        });
+	
+	        // c. update average row height
+	        var avg = _.reduce(ret.rows, function (memo, num) {
+	            return memo + num;
+	        }, 0) / (ret.rows.length === 0 ? 1 : ret.rows.length);
+	
+	        ret.avgRowHeight = avg;
+	        ret.estimateHeight = _.size(this.data.value) * avg + ret.thead;
+	
+	        return ret;
+	    }
+	
+	    function sample() {
+	        // a. render test pass
+	        var $tmpEl = $('<div style="visibility:hidden" />');
+	        var sample = _.first(this.data.value, 20);
+	
+	        this.$el.append($tmpEl);
+	
+	        $tmpEl[0].innerHTML = this.toHTML(sample);
+	
+	        // b. take measures
+	        var ret = dimensions.call(this, $tmpEl);
+	
+	        // c. clean-up
+	        $tmpEl.remove();
+	
+	        return ret;
+	    }
 	
 	    return {
-	      top: visibleTop - boundsTop,
-	      bottom: visibleBottom - boundsTop,
-	      offsetLeft: viewportLeft
+	        viewport: viewport,
+	        dimensions: dimensions,
+	        sample: sample
 	    };
-	  }
-	
-	  function dimensions(el) {
-	    var $el = el ? $(el) : this.$el;
-	
-	    // calculate heights
-	    // a. header
-	    var ret = {
-	      rows: [],
-	      thead: $el.find('thead > tr').outerHeight()
-	    };
-	
-	    // b. keep row info
-	    $el.find('tbody').children('tr').each(function () {
-	      ret.rows.push($(this).outerHeight());
-	    });
-	
-	    // c. update average row height
-	    var avg = _.reduce(ret.rows, function (memo, num) {
-	      return memo + num;
-	    }, 0) / (ret.rows.length === 0 ? 1 : ret.rows.length);
-	
-	    ret.avgRowHeight = avg;
-	    ret.estimateHeight = _.size(this.data.value) * avg + ret.thead;
-	
-	    return ret;
-	  }
-	
-	  function sample() {
-	    // a. render test pass
-	    var $tmpEl = $('<div style="visibility:hidden" />');
-	    var sample = _.first(this.data.value, 20);
-	
-	    this.$el.append($tmpEl);
-	
-	    $tmpEl[0].innerHTML = this.toHTML(sample);
-	
-	    // b. take measures
-	    var ret = dimensions.call(this, $tmpEl);
-	
-	    // c. clean-up
-	    $tmpEl.remove();
-	
-	    return ret;
-	  }
-	
-	  return {
-	    viewport: viewport,
-	    dimensions: dimensions,
-	    sample: sample
-	  };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
@@ -1475,7 +1513,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        columns[column.name] = {
 	          sortable: column.sortable,
-	          $metadata: $metadata
+	          $metadata: $metadata,
+	          config: column
 	        };
 	
 	        return columns;
@@ -1577,6 +1616,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      throw new Error('dataSource.type "' + config.dataSource.type + '" is not supported');
 	    }
 	
+	    pipeProjection('Columns');
 	    pipeProjection('Map');
 	    if (config.aggregate) {
 	      pipeProjection('AggregateRow');
