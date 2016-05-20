@@ -150,6 +150,9 @@ User defined attributes attached to the column header (`TH`).
 A boolean value specifies whether or not the column is locked.
 Locked columns are always visible when column shifter is on.
 
+### `columns[].hidden`
+A boolean value specifies whether or not the column is hide.
+
 ### `columns[].sortable`
 A boolean value specifies whether the column is sortable by clicking the header.
 
