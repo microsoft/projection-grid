@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import projections from '../projection/index';
+import { delegateEvents } from './utility';
 
 const projectionConfigs = {
   AggregateRow(config) {
@@ -184,6 +185,8 @@ export default definePlugin => definePlugin('projection', [
     throw new Error(`dataSource.type "${config.dataSource.type}" is not supported`);
   }
 
+  const dataSourceProjection = projection;
+
   pipeProjection('Columns');
   pipeProjection('Map');
   if (config.aggregate) {
@@ -209,6 +212,15 @@ export default definePlugin => definePlugin('projection', [
   if (_.find(config.columns, _.property('editable'))) {
     pipeProjection('Editable');
   }
+
+  delegateEvents({
+    from: dataSourceProjection,
+    to: projection,
+    events: [
+      'update:beginning',
+      'update:finished',
+    ],
+  });
 
   return projection;
 });
