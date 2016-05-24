@@ -31,29 +31,28 @@ define([
 
       if (_.has(local, 'column.editable')) {
         let editableOptions = local['column.editable'];
-        let config = {};
+        let viewConfig = {};
         let conditions = {};
 
         if (_.isArray(editableOptions)) {
           _.each(editableOptions, (editableColumn) => {
             if (_.isString(editableColumn)) {
               conditions[editableColumn] = editable;
-              config[editableColumn] = {};
             } else if (_.isObject(editableColumn) && _.isString(editableColumn.name)) {
               conditions[editableColumn.name] = _.isFunction(editableColumn.condition) ? editableColumn.condition : editable;
-              config[editableColumn.name] = editableColumn;
             }
+            viewConfig[editableColumn] = null;
           });
         } else {
           _.each(editableOptions, (options, columnName) => {
             if (_.isFunction(options)) {
               conditions[columnName] = editable;
-              config[columnName] = {editor: options};
+              viewConfig[columnName] = options;
             }
           });
         }
 
-        this.editableConfig = config;
+        this.viewConfig = viewConfig;
         this.isEditable = function (key, item) {
           return _.isFunction(conditions[key]) && conditions[key](item);
         };
@@ -66,7 +65,7 @@ define([
         var columns = model.get('columns');
         var iconClasses = this.get('editable.icon.class') || ['glyphicon', 'glyphicon-pencil'];
 
-        _.each(this.editableConfig, function (options, key) {
+        _.each(this.viewConfig, function (view, key) {
           var column = columns[key] || { property: key };
           var $metadata = column.$metadata = column.$metadata || {};
           var attrBody = $metadata['attr.body'] = $metadata['attr.body'] || {};
@@ -111,10 +110,8 @@ define([
         this.isEditable(arg.property, arg.model) &&
         $(e.target).closest('.is-not-trigger').length === 0) {
         schema = arg.grid.options.get('schema');
-        let options = this.editableConfig[property];
-        let editor = options.editor || PopupEditor;
-        options = _.omit(options, 'editor');
-        editor(_.extend({
+        let editor = this.viewConfig[property] || PopupEditor;
+        editor({
           model: arg.model,
           schema: schema,
           position: $(e.target).closest('td').position(),
@@ -122,7 +119,7 @@ define([
           onSubmit: (model) => {
             this.trigger('edit', model);
           },
-        }, options));
+        });
       }
     },
   });
