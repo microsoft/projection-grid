@@ -139,6 +139,7 @@ gulp.task('clean:test', function () {
   return del([
     'test-results',
     'coverage',
+    'errorShots',
   ]);
 });
 
