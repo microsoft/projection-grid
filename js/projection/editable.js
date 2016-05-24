@@ -104,36 +104,18 @@ define([
         $(e.target).closest('.is-not-trigger').length === 0) {
         schema = arg.grid.options.get('schema');
         let options = this.editableConfig[property];
-        let EditorClass = options.PopEditor || PopupEditor;
-        options = _.omit(options, 'PopEditor');
-        let editor = new EditorClass(_.extend({
+        let editor = options.editor || PopupEditor;
+        options = _.omit(options, 'editor');
+        editor(_.extend({
           value: arg.model[property],
+          schema: schema && schema.properties[property],
           position: $(e.target).closest('td').position(),
           property: property,
+          onSubmit: function(value) {
+            arg.model[property] = newValue;
+            this.trigger('edit', arg.model);
+          },
         }, options));
-
-        let cancelEditor = function() {
-          editor.trigger('cancel');
-        };
-
-        let removeEditor = function() {
-          document.removeEventListener('click', cancelEditor);
-          editor.remove();
-        };
-
-        editor.on('save', (newValue) => {
-          arg.model[property] = newValue;
-          removeEditor()
-          this.trigger('edit', arg.model);
-        });
-
-        editor.on('cancel', removeEditor);
-
-        document.body.appendChild(editor.render().el);
-        
-        window.setTimeout(() => {
-          document.addEventListener('click', cancelEditor);
-        });
       }
     },
   });

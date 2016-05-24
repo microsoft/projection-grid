@@ -33,9 +33,38 @@ define([
         left: this.position.left,
         top: this.position.top,
       });
+
+      this.dismiss = function () {
+        this.trigger('cancel');
+      }.bind(this);
+
+      window.setTimeout(() => {
+        $(window).on('click', this.dismiss);
+      }, 0);
+
       return this;
     },
+
+    remove: function () {
+      $(window).off('click', this.dismiss);
+      Backbone.View.prototype.remove.apply(this, arguments);
+    },
+
   });
 
-  return PopupEditor;
+  return function (options) {
+    var editor = new PopupEditor(options);
+
+    document.body.appendChild(editor.render().el);
+
+    editor.on('save', function (value) {
+      editor.remove();
+      options.onSubmit && options.onSubmit(value);
+    });
+
+    editor.on('cancel', function () {
+      editor.remove();
+      options.onCancel && options.onCancel();
+    });
+  };
 });
