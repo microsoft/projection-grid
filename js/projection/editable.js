@@ -29,16 +29,20 @@ define([
         return true;
       };
 
+      var config = {};
       if (_.has(local, 'column.editable')) {
         var conditions = _.reduce(local['column.editable'], function (conds, editableColumn) {
           if (_.isString(editableColumn)) {
             conds[editableColumn] = editable;
+            config[editableColumn] = {};
           } else if (_.isObject(editableColumn) && _.isString(editableColumn.name)) {
             conds[editableColumn.name] = _.isFunction(editableColumn.condition) ? editableColumn.condition : editable;
+            config[editableColumn.name] = editableColumn;
           }
           return conds;
         }, {});
 
+        this.editableConfig = config;
         this.isEditable = function (key, item) {
           return _.isFunction(conditions[key]) && conditions[key](item);
         };
@@ -96,24 +100,40 @@ define([
       var property = (metadata && metadata.map) || arg.property;
 
       if (!isReadonlyRow(arg.model) &&
-      this.isEditable(arg.property, arg.model) &&
-      e.target.tagName !== 'A' &&
-      $(e.target).closest('.is-not-trigger').length === 0) {
+        this.isEditable(arg.property, arg.model) &&
+        $(e.target).closest('.is-not-trigger').length === 0) {
         schema = arg.grid.options.get('schema');
-        PopupEditor.prompt({
-          template: 'inline',
-          model: _.clone(arg.model),
-          schema: schema,
-          fields: [{
-            showLabel: false,
-            property: property,
-          }],
+        let options = this.editableConfig[property];
+        let EditorClass = options.PopEditor || PopupEditor;
+        options = _.omit(options, 'PopEditor');
+        let editor = new EditorClass(_.extend({
+          value: arg.model[property],
           position: $(e.target).closest('td').position(),
-        }).then(function (model) {
-          if (model) {
-            this.trigger('edit', model);
-          }
-        }.bind(this));
+          property: property,
+        }, options));
+
+        let cancelEditor = function() {
+          editor.trigger('cancel');
+        };
+
+        let removeEditor = function() {
+          document.removeEventListener('click', cancelEditor);
+          editor.remove();
+        };
+
+        editor.on('save', (newValue) => {
+          arg.model[property] = newValue;
+          removeEditor()
+          this.trigger('edit', arg.model);
+        });
+
+        editor.on('cancel', removeEditor);
+
+        document.body.appendChild(editor.render().el);
+        
+        window.setTimeout(() => {
+          document.addEventListener('click', cancelEditor);
+        });
       }
     },
   });
