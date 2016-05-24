@@ -7,13 +7,13 @@ define([
   var PopupEditor = Backbone.View.extend({
     events: {
       'click .save': function () {
-        this.trigger('save', this.value);
+        this.trigger('save', this.model);
       },
       'click .cancel': function () {
         this.trigger('cancel');
       },
       'change .editor': function (e) {
-        this.value = e.target.value;
+        this.model = e.target.model;
       },
       'click form': function (e) {
         e.stopPropagation();
@@ -22,12 +22,12 @@ define([
 
     initialize: function (options) {
       this.position = options.position;
-      this.value = options.value;
+      this.model = options.model;
       this.property = options.property;
     },
 
     render: function () {
-      this.$el.html(template({ value: this.value }));
+      this.$el.html(template({ value: this.model[this.property] }));
       this.$el.css({
         position: 'absolute',
         left: this.position.left,
@@ -57,9 +57,9 @@ define([
 
     document.body.appendChild(editor.render().el);
 
-    editor.on('save', function (value) {
+    editor.on('save', function (model) {
       editor.remove();
-      options.onSubmit && options.onSubmit(value);
+      options.onSubmit && options.onSubmit(model);
     });
 
     editor.on('cancel', function () {

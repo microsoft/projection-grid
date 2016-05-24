@@ -29,18 +29,29 @@ define([
         return true;
       };
 
-      var config = {};
       if (_.has(local, 'column.editable')) {
-        var conditions = _.reduce(local['column.editable'], function (conds, editableColumn) {
-          if (_.isString(editableColumn)) {
-            conds[editableColumn] = editable;
-            config[editableColumn] = {};
-          } else if (_.isObject(editableColumn) && _.isString(editableColumn.name)) {
-            conds[editableColumn.name] = _.isFunction(editableColumn.condition) ? editableColumn.condition : editable;
-            config[editableColumn.name] = editableColumn;
-          }
-          return conds;
-        }, {});
+        let editableOptions = local['column.editable'];
+        let config = {};
+        let conditions = {};
+
+        if (_.isArray(editableOptions)) {
+          _.each(editableOptions, (editableColumn) => {
+            if (_.isString(editableColumn)) {
+              conditions[editableColumn] = editable;
+              config[editableColumn] = {};
+            } else if (_.isObject(editableColumn) && _.isString(editableColumn.name)) {
+              conditions[editableColumn.name] = _.isFunction(editableColumn.condition) ? editableColumn.condition : editable;
+              config[editableColumn.name] = editableColumn;
+            }
+          });
+        } else {
+          _.each(editableOptions, (options, columnName) => {
+            if (_.isFunction(options)) {
+              conditions[columnName] = editable;
+              config[columnName] = {editor: options};
+            }
+          });
+        }
 
         this.editableConfig = config;
         this.isEditable = function (key, item) {
@@ -55,21 +66,18 @@ define([
         var columns = model.get('columns');
         var iconClasses = this.get('editable.icon.class') || ['glyphicon', 'glyphicon-pencil'];
 
-        _.each(this.get('column.editable'), function (editableColumn) {
-          var key = _.isString(editableColumn) ? editableColumn : editableColumn.name;
-          if (key) {
-            var column = columns[key] || { property: key };
-            var $metadata = column.$metadata = column.$metadata || {};
-            var attrBody = $metadata['attr.body'] = $metadata['attr.body'] || {};
-            var className = attrBody.class || [];
+        _.each(this.editableConfig, function (options, key) {
+          var column = columns[key] || { property: key };
+          var $metadata = column.$metadata = column.$metadata || {};
+          var attrBody = $metadata['attr.body'] = $metadata['attr.body'] || {};
+          var className = attrBody.class || [];
 
-            if (_.isString(className)) {
-              className = className.split(/\s+/);
-            }
-            attrBody.class = _.union(className, ['grid-editable-cell']);
-
-            columns[key] = column;
+          if (_.isString(className)) {
+            className = className.split(/\s+/);
           }
+          attrBody.class = _.union(className, ['grid-editable-cell']);
+
+          columns[key] = column;
         });
 
         var value = _.map(model.get('value'), function (item) {
@@ -107,13 +115,12 @@ define([
         let editor = options.editor || PopupEditor;
         options = _.omit(options, 'editor');
         editor(_.extend({
-          value: arg.model[property],
-          schema: schema && schema.properties[property],
+          model: arg.model,
+          schema: schema,
           position: $(e.target).closest('td').position(),
           property: property,
-          onSubmit: function(value) {
-            arg.model[property] = newValue;
-            this.trigger('edit', arg.model);
+          onSubmit: (model) => {
+            this.trigger('edit', model);
           },
         }, options));
       }
