@@ -75,13 +75,13 @@ var grid = pgrid.factory().use(pagerViewPlugin).create({
   },
 });
 
-// jsdata.on('update:beginning', function () {
-//   console.log('begin update');
-// });
-//
-// jsdata.on('update:finished', function () {
-//   console.log('end update');
-// });
+grid.gridView.on('update:beginning', function () {
+  console.log('begin update');
+});
+
+grid.gridView.on('update:finished', function () {
+  console.log('end update');
+});
 
 grid.gridView.on('data:edit', model => {
   console.log(`[Edit] ${JSON.stringify(model)}`);

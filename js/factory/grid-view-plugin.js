@@ -1,13 +1,14 @@
 import _ from 'underscore';
 import GridView from '../grid-view';
 import layout from '../layout/index';
+import { delegateEvents } from './utility';
 
 export default definePlugin => definePlugin('gridView', [
   'config',
   'projection',
   'renderers',
 ], function (config, projection, renderers) {
-  return new GridView({
+  const gridView = new GridView({
     projection,
     el: config.el,
     container: _.chain(config)
@@ -22,4 +23,15 @@ export default definePlugin => definePlugin('gridView', [
       hideHeaders: config.hideHeaders,
     }),
   });
+
+  delegateEvents({
+    from: projection,
+    to: gridView,
+    events: [
+      'update:beginning',
+      'update:finished',
+    ],
+  });
+
+  return gridView;
 });
