@@ -63,7 +63,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	module.exports = {
-	  GridView: __webpack_require__(54),
+	  GridView: __webpack_require__(55),
 	  projections: __webpack_require__(17),
 	  layout: __webpack_require__(4),
 	  factory: _gridFactory2.default
@@ -97,7 +97,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _projectionPlugin2 = _interopRequireDefault(_projectionPlugin);
 	
-	var _gridViewPlugin = __webpack_require__(53);
+	var _gridViewPlugin = __webpack_require__(54);
 	
 	var _gridViewPlugin2 = _interopRequireDefault(_gridViewPlugin);
 	
@@ -1196,80 +1196,80 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 	
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _) {
-	    function viewport(el, container) {
-	        var $el = el ? $(el) : this.$el;
+	  function viewport(el, container) {
+	    var $el = el ? $(el) : this.$el;
 	
-	        container = container || this.container;
-	        var $viewport = container.$el;
+	    container = container || this.container;
+	    var $viewport = container.$el;
 	
-	        var viewportTop = $viewport.scrollTop();
-	        var viewportBottom = viewportTop + $viewport.height();
-	        var viewportLeft = $viewport.scrollLeft();
+	    var viewportTop = $viewport.scrollTop();
+	    var viewportBottom = viewportTop + $viewport.height();
+	    var viewportLeft = $viewport.scrollLeft();
 	
-	        var boundsTop = container.offset($el).top;
-	        var boundsBottom = boundsTop + $el.innerHeight();
-	        // var boundsLeft = $el.offset().left;
+	    var boundsTop = container.offset($el).top;
+	    var boundsBottom = boundsTop + $el.innerHeight();
+	    // var boundsLeft = $el.offset().left;
 	
-	        var visibleTop = Math.max(boundsTop, viewportTop);
-	        var visibleBottom = Math.min(boundsBottom, viewportBottom);
-	        // var visibleLeft = Math.max(boundsLeft, viewportLeft);
-	
-	        return {
-	            top: visibleTop - boundsTop,
-	            bottom: visibleBottom - boundsTop,
-	            offsetLeft: viewportLeft
-	        };
-	    }
-	
-	    function dimensions(el) {
-	        var $el = el ? $(el) : this.$el;
-	
-	        // calculate heights
-	        // a. header
-	        var ret = {
-	            rows: [],
-	            thead: $el.find('thead > tr').outerHeight()
-	        };
-	
-	        // b. keep row info
-	        $el.find('tbody').children('tr').each(function () {
-	            ret.rows.push($(this).outerHeight());
-	        });
-	
-	        // c. update average row height
-	        var avg = _.reduce(ret.rows, function (memo, num) {
-	            return memo + num;
-	        }, 0) / (ret.rows.length === 0 ? 1 : ret.rows.length);
-	
-	        ret.avgRowHeight = avg;
-	        ret.estimateHeight = _.size(this.data.value) * avg + ret.thead;
-	
-	        return ret;
-	    }
-	
-	    function sample() {
-	        // a. render test pass
-	        var $tmpEl = $('<div style="visibility:hidden" />');
-	        var sample = _.first(this.data.value, 20);
-	
-	        this.$el.append($tmpEl);
-	
-	        $tmpEl[0].innerHTML = this.toHTML(sample);
-	
-	        // b. take measures
-	        var ret = dimensions.call(this, $tmpEl);
-	
-	        // c. clean-up
-	        $tmpEl.remove();
-	
-	        return ret;
-	    }
+	    var visibleTop = Math.max(boundsTop, viewportTop);
+	    var visibleBottom = Math.min(boundsBottom, viewportBottom);
+	    // var visibleLeft = Math.max(boundsLeft, viewportLeft);
 	
 	    return {
-	        viewport: viewport,
-	        dimensions: dimensions,
-	        sample: sample
+	      top: visibleTop - boundsTop,
+	      bottom: visibleBottom - boundsTop,
+	      offsetLeft: viewportLeft
 	    };
+	  }
+	
+	  function dimensions(el) {
+	    var $el = el ? $(el) : this.$el;
+	
+	    // calculate heights
+	    // a. header
+	    var ret = {
+	      rows: [],
+	      thead: $el.find('thead > tr').outerHeight()
+	    };
+	
+	    // b. keep row info
+	    $el.find('tbody').children('tr').each(function () {
+	      ret.rows.push($(this).outerHeight());
+	    });
+	
+	    // c. update average row height
+	    var avg = _.reduce(ret.rows, function (memo, num) {
+	      return memo + num;
+	    }, 0) / (ret.rows.length === 0 ? 1 : ret.rows.length);
+	
+	    ret.avgRowHeight = avg;
+	    ret.estimateHeight = _.size(this.data.value) * avg + ret.thead;
+	
+	    return ret;
+	  }
+	
+	  function sample() {
+	    // a. render test pass
+	    var $tmpEl = $('<div style="visibility:hidden" />');
+	    var sample = _.first(this.data.value, 20);
+	
+	    this.$el.append($tmpEl);
+	
+	    $tmpEl[0].innerHTML = this.toHTML(sample);
+	
+	    // b. take measures
+	    var ret = dimensions.call(this, $tmpEl);
+	
+	    // c. clean-up
+	    $tmpEl.remove();
+	
+	    return ret;
+	  }
+	
+	  return {
+	    viewport: viewport,
+	    dimensions: dimensions,
+	    sample: sample
+	  };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
@@ -1450,6 +1450,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _index2 = _interopRequireDefault(_index);
 	
+	var _utility = __webpack_require__(53);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var projectionConfigs = {
@@ -1616,6 +1618,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      throw new Error('dataSource.type "' + config.dataSource.type + '" is not supported');
 	    }
 	
+	    var dataSourceProjection = projection;
+	
 	    pipeProjection('Columns');
 	    pipeProjection('Map');
 	    if (config.aggregate) {
@@ -1641,6 +1645,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (_underscore2.default.find(config.columns, _underscore2.default.property('editable'))) {
 	      pipeProjection('Editable');
 	    }
+	
+	    (0, _utility.delegateEvents)({
+	      from: dataSourceProjection,
+	      to: projection,
+	      events: ['update:beginning', 'update:finished']
+	    });
 	
 	    return projection;
 	  });
@@ -4003,12 +4013,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.delegateEvents = delegateEvents;
 	
 	var _underscore = __webpack_require__(2);
 	
 	var _underscore2 = _interopRequireDefault(_underscore);
 	
-	var _gridView = __webpack_require__(54);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function delegateEvents(_ref) {
+	  var from = _ref.from;
+	  var to = _ref.to;
+	  var events = _ref.events;
+	
+	  _underscore2.default.each(events, function (event) {
+	    return from.on(event, function () {
+	      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	        args[_key] = arguments[_key];
+	      }
+	
+	      return to.trigger.apply(to, [event].concat(args));
+	    });
+	  });
+	}
+
+/***/ },
+/* 54 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _underscore = __webpack_require__(2);
+	
+	var _underscore2 = _interopRequireDefault(_underscore);
+	
+	var _gridView = __webpack_require__(55);
 	
 	var _gridView2 = _interopRequireDefault(_gridView);
 	
@@ -4016,11 +4059,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _index2 = _interopRequireDefault(_index);
 	
+	var _utility = __webpack_require__(53);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	exports.default = function (definePlugin) {
 	  return definePlugin('gridView', ['config', 'projection', 'renderers'], function (config, projection, renderers) {
-	    return new _gridView2.default({
+	    var gridView = new _gridView2.default({
 	      projection: projection,
 	      el: config.el,
 	      container: _underscore2.default.chain(config).result('scrollable').result('fixedHeader').result('container').value(),
@@ -4031,16 +4076,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	        hideHeaders: config.hideHeaders
 	      })
 	    });
+	
+	    (0, _utility.delegateEvents)({
+	      from: projection,
+	      to: gridView,
+	      events: ['update:beginning', 'update:finished']
+	    });
+	
+	    return gridView;
 	  });
 	};
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 	
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(7), __webpack_require__(55), __webpack_require__(56), __webpack_require__(58)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, Options, WindowContainer, ElementContainer) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(7), __webpack_require__(56), __webpack_require__(57), __webpack_require__(59)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Backbone, Options, WindowContainer, ElementContainer) {
 	  var GridView = Backbone.View.extend({
 	    // todo [akamel] document available options
 	    initialize: function initialize(options) {
@@ -4137,7 +4190,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 55 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -4152,12 +4205,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 	
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(6), __webpack_require__(57)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, $, ContainerBase) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(6), __webpack_require__(58)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, $, ContainerBase) {
 	  var WindowContainer = ContainerBase.extend({
 	    constructor: function constructor(options) {
 	      options = _.extend({}, options, { el: window });
@@ -4173,7 +4226,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -4202,12 +4255,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 	
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(6), __webpack_require__(57)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, $, ContainerBase) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(6), __webpack_require__(58)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, $, ContainerBase) {
 	  var ElementContainer = ContainerBase.extend({
 	    offset: function offset(element) {
 	      var position = $(element).position();
