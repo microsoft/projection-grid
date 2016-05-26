@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import Backbone from 'backbone';
 import projections from '../projection/index';
 import { delegateEvents } from './utility';
 
@@ -27,7 +28,11 @@ const projectionConfigs = {
 
   Map(config) {
     const properties = _.reduce(config.columns, (memo, { name, value, field }) => {
-      memo[name] = value || (item => _.reduce((field || name).split('/'), (memo, prop) => memo[prop], item));
+      memo[name] = value || (item => _.reduce(
+        (field || name).split('/'),
+        (memo, prop) => _.result(memo, prop),
+        item
+      ));
       return memo;
     }, {});
 
@@ -121,6 +126,8 @@ const projectionConfigs = {
     };
   },
 
+  MemoryQueryable() { },
+
   PropertyTemplate(config) {
     return {
       'property.template': _.reduce(config.columns, (propTmpl, column) => {
@@ -160,6 +167,16 @@ const projectionConfigs = {
       'page.number': 0,
     };
   },
+
+  Sink(config) {
+    const data = _.result(config.dataSource, 'data', []);
+
+    if (_.isArray(data)) {
+      return { seed: data };
+    } else if (data instanceof Backbone.Collection) {
+      return { seed: data.toJSON() };
+    }
+  },
 };
 
 export default definePlugin => definePlugin('projection', [
@@ -179,8 +196,25 @@ export default definePlugin => definePlugin('projection', [
     }
   }
 
-  if (config.dataSource.type === 'js-data') {
+  const dataSourceType = config.dataSource.type || 'memory';
+  if (dataSourceType === 'js-data') {
     pipeProjection('JSData');
+  } else if (dataSourceType === 'memory') {
+    pipeProjection('Sink');
+    pipeProjection('MemoryQueryable');
+    if (config.dataSource.data instanceof Backbone.Collection) {
+      let updating = false;
+      const scheduleUpdate = () => {
+        if (!updating) {
+          updating = true;
+          window.setTimeout(() => {
+            projection.set('seed', config.dataSource.data.toJSON());
+            updating = false;
+          }, 0);
+        }
+      };
+      config.dataSource.data.on('all', scheduleUpdate);
+    }
   } else {
     throw new Error(`dataSource.type "${config.dataSource.type}" is not supported`);
   }

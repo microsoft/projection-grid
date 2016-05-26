@@ -71,7 +71,16 @@ The root element of the grid. It should be a CSS selector.
 Data source of the grid. Tells grid where to get the row data.
 
 ### `dataSource.type`
-The type of the data source. Only `'js-data'` is supported for now.
+The type of the data source. Available values are
+
+* `'js-data'`, the JSData data source
+* `'memory'`, the memory data source
+
+The default value is `'memory'`.
+
+### `dataSource.data`
+An option of `'memory'` data source which should be an array of row data, or
+a Backbone.Collection.
 
 ### `dataSource.resource`
 An option of `'js-data'` data source which is a [JSData Resource][js-data-resource].
