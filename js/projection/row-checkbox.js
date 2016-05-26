@@ -33,12 +33,13 @@ define([
 
       if (Model.__super__.update.call(this, options)) {
         var checkId = this.get('row.check.id');
-        var ids = _.pluck(this.src.data.get('value'), checkId);
+        var value = this.src.data.get('value');
+        var ids = _.pluck(value, checkId);
         var checked = _.intersection(this.get('row.check.list'), ids);
         var checkedLookup = _.object(checked, []);
         var col = this.get('column.checked');
         var columns = _.clone(this.src.data.get('columns'));
-        var checkedAll = true;
+        var checkedAll = value.length > 0;
         var hasCheckboxable = false;
         var checkboxAllow = this.get('row.check.allow');
         var checkboxColumn = _.find(columns, function (item) {
@@ -49,7 +50,7 @@ define([
         this.set('row.check.list', checked, { silent: true });
 
         // todo [akamel] it is not clear how 'hasCheckboxable' is used
-        var value = _.map(this.src.data.get('value'), function (item) {
+        value = _.map(value, function (item) {
           var ret = _.clone(item);
           var checked = false;
           var disabled = true;
@@ -85,7 +86,6 @@ define([
                 checked: checkedAll,
                 disabled: disabled,
               });
-              this.attributes['row.check.checked.all'] = checkedAll;
             } else {
               checkboxColumn.$html = selectableTemplate({
                 type: 'checkbox',

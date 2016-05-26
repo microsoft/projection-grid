@@ -14,7 +14,7 @@ const {
   el: '.grid-root',
   dataSource: {
     data,
-    schema: { key: 'CustomerID' },
+    schema: { key: 'UserName' },
   },
   selectable: true,
   pageable: {
