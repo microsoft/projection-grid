@@ -5,7 +5,7 @@ define([
   'component/grid/layout/template/editable.jade',
   'component/popup-editor/index',
   '../../less/editable.less',
-], function (_, $, BaseProjection, editableTemplate, PopupEditor) {
+], function (_, $, BaseProjection, editableTemplate, prompt) {
   'use strict';
 
   function isReadonlyRow(item) {
@@ -111,7 +111,7 @@ define([
         e.target.tagName !== 'A' &&
         $(e.target).closest('.is-not-trigger').length === 0) {
         schema = arg.grid.options.get('schema');
-        let editor = this.viewConfig[property] || PopupEditor;
+        let editor = this.viewConfig[property] || prompt;
         editor({
           model: arg.model,
           schema: schema,
