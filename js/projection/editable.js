@@ -35,7 +35,7 @@ define([
         let conditions = {};
 
         if (_.isArray(editableOptions)) {
-          _.each(editableOptions, (editableColumn) => {
+          _.each(editableOptions, editableColumn => {
             if (_.isString(editableColumn)) {
               conditions[editableColumn] = editable;
             } else if (_.isObject(editableColumn) && _.isString(editableColumn.name)) {
@@ -117,7 +117,7 @@ define([
           schema: schema,
           position: $(e.target).closest('td').position(),
           property: property,
-          onSubmit: (model) => {
+          onSubmit: model => {
             this.trigger('edit', model);
           },
         });

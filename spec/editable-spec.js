@@ -25,8 +25,8 @@ describe('projection editable', function () {
   it('receive object editable config', function () {
     var model = new EditableProjection({
       'column.editable': {
-        'name': sinon.spy(),
-        'age': sinon.spy(),
+        name: sinon.spy(),
+        age: sinon.spy(),
       },
     });
 
