@@ -108,6 +108,7 @@ define([
 
       if (!isReadonlyRow(arg.model) &&
         this.isEditable(arg.property, arg.model) &&
+        e.target.tagName !== 'A' &&
         $(e.target).closest('.is-not-trigger').length === 0) {
         schema = arg.grid.options.get('schema');
         let editor = this.viewConfig[property] || PopupEditor;
