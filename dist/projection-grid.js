@@ -1446,6 +1446,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _underscore2 = _interopRequireDefault(_underscore);
 	
+	var _backbone = __webpack_require__(7);
+	
+	var _backbone2 = _interopRequireDefault(_backbone);
+	
 	var _index = __webpack_require__(17);
 	
 	var _index2 = _interopRequireDefault(_index);
@@ -1483,7 +1487,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      memo[name] = value || function (item) {
 	        return _underscore2.default.reduce((field || name).split('/'), function (memo, prop) {
-	          return memo[prop];
+	          return _underscore2.default.result(memo, prop);
 	        }, item);
 	      };
 	      return memo;
@@ -1565,6 +1569,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      'column.editable': _underscore2.default.chain(config.columns).filter(_underscore2.default.property('editable')).map(_underscore2.default.property('name')).value()
 	    };
 	  },
+	  MemoryQueryable: function MemoryQueryable() {},
 	  PropertyTemplate: function PropertyTemplate(config) {
 	    return {
 	      'property.template': _underscore2.default.reduce(config.columns, function (propTmpl, column) {
@@ -1593,6 +1598,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	      'page.size': config.pageable.pageSize,
 	      'page.number': 0
 	    };
+	  },
+	  Sink: function Sink(config) {
+	    var data = _underscore2.default.result(config.dataSource, 'data', []);
+	
+	    if (_underscore2.default.isArray(data)) {
+	      return { seed: data };
+	    } else if (data instanceof _backbone2.default.Collection) {
+	      return { seed: data.toJSON() };
+	    }
 	  }
 	};
 	
@@ -1612,8 +1626,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	
-	    if (config.dataSource.type === 'js-data') {
+	    var dataSourceType = config.dataSource.type || 'memory';
+	    if (dataSourceType === 'js-data') {
 	      pipeProjection('JSData');
+	    } else if (dataSourceType === 'memory') {
+	      pipeProjection('Sink');
+	      pipeProjection('MemoryQueryable');
+	      if (config.dataSource.data instanceof _backbone2.default.Collection) {
+	        (function () {
+	          var updating = false;
+	          var scheduleUpdate = function scheduleUpdate() {
+	            if (!updating) {
+	              updating = true;
+	              window.setTimeout(function () {
+	                projection.set('seed', config.dataSource.data.toJSON());
+	                updating = false;
+	              }, 0);
+	            }
+	          };
+	          config.dataSource.data.on('all', scheduleUpdate);
+	        })();
+	      }
 	    } else {
 	      throw new Error('dataSource.type "' + config.dataSource.type + '" is not supported');
 	    }
@@ -2314,7 +2347,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 	
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(6), __webpack_require__(19), __webpack_require__(29), __webpack_require__(30), __webpack_require__(33)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, $, BaseProjection, editableTemplate, PopupEditor) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(6), __webpack_require__(19), __webpack_require__(29), __webpack_require__(30), __webpack_require__(33)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, $, BaseProjection, editableTemplate, prompt) {
 	  'use strict';
 	
 	  function isReadonlyRow(item) {
@@ -2331,23 +2364,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	
 	    beforeSet: function beforeSet(local) {
+	      var _this = this;
+	
 	      var editable = function editable() {
 	        return true;
 	      };
 	
 	      if (_.has(local, 'column.editable')) {
-	        var conditions = _.reduce(local['column.editable'], function (conds, editableColumn) {
-	          if (_.isString(editableColumn)) {
-	            conds[editableColumn] = editable;
-	          } else if (_.isObject(editableColumn) && _.isString(editableColumn.name)) {
-	            conds[editableColumn.name] = _.isFunction(editableColumn.condition) ? editableColumn.condition : editable;
-	          }
-	          return conds;
-	        }, {});
+	        (function () {
+	          var editableOptions = local['column.editable'];
+	          var viewConfig = {};
+	          var conditions = {};
 	
-	        this.isEditable = function (key, item) {
-	          return _.isFunction(conditions[key]) && conditions[key](item);
-	        };
+	          if (_.isArray(editableOptions)) {
+	            _.each(editableOptions, function (editableColumn) {
+	              if (_.isString(editableColumn)) {
+	                conditions[editableColumn] = editable;
+	              } else if (_.isObject(editableColumn) && _.isString(editableColumn.name)) {
+	                conditions[editableColumn.name] = _.isFunction(editableColumn.condition) ? editableColumn.condition : editable;
+	              }
+	              viewConfig[editableColumn] = null;
+	            });
+	          } else {
+	            _.each(editableOptions, function (options, columnName) {
+	              if (_.isFunction(options)) {
+	                conditions[columnName] = editable;
+	                viewConfig[columnName] = options;
+	              }
+	            });
+	          }
+	
+	          _this.viewConfig = viewConfig;
+	          _this.isEditable = function (key, item) {
+	            return _.isFunction(conditions[key]) && conditions[key](item);
+	          };
+	        })();
 	      }
 	    },
 	
@@ -2357,21 +2408,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var columns = model.get('columns');
 	        var iconClasses = this.get('editable.icon.class') || ['glyphicon', 'glyphicon-pencil'];
 	
-	        _.each(this.get('column.editable'), function (editableColumn) {
-	          var key = _.isString(editableColumn) ? editableColumn : editableColumn.name;
-	          if (key) {
-	            var column = columns[key] || { property: key };
-	            var $metadata = column.$metadata = column.$metadata || {};
-	            var attrBody = $metadata['attr.body'] = $metadata['attr.body'] || {};
-	            var className = attrBody.class || [];
+	        _.each(this.viewConfig, function (view, key) {
+	          var column = columns[key] || { property: key };
+	          var $metadata = column.$metadata = column.$metadata || {};
+	          var attrBody = $metadata['attr.body'] = $metadata['attr.body'] || {};
+	          var className = attrBody.class || [];
 	
-	            if (_.isString(className)) {
-	              className = className.split(/\s+/);
-	            }
-	            attrBody.class = _.union(className, ['grid-editable-cell']);
-	
-	            columns[key] = column;
+	          if (_.isString(className)) {
+	            className = className.split(/\s+/);
 	          }
+	          attrBody.class = _.union(className, ['grid-editable-cell']);
+	
+	          columns[key] = column;
 	        });
 	
 	        var value = _.map(model.get('value'), function (item) {
@@ -2395,6 +2443,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	
 	    tdClick: function tdClick(e, arg) {
+	      var _this2 = this;
+	
 	      var schema = null;
 	      var metadata = arg.column.$metadata;
 	      // TODO: wewei
@@ -2403,20 +2453,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      if (!isReadonlyRow(arg.model) && this.isEditable(arg.property, arg.model) && e.target.tagName !== 'A' && $(e.target).closest('.is-not-trigger').length === 0) {
 	        schema = arg.grid.options.get('schema');
-	        PopupEditor.prompt({
-	          template: 'inline',
-	          model: _.clone(arg.model),
+	        var editor = this.viewConfig[property] || prompt;
+	        editor({
+	          model: arg.model,
 	          schema: schema,
-	          fields: [{
-	            showLabel: false,
-	            property: property
-	          }],
-	          position: $(e.target).closest('td').position()
-	        }).then(function (model) {
-	          if (model) {
-	            this.trigger('edit', model);
+	          position: $(e.target).closest('td').position(),
+	          property: property,
+	          onSubmit: function onSubmit(model) {
+	            _this2.trigger('edit', model);
 	          }
-	        }.bind(this));
+	        });
 	      }
 	    }
 	  });
@@ -2452,30 +2498,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.trigger('cancel');
 	      },
 	      'change .editor': function changeEditor(e) {
-	        this.model[this.property] = e.target.value;
+	        this.model = e.target.model;
+	      },
+	      'click form': function clickForm(e) {
+	        e.stopPropagation();
 	      }
 	    },
 	
 	    initialize: function initialize(options) {
 	      this.position = options.position;
 	      this.model = options.model;
-	      this.property = options.fields[0].property;
+	      this.property = options.property;
 	    },
 	
 	    render: function render() {
+	      var _this = this;
+	
 	      this.$el.html(template({ value: this.model[this.property] }));
 	      this.$el.css({
 	        position: 'absolute',
 	        left: this.position.left,
 	        top: this.position.top
 	      });
+	
 	      this.dismiss = function () {
 	        this.trigger('cancel');
 	      }.bind(this);
 	
 	      window.setTimeout(function () {
-	        $(window).on('click', this.dismiss);
+	        $(window).on('click', _this.dismiss);
 	      }, 0);
+	
 	      return this;
 	    },
 	
@@ -2483,26 +2536,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	      $(window).off('click', this.dismiss);
 	      Backbone.View.prototype.remove.apply(this, arguments);
 	    }
+	
 	  });
 	
-	  return {
-	    prompt: function prompt(options) {
-	      return new Promise(function (resolve /* , reject */) {
-	        var editor = new PopupEditor(options);
+	  return function (options) {
+	    var editor = new PopupEditor(options);
 	
-	        document.body.appendChild(editor.render().el);
+	    document.body.appendChild(editor.render().el);
 	
-	        editor.on('save', function (model) {
-	          resolve(model);
-	          editor.remove();
-	        });
+	    editor.on('save', function (model) {
+	      editor.remove();
+	      options.onSubmit && options.onSubmit(model);
+	    });
 	
-	        editor.on('cancel', function () {
-	          resolve();
-	          editor.remove();
-	        });
-	      });
-	    }
+	    editor.on('cancel', function () {
+	      editor.remove();
+	      options.onCancel && options.onCancel();
+	    });
 	  };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -3387,12 +3437,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      if (Model.__super__.update.call(this, options)) {
 	        var checkId = this.get('row.check.id');
-	        var ids = _.pluck(this.src.data.get('value'), checkId);
+	        var value = this.src.data.get('value');
+	        var ids = _.pluck(value, checkId);
 	        var checked = _.intersection(this.get('row.check.list'), ids);
 	        var checkedLookup = _.object(checked, []);
 	        var col = this.get('column.checked');
 	        var columns = _.clone(this.src.data.get('columns'));
-	        var checkedAll = true;
+	        var checkedAll = value.length > 0;
 	        var hasCheckboxable = false;
 	        var checkboxAllow = this.get('row.check.allow');
 	        var checkboxColumn = _.find(columns, function (item) {
@@ -3403,7 +3454,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.set('row.check.list', checked, { silent: true });
 	
 	        // todo [akamel] it is not clear how 'hasCheckboxable' is used
-	        var value = _.map(this.src.data.get('value'), function (item) {
+	        value = _.map(value, function (item) {
 	          var ret = _.clone(item);
 	          var checked = false;
 	          var disabled = true;
@@ -3439,7 +3490,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                checked: checkedAll,
 	                disabled: disabled
 	              });
-	              this.attributes['row.check.checked.all'] = checkedAll;
+	              if (!checkedAll) {
+	                this.attributes['row.check.checked.all'] = false;
+	              }
 	            } else {
 	              checkboxColumn.$html = selectableTemplate({
 	                type: 'checkbox',
@@ -3682,7 +3735,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var checkMap = _.clone(this.get('row.check.map'));
 	        var id = arg.model[this.get('row.check.id')];
 	        var defaultTransition = this.get('row.check.transition');
-	        var check = _.extend({ id: id, transition: defaultTransition, state: 'unchecked' }, checkMap[id]);
+	        var check = _.extend({
+	          id: id,
+	          transition: defaultTransition,
+	          state: 'unchecked'
+	        }, checkMap[id]);
 	
 	        check.state = check.transition(check.state);
 	        checkMap[id] = check;
@@ -3709,7 +3766,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        checkMap = _.object(this.data.get('value').map(function (item) {
 	          var id = item[checkId];
-	          var check = _.extend({ id: id, transition: CheckTransitionRule }, checkMap[id], { state: allCheck.state });
+	          var check = _.extend({
+	            id: id,
+	            transition: CheckTransitionRule
+	          }, checkMap[id], { state: allCheck.state });
 	
 	          return [id, check];
 	        }));
