@@ -13,14 +13,17 @@ define([
         this.trigger('cancel');
       },
       'change .editor': function (e) {
-        this.model[this.property] = e.target.value;
+        this.model = e.target.model;
       },
+      'click form': function (e) {
+        e.stopPropagation();
+      }
     },
 
     initialize: function (options) {
       this.position = options.position;
       this.model = options.model;
-      this.property = options.fields[0].property;
+      this.property = options.property;
     },
 
     render: function () {
@@ -30,13 +33,15 @@ define([
         left: this.position.left,
         top: this.position.top,
       });
+
       this.dismiss = function () {
         this.trigger('cancel');
       }.bind(this);
 
-      window.setTimeout(function () {
+      window.setTimeout(() => {
         $(window).on('click', this.dismiss);
       }, 0);
+
       return this;
     },
 
@@ -44,25 +49,22 @@ define([
       $(window).off('click', this.dismiss);
       Backbone.View.prototype.remove.apply(this, arguments);
     },
+
   });
 
-  return {
-    prompt: function (options) {
-      return new Promise(function (resolve /* , reject */) {
-        var editor = new PopupEditor(options);
+  return function (options) {
+    var editor = new PopupEditor(options);
 
-        document.body.appendChild(editor.render().el);
+    document.body.appendChild(editor.render().el);
 
-        editor.on('save', function (model) {
-          resolve(model);
-          editor.remove();
-        });
+    editor.on('save', function (model) {
+      editor.remove();
+      options.onSubmit && options.onSubmit(model);
+    });
 
-        editor.on('cancel', function () {
-          resolve();
-          editor.remove();
-        });
-      });
-    },
+    editor.on('cancel', function () {
+      editor.remove();
+      options.onCancel && options.onCancel();
+    });
   };
 });
