@@ -27,7 +27,11 @@ const projectionConfigs = {
 
   Map(config) {
     const properties = _.reduce(config.columns, (memo, { name, value, field }) => {
-      memo[name] = value || (item => _.reduce((field || name).split('/'), (memo, prop) => memo[prop], item));
+      memo[name] = value || (item => _.reduce(
+        (field || name).split('/'),
+        (memo, prop) => _.result(memo, prop),
+        item
+      ));
       return memo;
     }, {});
 
@@ -121,6 +125,8 @@ const projectionConfigs = {
     };
   },
 
+  MemoryQueryable() { },
+
   PropertyTemplate(config) {
     return {
       'property.template': _.reduce(config.columns, (propTmpl, column) => {
@@ -160,6 +166,12 @@ const projectionConfigs = {
       'page.number': 0,
     };
   },
+
+  Sink(config) {
+    return {
+      seed: _.result(config.dataSource, 'data', []),
+    };
+  },
 };
 
 export default definePlugin => definePlugin('projection', [
@@ -181,6 +193,12 @@ export default definePlugin => definePlugin('projection', [
 
   if (config.dataSource.type === 'js-data') {
     pipeProjection('JSData');
+  } else if (
+    config.dataSource.type === 'memory' ||
+    _.isArray(config.dataSource.data)
+  ) {
+    pipeProjection('Sink');
+    pipeProjection('MemoryQueryable');
   } else {
     throw new Error(`dataSource.type "${config.dataSource.type}" is not supported`);
   }
