@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import Backbone from 'backbone';
 import projections from '../projection/index';
 import { delegateEvents } from './utility';
 
@@ -168,9 +169,13 @@ const projectionConfigs = {
   },
 
   Sink(config) {
-    return {
-      seed: _.result(config.dataSource, 'data', []),
-    };
+    const data = _.result(config.dataSource, 'data', []);
+
+    if (_.isArray(data)) {
+      return { seed: data };
+    } else if (data instanceof Backbone.Collection) {
+      return { seed: data.toJSON() };
+    }
   },
 };
 
@@ -191,14 +196,25 @@ export default definePlugin => definePlugin('projection', [
     }
   }
 
-  if (config.dataSource.type === 'js-data') {
+  const dataSourceType = config.dataSource.type || 'memory';
+  if (dataSourceType === 'js-data') {
     pipeProjection('JSData');
-  } else if (
-    config.dataSource.type === 'memory' ||
-    _.isArray(config.dataSource.data)
-  ) {
+  } else if (dataSourceType === 'memory') {
     pipeProjection('Sink');
     pipeProjection('MemoryQueryable');
+    if (config.dataSource.data instanceof Backbone.Collection) {
+      let updating = false;
+      const scheduleUpdate = () => {
+        if (!updating) {
+          updating = true;
+          window.setTimeout(() => {
+            projection.set('seed', config.dataSource.data.toJSON());
+            updating = false;
+          }, 0);
+        }
+      };
+      config.dataSource.data.on('all', scheduleUpdate);
+    }
   } else {
     throw new Error(`dataSource.type "${config.dataSource.type}" is not supported`);
   }

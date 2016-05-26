@@ -1,8 +1,11 @@
+import Backbone from 'backbone';
 import pgrid from 'projection-grid';
 import pagerViewPlugin from './pager-view-plugin';
 import people from 'json!./people.json';
 
 import 'bootstrap-webpack';
+
+const data = window.data = new Backbone.Collection(people.value);
 
 const {
   pagerView,
@@ -10,7 +13,7 @@ const {
 } = pgrid.factory().use(pagerViewPlugin).create({
   el: '.grid-root',
   dataSource: {
-    data: people.value,
+    data,
     schema: { key: 'CustomerID' },
   },
   selectable: true,
