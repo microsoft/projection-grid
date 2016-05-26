@@ -17,7 +17,7 @@ define([
       },
       'click form': function (e) {
         e.stopPropagation();
-      }
+      },
     },
 
     initialize: function (options) {
