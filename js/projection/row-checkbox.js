@@ -86,6 +86,9 @@ define([
                 checked: checkedAll,
                 disabled: disabled,
               });
+              if (!checkedAll) {
+                this.attributes['row.check.checked.all'] = false;
+              }
             } else {
               checkboxColumn.$html = selectableTemplate({
                 type: 'checkbox',
