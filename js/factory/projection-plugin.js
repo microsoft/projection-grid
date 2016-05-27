@@ -47,27 +47,42 @@ const projectionConfigs = {
   },
 
   Columns(config) {
-    return {
-      columns: _.reduce(config.columns, (columns, column) => {
-        const $metadata = {};
+    const columns = _.reduce(config.columns, (columns, column) => {
+      const $metadata = {};
 
-        if (column.attributes) {
-          $metadata['attr.body'] = column.attributes;
-        }
+      if (column.attributes) {
+        $metadata['attr.body'] = column.attributes;
+      }
 
-        if (column.headerAttributes) {
-          $metadata['attr.head'] = column.headerAttributes;
-        }
+      if (column.headerAttributes) {
+        $metadata['attr.head'] = column.headerAttributes;
+      }
 
-        columns[column.name] = {
-          sortable: column.sortable,
-          $metadata,
-          config: column,
-        };
+      columns[column.name] = {
+        sortable: column.sortable,
+        $metadata,
+        config: column,
+      };
 
-        return columns;
-      }, {}),
-    };
+      return columns;
+    }, {});
+
+    if (config.selectable) {
+      columns.checkbox = {
+        config: { name: 'selection' },
+      };
+    }
+
+    if (_.has(config.columnShifter, 'totalColumns')) {
+      columns['column.skip.less'] = {
+        config: { name: 'skip-less' },
+      };
+      columns['column.skip.more'] = {
+        config: { name: 'skip-more' },
+      };
+    }
+
+    return { columns };
   },
 
   ColumnI18n(config) {
@@ -226,8 +241,8 @@ export default definePlugin => definePlugin('projection', [
   if (config.aggregate) {
     pipeProjection('AggregateRow');
   }
-  pipeProjection('ColumnI18n');
   pipeProjection('ColumnQueryable');
+  pipeProjection('ColumnI18n');
 
   if (_.has(config.columnShifter, 'totalColumns')) {
     pipeProjection('ColumnShifter');
