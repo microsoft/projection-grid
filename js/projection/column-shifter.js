@@ -55,9 +55,9 @@ define([
         }
 
         select.splice(unlockedAt, 0, colLess.property);
-        columns[colLess.property] = colLess;
+        columns[colLess.property] = _.defaults(colLess, columns[colLess.property]);
         select.push(colMore.property);
-        columns[colMore.property] = colMore;
+        columns[colMore.property] = _.defaults(colMore, columns[colMore.property]);
 
         this.patch({
           columns: columns,
