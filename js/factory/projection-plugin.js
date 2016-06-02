@@ -133,11 +133,20 @@ const projectionConfigs = {
   },
 
   Editable(config) {
+    var editableNames = _.chain(config.columns)
+      .filter(_.property('editable'))
+      .map(_.property('name'))
+      .value();
+    var editableConf = editableNames;
+    // the popupEditorConstructor is used to set the customized popup editor
+    if (config.popupEditorConstructor) {
+      editableConf = {};
+      editableNames.forEach(function(name) {
+        editableConf[name] = config.popupEditorConstructor;
+      })
+    }
     return {
-      'column.editable': _.chain(config.columns)
-        .filter(_.property('editable'))
-        .map(_.property('name'))
-        .value(),
+      'column.editable': editableConf,
     };
   },
 
