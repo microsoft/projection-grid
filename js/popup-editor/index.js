@@ -13,7 +13,7 @@ define([
         this.trigger('cancel');
       },
       'change .editor': function (e) {
-        this.model = e.target.model;
+        this.model[this.property] = e.target.value;
       },
       'click form': function (e) {
         e.stopPropagation();
