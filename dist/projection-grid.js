@@ -156,7 +156,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }, { config: config });
 	    }
 	  }]);
-
+	
 	  return GridFactory;
 	}();
 
@@ -1196,80 +1196,80 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 	
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _) {
-	  function viewport(el, container) {
-	    var $el = el ? $(el) : this.$el;
+	    function viewport(el, container) {
+	        var $el = el ? $(el) : this.$el;
 	
-	    container = container || this.container;
-	    var $viewport = container.$el;
+	        container = container || this.container;
+	        var $viewport = container.$el;
 	
-	    var viewportTop = $viewport.scrollTop();
-	    var viewportBottom = viewportTop + $viewport.height();
-	    var viewportLeft = $viewport.scrollLeft();
+	        var viewportTop = $viewport.scrollTop();
+	        var viewportBottom = viewportTop + $viewport.height();
+	        var viewportLeft = $viewport.scrollLeft();
 	
-	    var boundsTop = container.offset($el).top;
-	    var boundsBottom = boundsTop + $el.innerHeight();
-	    // var boundsLeft = $el.offset().left;
+	        var boundsTop = container.offset($el).top;
+	        var boundsBottom = boundsTop + $el.innerHeight();
+	        // var boundsLeft = $el.offset().left;
 	
-	    var visibleTop = Math.max(boundsTop, viewportTop);
-	    var visibleBottom = Math.min(boundsBottom, viewportBottom);
-	    // var visibleLeft = Math.max(boundsLeft, viewportLeft);
+	        var visibleTop = Math.max(boundsTop, viewportTop);
+	        var visibleBottom = Math.min(boundsBottom, viewportBottom);
+	        // var visibleLeft = Math.max(boundsLeft, viewportLeft);
+	
+	        return {
+	            top: visibleTop - boundsTop,
+	            bottom: visibleBottom - boundsTop,
+	            offsetLeft: viewportLeft
+	        };
+	    }
+	
+	    function dimensions(el) {
+	        var $el = el ? $(el) : this.$el;
+	
+	        // calculate heights
+	        // a. header
+	        var ret = {
+	            rows: [],
+	            thead: $el.find('thead > tr').outerHeight()
+	        };
+	
+	        // b. keep row info
+	        $el.find('tbody').children('tr').each(function () {
+	            ret.rows.push($(this).outerHeight());
+	        });
+	
+	        // c. update average row height
+	        var avg = _.reduce(ret.rows, function (memo, num) {
+	            return memo + num;
+	        }, 0) / (ret.rows.length === 0 ? 1 : ret.rows.length);
+	
+	        ret.avgRowHeight = avg;
+	        ret.estimateHeight = _.size(this.data.value) * avg + ret.thead;
+	
+	        return ret;
+	    }
+	
+	    function sample() {
+	        // a. render test pass
+	        var $tmpEl = $('<div style="visibility:hidden" />');
+	        var sample = _.first(this.data.value, 20);
+	
+	        this.$el.append($tmpEl);
+	
+	        $tmpEl[0].innerHTML = this.toHTML(sample);
+	
+	        // b. take measures
+	        var ret = dimensions.call(this, $tmpEl);
+	
+	        // c. clean-up
+	        $tmpEl.remove();
+	
+	        return ret;
+	    }
 	
 	    return {
-	      top: visibleTop - boundsTop,
-	      bottom: visibleBottom - boundsTop,
-	      offsetLeft: viewportLeft
+	        viewport: viewport,
+	        dimensions: dimensions,
+	        sample: sample
 	    };
-	  }
-	
-	  function dimensions(el) {
-	    var $el = el ? $(el) : this.$el;
-	
-	    // calculate heights
-	    // a. header
-	    var ret = {
-	      rows: [],
-	      thead: $el.find('thead > tr').outerHeight()
-	    };
-	
-	    // b. keep row info
-	    $el.find('tbody').children('tr').each(function () {
-	      ret.rows.push($(this).outerHeight());
-	    });
-	
-	    // c. update average row height
-	    var avg = _.reduce(ret.rows, function (memo, num) {
-	      return memo + num;
-	    }, 0) / (ret.rows.length === 0 ? 1 : ret.rows.length);
-	
-	    ret.avgRowHeight = avg;
-	    ret.estimateHeight = _.size(this.data.value) * avg + ret.thead;
-	
-	    return ret;
-	  }
-	
-	  function sample() {
-	    // a. render test pass
-	    var $tmpEl = $('<div style="visibility:hidden" />');
-	    var sample = _.first(this.data.value, 20);
-	
-	    this.$el.append($tmpEl);
-	
-	    $tmpEl[0].innerHTML = this.toHTML(sample);
-	
-	    // b. take measures
-	    var ret = dimensions.call(this, $tmpEl);
-	
-	    // c. clean-up
-	    $tmpEl.remove();
-	
-	    return ret;
-	  }
-	
-	  return {
-	    viewport: viewport,
-	    dimensions: dimensions,
-	    sample: sample
-	  };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
@@ -1505,27 +1505,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	  },
 	  Columns: function Columns(config) {
-	    return {
-	      columns: _underscore2.default.reduce(config.columns, function (columns, column) {
-	        var $metadata = {};
+	    var columns = _underscore2.default.reduce(config.columns, function (columns, column) {
+	      var $metadata = {};
 	
-	        if (column.attributes) {
-	          $metadata['attr.body'] = column.attributes;
-	        }
+	      if (column.attributes) {
+	        $metadata['attr.body'] = column.attributes;
+	      }
 	
-	        if (column.headerAttributes) {
-	          $metadata['attr.head'] = column.headerAttributes;
-	        }
+	      if (column.headerAttributes) {
+	        $metadata['attr.head'] = column.headerAttributes;
+	      }
 	
-	        columns[column.name] = {
-	          sortable: column.sortable,
-	          $metadata: $metadata,
-	          config: column
-	        };
+	      columns[column.name] = {
+	        sortable: column.sortable,
+	        $metadata: $metadata,
+	        config: column
+	      };
 	
-	        return columns;
-	      }, {})
-	    };
+	      return columns;
+	    }, {});
+	
+	    if (config.selectable) {
+	      columns.checkbox = {
+	        config: { name: 'selection' }
+	      };
+	    }
+	
+	    if (_underscore2.default.has(config.columnShifter, 'totalColumns')) {
+	      columns['column.skip.less'] = {
+	        config: { name: 'skip-less' }
+	      };
+	      columns['column.skip.more'] = {
+	        config: { name: 'skip-more' }
+	      };
+	    }
+	
+	    return { columns: columns };
 	  },
 	  ColumnI18n: function ColumnI18n(config) {
 	    return {
@@ -1658,8 +1673,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (config.aggregate) {
 	      pipeProjection('AggregateRow');
 	    }
-	    pipeProjection('ColumnI18n');
 	    pipeProjection('ColumnQueryable');
+	    pipeProjection('ColumnI18n');
 	
 	    if (_underscore2.default.has(config.columnShifter, 'totalColumns')) {
 	      pipeProjection('ColumnShifter');
@@ -1990,11 +2005,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var model = this.src.data;
 	        var colOptions = this.get('column.i18n');
 	        var columns = model.get('columns') || {};
-	        var select = model.get('select') || _.keys(columns);
 	        var $default = colOptions[''];
 	
 	        var i18nColumns = {};
-	        _.each(select, function (element) {
+	        _.each(_.keys(columns), function (element) {
 	          var opt = colOptions[element];
 	          if (_.isUndefined(opt)) {
 	            opt = $default;
@@ -2175,9 +2189,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        select.splice(unlockedAt, 0, colLess.property);
-	        columns[colLess.property] = colLess;
+	        columns[colLess.property] = _.defaults(colLess, columns[colLess.property]);
 	        select.push(colMore.property);
-	        columns[colMore.property] = colMore;
+	        columns[colMore.property] = _.defaults(colMore, columns[colMore.property]);
 	
 	        this.patch({
 	          columns: columns,
