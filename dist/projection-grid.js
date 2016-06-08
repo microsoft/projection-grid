@@ -1580,8 +1580,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	  },
 	  Editable: function Editable(config) {
+	    var editableNames = _underscore2.default.chain(config.columns).filter(_underscore2.default.property('editable')).map(_underscore2.default.property('name')).value();
+	    var editableConf = editableNames;
+	    // the popupEditorConstructor is used to set the customized popup editor
+	    if (config.popupEditorConstructor) {
+	      editableConf = {};
+	      editableNames.forEach(function (name) {
+	        editableConf[name] = config.popupEditorConstructor;
+	      });
+	    }
 	    return {
-	      'column.editable': _underscore2.default.chain(config.columns).filter(_underscore2.default.property('editable')).map(_underscore2.default.property('name')).value()
+	      'column.editable': editableConf
 	    };
 	  },
 	  MemoryQueryable: function MemoryQueryable() {},
@@ -2512,7 +2521,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.trigger('cancel');
 	      },
 	      'change .editor': function changeEditor(e) {
-	        this.model = e.target.model;
+	        this.model[this.property] = e.target.value;
 	      },
 	      'click form': function clickForm(e) {
 	        e.stopPropagation();
