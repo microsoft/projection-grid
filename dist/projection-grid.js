@@ -1580,15 +1580,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	  },
 	  Editable: function Editable(config) {
-	    var editableNames = _underscore2.default.chain(config.columns).filter(_underscore2.default.property('editable')).map(_underscore2.default.property('name')).value();
-	    var editableConf = editableNames;
-	    // the popupEditorConstructor is used to set the customized popup editor
-	    if (config.popupEditorConstructor) {
-	      editableConf = {};
-	      editableNames.forEach(function (name) {
-	        editableConf[name] = config.popupEditorConstructor;
-	      });
-	    }
+	    var editableConf = {};
+	    // the popupEditorBuilder is used to set the customized popup editor
+	    var defaultBuilder = config.popupEditorBuilder;
+	
+	    _underscore2.default.each(config.columns, function (column) {
+	      if (column.editable) {
+	        editableConf[column.name] = column.popupEditorBuilder || defaultBuilder;
+	      }
+	    });
+	
 	    return {
 	      'column.editable': editableConf
 	    };
