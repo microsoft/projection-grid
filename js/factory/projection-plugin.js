@@ -19,11 +19,12 @@ const projectionConfigs = {
   },
 
   JSData(config) {
-    return {
+    var otherConfig = _.omit(config.dataSource, 'resource', 'query', 'options');
+    return _.extend(otherConfig, {
       'jsdata.entity': config.dataSource.resource,
       'jsdata.query': config.dataSource.query,
       'jsdata.options': config.dataSource.options,
-    };
+    });
   },
 
   Map(config) {
@@ -142,7 +143,7 @@ const projectionConfigs = {
         editableConf[column.name] = column.popupEditorBuilder || defaultBuilder;
       }
     });
- 
+
     return {
       'column.editable': editableConf,
     };
