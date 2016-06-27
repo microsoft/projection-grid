@@ -1473,11 +1473,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return configAgg;
 	  },
 	  JSData: function JSData(config) {
-	    return {
+	    var otherConfig = _underscore2.default.omit(config.dataSource, 'resource', 'query', 'options');
+	    return _underscore2.default.extend(otherConfig, {
 	      'jsdata.entity': config.dataSource.resource,
 	      'jsdata.query': config.dataSource.query,
 	      'jsdata.options': config.dataSource.options
-	    };
+	    });
 	  },
 	  Map: function Map(config) {
 	    var properties = _underscore2.default.reduce(config.columns, function (memo, _ref) {
