@@ -24,7 +24,7 @@ const projectionConfigs = {
       'take',
       'filter',
       'orderby',
-      'select'
+      'select',
     ]), {
       'jsdata.entity': config.dataSource.resource,
       'jsdata.query': config.dataSource.query,
@@ -143,7 +143,7 @@ const projectionConfigs = {
     // the popupEditorBuilder is used to set the customized popup editor
     var defaultBuilder = config.popupEditorBuilder;
 
-    _.each(config.columns, function(column) {
+    _.each(config.columns, column => {
       if (column.editable) {
         editableConf[column.name] = column.popupEditorBuilder || defaultBuilder;
       }
