@@ -115,7 +115,7 @@ define([
         editor({
           model: arg.model,
           schema: schema,
-          position: $(e.target).closest('td').position(),
+          position: $(e.target).closest('td').offset(),
           property: property,
           onSubmit: model => {
             this.trigger('edit', model);
