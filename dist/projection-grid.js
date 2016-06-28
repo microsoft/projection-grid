@@ -1473,8 +1473,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return configAgg;
 	  },
 	  JSData: function JSData(config) {
-	    var otherConfig = _underscore2.default.omit(config.dataSource, 'resource', 'query', 'options');
-	    return _underscore2.default.extend(otherConfig, {
+	    return _underscore2.default.extend(_underscore2.default.pick(config.dataSource, ['skip', 'take', 'filter', 'orderby', 'select']), {
 	      'jsdata.entity': config.dataSource.resource,
 	      'jsdata.query': config.dataSource.query,
 	      'jsdata.options': config.dataSource.options
@@ -2482,7 +2481,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        editor({
 	          model: arg.model,
 	          schema: schema,
-	          position: $(e.target).closest('td').position(),
+	          position: $(e.target).closest('td').offset(),
 	          property: property,
 	          onSubmit: function onSubmit(model) {
 	            _this2.trigger('edit', model);
