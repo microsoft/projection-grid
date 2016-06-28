@@ -115,7 +115,7 @@ define([
         editor({
           model: arg.model,
           schema: schema,
-          position: $(e.target).closest('td').offset(),
+          position: this._position(arg.grid, e.target),
           property: property,
           onSubmit: model => {
             this.trigger('edit', model);
@@ -123,5 +123,13 @@ define([
         });
       }
     },
+
+    _position: function (grid, target) {
+      var $td = $(target).closest('td');
+      var pos = grid.layout.container.el === window ? 'offset' : 'position';
+
+      return $td[pos]();
+    },
+
   });
 });
