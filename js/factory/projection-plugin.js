@@ -19,7 +19,7 @@ const projectionConfigs = {
   },
 
   JSData(config) {
-    var otherConfig = _.omit(config.dataSource, 'resource', 'query', 'options');
+    var otherConfig = _.omit(config.dataSource, 'resource', 'query', 'options', 'type', 'schema');
     return _.extend(otherConfig, {
       'jsdata.entity': config.dataSource.resource,
       'jsdata.query': config.dataSource.query,
