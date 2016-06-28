@@ -7,7 +7,7 @@ define([
     var rows = fn(data);
 
     _.each(rows, function (row) {
-      row.$metadata = _.extend(row.$metadata, { type: 'aggregate' });
+      row.$metadata = _.extend({}, row.$metadata, { type: 'aggregate' });
     });
 
     return rows;

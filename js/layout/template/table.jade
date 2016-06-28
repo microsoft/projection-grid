@@ -11,7 +11,10 @@ mixin columnHeader(column)
 
 mixin th(column, hasGroup, isSubColumn)
   - var attr = (column.$metadata || {})['attr.head'] || {}
+  - var colName = column.config && column.config.name || '';
   - var cls = [];
+  if (colName)
+    - cls.push('col-' + colName);
   if column.sortable
     - cls.push('sortable');
   if column.$orderby
@@ -41,8 +44,10 @@ mixin th(column, hasGroup, isSubColumn)
 
 mixin td(row, column)
   - var attr = (column.$metadata || {})['attr.body'] || {}
+  - var colName = column.config && column.config.name || '';
+  - var cls = colName ? 'col-' + colName : '';
 
-  td&attributes(attributes)&attributes(attr)
+  td(class=cls)&attributes(attributes)&attributes(attr)
     - var res = row[column.property]
     if (res && res.$html)
       != res.$html

@@ -1,22 +1,37 @@
+import _ from 'underscore';
 import GridView from '../grid-view';
 import layout from '../layout/index';
+import { delegateEvents } from './utility';
 
 export default definePlugin => definePlugin('gridView', [
   'config',
   'projection',
   'renderers',
-  'columns',
-], function (config, projection, renderers, columns) {
-  return new GridView({
+], function (config, projection, renderers) {
+  const gridView = new GridView({
     projection,
     el: config.el,
-    container: config.container,
+    container: _.chain(config)
+      .result('scrollable')
+      .result('fixedHeader')
+      .result('container')
+      .value(),
     schema: config.dataSource.schema,
     Layout: layout.TableLayout.partial({
       renderers,
       template: layout.templates.table,
       hideHeaders: config.hideHeaders,
-      columns,
     }),
   });
+
+  delegateEvents({
+    from: projection,
+    to: gridView,
+    events: [
+      'update:beginning',
+      'update:finished',
+    ],
+  });
+
+  return gridView;
 });

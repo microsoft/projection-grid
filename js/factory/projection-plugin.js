@@ -1,5 +1,7 @@
 import _ from 'underscore';
+import Backbone from 'backbone';
 import projections from '../projection/index';
+import { delegateEvents } from './utility';
 
 const projectionConfigs = {
   AggregateRow(config) {
@@ -17,16 +19,21 @@ const projectionConfigs = {
   },
 
   JSData(config) {
-    return {
+    var otherConfig = _.omit(config.dataSource, 'resource', 'query', 'options');
+    return _.extend(otherConfig, {
       'jsdata.entity': config.dataSource.resource,
       'jsdata.query': config.dataSource.query,
       'jsdata.options': config.dataSource.options,
-    };
+    });
   },
 
   Map(config) {
     const properties = _.reduce(config.columns, (memo, { name, value, field }) => {
-      memo[name] = value || (item => _.reduce((field || name).split('/'), (memo, prop) => memo[prop], item));
+      memo[name] = value || (item => _.reduce(
+        (field || name).split('/'),
+        (memo, prop) => _.result(memo, prop),
+        item
+      ));
       return memo;
     }, {});
 
@@ -38,6 +45,45 @@ const projectionConfigs = {
         }, {});
       },
     };
+  },
+
+  Columns(config) {
+    const columns = _.reduce(config.columns, (columns, column) => {
+      const $metadata = {};
+
+      if (column.attributes) {
+        $metadata['attr.body'] = column.attributes;
+      }
+
+      if (column.headerAttributes) {
+        $metadata['attr.head'] = column.headerAttributes;
+      }
+
+      columns[column.name] = {
+        sortable: column.sortable,
+        $metadata,
+        config: column,
+      };
+
+      return columns;
+    }, {});
+
+    if (config.selectable) {
+      columns.checkbox = {
+        config: { name: 'selection' },
+      };
+    }
+
+    if (_.has(config.columnShifter, 'totalColumns')) {
+      columns['column.skip.less'] = {
+        config: { name: 'skip-less' },
+      };
+      columns['column.skip.more'] = {
+        config: { name: 'skip-more' },
+      };
+    }
+
+    return { columns };
   },
 
   ColumnI18n(config) {
@@ -87,6 +133,24 @@ const projectionConfigs = {
     };
   },
 
+  Editable(config) {
+    var editableConf = {};
+    // the popupEditorBuilder is used to set the customized popup editor
+    var defaultBuilder = config.popupEditorBuilder;
+
+    _.each(config.columns, function(column) {
+      if (column.editable) {
+        editableConf[column.name] = column.popupEditorBuilder || defaultBuilder;
+      }
+    });
+
+    return {
+      'column.editable': editableConf,
+    };
+  },
+
+  MemoryQueryable() { },
+
   PropertyTemplate(config) {
     return {
       'property.template': _.reduce(config.columns, (propTmpl, column) => {
@@ -100,10 +164,23 @@ const projectionConfigs = {
 
   RowIndex() { },
 
-  RowCheckbox() {
+  RowCheckbox(config) {
     return {
-      'row.check.id': 'rowIndex',
+      'row.check.id': _.chain(config)
+        .result('dataSource')
+        .result('schema')
+        .result('key', 'rowIndex')
+        .value(),
+      'row.check.single': config.selectable === 'single',
       'column.checked': 'checkbox',
+      'row.check.allow': function (model) {
+        var type = _.chain(model).result('$metadata').result('type').value();
+
+        return !_.contains([
+          'segmentation',
+          'aggregate',
+        ], type);
+      },
     };
   },
 
@@ -112,6 +189,16 @@ const projectionConfigs = {
       'page.size': config.pageable.pageSize,
       'page.number': 0,
     };
+  },
+
+  Sink(config) {
+    const data = _.result(config.dataSource, 'data', []);
+
+    if (_.isArray(data)) {
+      return { seed: data };
+    } else if (data instanceof Backbone.Collection) {
+      return { seed: data.toJSON() };
+    }
   },
 };
 
@@ -132,18 +219,38 @@ export default definePlugin => definePlugin('projection', [
     }
   }
 
-  if (config.dataSource.type === 'js-data') {
+  const dataSourceType = config.dataSource.type || 'memory';
+  if (dataSourceType === 'js-data') {
     pipeProjection('JSData');
+  } else if (dataSourceType === 'memory') {
+    pipeProjection('Sink');
+    pipeProjection('MemoryQueryable');
+    if (config.dataSource.data instanceof Backbone.Collection) {
+      let updating = false;
+      const scheduleUpdate = () => {
+        if (!updating) {
+          updating = true;
+          window.setTimeout(() => {
+            projection.set('seed', config.dataSource.data.toJSON());
+            updating = false;
+          }, 0);
+        }
+      };
+      config.dataSource.data.on('all', scheduleUpdate);
+    }
   } else {
     throw new Error(`dataSource.type "${config.dataSource.type}" is not supported`);
   }
 
+  const dataSourceProjection = projection;
+
+  pipeProjection('Columns');
   pipeProjection('Map');
   if (config.aggregate) {
     pipeProjection('AggregateRow');
   }
-  pipeProjection('ColumnI18n');
   pipeProjection('ColumnQueryable');
+  pipeProjection('ColumnI18n');
 
   if (_.has(config.columnShifter, 'totalColumns')) {
     pipeProjection('ColumnShifter');
@@ -159,6 +266,18 @@ export default definePlugin => definePlugin('projection', [
   if (_.has(config.pageable, 'pageSize')) {
     pipeProjection('Page');
   }
+  if (_.find(config.columns, _.property('editable'))) {
+    pipeProjection('Editable');
+  }
+
+  delegateEvents({
+    from: dataSourceProjection,
+    to: projection,
+    events: [
+      'update:beginning',
+      'update:finished',
+    ],
+  });
 
   return projection;
 });

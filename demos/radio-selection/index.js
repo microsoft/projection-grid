@@ -2,35 +2,16 @@ var pgrid = require('projection-grid');
 var Customer = require('./js-data-resource');
 var keyHeaderTemplate = require('./key-column-header.jade');
 var companyNameTemplate = require('./company-name.jade');
-var pagerViewPlugin = require('./pager-view-plugin').default;
 require('bootstrap-webpack');
 
-var grid = pgrid.factory().use(pagerViewPlugin).create({
+var grid = pgrid.factory().create({
   el: '.grid-root',
   dataSource: {
     type: 'js-data',
     resource: Customer,
-    schema: { key: 'CustomerID' },
   },
-  aggregate: {
-    top(/* data */) {
-      return [
-        { CustomerID: 'Total Top' },
-      ];
-    },
-    bottom(/* data */) {
-      return [
-        { CustomerID: 'Total Bottom' },
-      ];
-    },
-  },
-  scrollable: {
-    virtual: true,
-  },
-  columnShifter: {
-    totalColumns: 3,
-  },
-  selectable: true,
+  selectable: 'single',
+  hideHeaders: true,
   pageable: {
     pageSize: 10,
     pageSizes: [5, 10, 15, 20],
@@ -47,7 +28,6 @@ var grid = pgrid.factory().use(pagerViewPlugin).create({
       name: 'CompanyName',
       title: 'Company Name',
       sortable: true,
-      editable: true,
       template: companyNameTemplate,
       attributes: {
         class: 'company-name-cell',
@@ -60,7 +40,6 @@ var grid = pgrid.factory().use(pagerViewPlugin).create({
       name: 'City',
       title: 'City',
       sortable: true,
-      editable: true,
     },
     {
       name: 'Contact',
@@ -75,17 +54,4 @@ var grid = pgrid.factory().use(pagerViewPlugin).create({
   },
 });
 
-grid.gridView.on('update:beginning', function () {
-  console.log('begin update');
-});
-
-grid.gridView.on('update:finished', function () {
-  console.log('end update');
-});
-
-grid.gridView.on('data:edit', model => {
-  console.log(`[Edit] ${JSON.stringify(model)}`);
-});
-
 grid.gridView.render({ fetch: true });
-grid.pagerView.render();

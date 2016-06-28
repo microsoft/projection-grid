@@ -29,11 +29,10 @@ define([
         var model = this.src.data;
         var colOptions = this.get('column.i18n');
         var columns = model.get('columns') || {};
-        var select = _.size(columns) ? _.keys(columns) : model.get('select');
         var $default = colOptions[''];
 
         var i18nColumns = {};
-        _.each(select, function (element) {
+        _.each(_.keys(columns), function (element) {
           var opt = colOptions[element];
           if (_.isUndefined(opt)) {
             opt = $default;

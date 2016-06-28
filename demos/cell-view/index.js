@@ -1,40 +1,20 @@
 var pgrid = require('projection-grid');
-var Customer = require('./js-data-resource');
+var Customer = require('./js-data-resource').default;
 var keyHeaderTemplate = require('./key-column-header.jade');
 var companyNameTemplate = require('./company-name.jade');
-var pagerViewPlugin = require('./pager-view-plugin').default;
-require('bootstrap-webpack');
+var MapView = require('./map-view').default;
 
-var grid = pgrid.factory().use(pagerViewPlugin).create({
+require('bootstrap-webpack');
+require('style!css!./index.css');
+
+var grid = pgrid.factory().create({
   el: '.grid-root',
   dataSource: {
     type: 'js-data',
     resource: Customer,
     schema: { key: 'CustomerID' },
   },
-  aggregate: {
-    top(/* data */) {
-      return [
-        { CustomerID: 'Total Top' },
-      ];
-    },
-    bottom(/* data */) {
-      return [
-        { CustomerID: 'Total Bottom' },
-      ];
-    },
-  },
-  scrollable: {
-    virtual: true,
-  },
-  columnShifter: {
-    totalColumns: 3,
-  },
   selectable: true,
-  pageable: {
-    pageSize: 10,
-    pageSizes: [5, 10, 15, 20],
-  },
   columns: [
     {
       name: 'CustomerID',
@@ -47,7 +27,6 @@ var grid = pgrid.factory().use(pagerViewPlugin).create({
       name: 'CompanyName',
       title: 'Company Name',
       sortable: true,
-      editable: true,
       template: companyNameTemplate,
       attributes: {
         class: 'company-name-cell',
@@ -60,7 +39,7 @@ var grid = pgrid.factory().use(pagerViewPlugin).create({
       name: 'City',
       title: 'City',
       sortable: true,
-      editable: true,
+      View: MapView,
     },
     {
       name: 'Contact',
@@ -69,23 +48,6 @@ var grid = pgrid.factory().use(pagerViewPlugin).create({
       sortable: true,
     },
   ],
-  pagerView: {
-    el: '.pager-root',
-    availablePageSizes: [5, 10, 15, 20],
-  },
-});
-
-grid.gridView.on('update:beginning', function () {
-  console.log('begin update');
-});
-
-grid.gridView.on('update:finished', function () {
-  console.log('end update');
-});
-
-grid.gridView.on('data:edit', model => {
-  console.log(`[Edit] ${JSON.stringify(model)}`);
 });
 
 grid.gridView.render({ fetch: true });
-grid.pagerView.render();

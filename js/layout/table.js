@@ -25,6 +25,8 @@ define([
         return new Renderer({ layout: this });
       }.bind(this));
 
+      this.subviews = [];
+
       // TODO [akamel] make this conditional if these renderes are enabled
       this.onViewPortChange = this.onViewPortChange.bind(this);
       this.listenTo(this.container, 'scroll:container', this.onViewPortChange);
@@ -35,7 +37,15 @@ define([
       this.scheduleDraw();
     },
 
+    removeSubviews: function () {
+      _.each(this.subviews, function (subview) {
+        subview.remove();
+      });
+      this.subviews = [];
+    },
+
     remove: function () {
+      this.removeSubviews();
       this.container.stopListening(this.container);
       Backbone.View.prototype.remove.apply(this, arguments);
     },
@@ -108,7 +118,7 @@ define([
       ret.column = this.data.columns[ret.property];
       if (ret.property === this.grid.projection.get('column.checked')) {
         // TODO [akamel] this shouldn't be here
-        var checkbox = $el.find('.column-checkbox');
+        var checkbox = $el.find('.column-selection');
         if (checkbox.length) {
           ret.checked = checkbox[0].checked;
         }
@@ -144,10 +154,9 @@ define([
         renderer.update && renderer.update();
       });
 
-      // TODO [akamel] consider moving this to a projection
       var value = model.get('value');
-      // TODO [akamel] is this overriding the values we got from the projection //see column extend below
       var columns = model.get('columns');
+      var columnsDelta = {};
       var colOptions = this.options.columns || {};
       var orderby = {};
 
@@ -163,13 +172,19 @@ define([
       // TODO [akamel] consider filtering which props to copy/override
         var delta = {};
         var colOption = colOptions[property];
-        var orderName = colOption && _.isString(colOption.sortable) ? colOption.sortable : property;
+        var orderName = property;
+
+        if (colOption && _.isString(colOption.sortable)) {
+          orderName = colOption.sortable;
+        } else if (col && _.isString(col.sortable)) {
+          orderName = col.sortable;
+        }
 
         if (orderby[orderName]) {
           delta.$orderby = orderby[orderName];
         }
 
-        columns[property] = _.extend(col, colOption, delta);
+        columnsDelta[property] = _.defaults(delta, colOption, col);
       });
 
       if (_.has(this.options.$metadata, 'class') && _.isArray(this.options.$metadata.class)) {
@@ -178,7 +193,7 @@ define([
 
       var delta = {
         'value': value,
-        'columns': columns,
+        'columns': columnsDelta,
         'columns.lookup': _.indexBy(columns, function (col) {
           return col.property;
         }),
@@ -251,9 +266,30 @@ define([
           throw err;
         }
 
+        this.removeSubviews();
+
         if (res.canSkipDraw !== true) {
           this.el.innerHTML = this.toHTML(res.rows);
         }
+
+        _.each(this.data.columns, function (column) {
+          if (column.config) {
+            if (_.isFunction(column.config.View)) {
+              this.$('td.col-' + column.config.name).each(function (index, el) {
+                var cellView = new column.config.View({ model: this.dataFor(el).model });
+                this.$(el).html(cellView.render().el);
+                this.subviews.push(cellView);
+              }.bind(this));
+            }
+            if (_.isFunction(column.config.HeaderView)) {
+              this.$('th.col-' + column.config.name).each(function (index, el) {
+                var headerView = new column.config.HeaderView();
+                this.$(el).html(headerView.render().el);
+                this.subviews.push(headerView);
+              }.bind(this));
+            }
+          }
+        }, this);
       }.bind(this));
 
       this.trigger('render:finished');

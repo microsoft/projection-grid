@@ -27,6 +27,7 @@ require([
   var ColumnGroup = pgrid.projections.ColumnGroup;
   var EditableProjection = pgrid.projections.Editable;
   var ColumnTemplate = pgrid.projections.ColumnTemplate;
+  var Columns = pgrid.projections.Columns;
   // layout
   var TableLayout = pgrid.layout.TableLayout;
   var tmplJade = pgrid.layout.templates.table;
@@ -168,6 +169,27 @@ require([
       },
     });
 
+    var columns = new Columns({
+      columns: {
+        name: {},
+        first: {
+          $metadata: {
+            'attr.head': { class: ['row__cell'] },
+            'attr.body': { class: ['row__cell cell--text'] },
+          },
+        },
+        CustomerID: {
+          sortable: true,
+        },
+        ShipCity: {
+          cell: {
+            class: ['text-right'],
+          },
+        },
+      },
+
+    });
+
     // TODO [akamel] also support not-in
     var colq = new ColumnQueryableProjection({
       'column.lock': ['rowIndex', 'first', 'checkbox'],
@@ -255,6 +277,7 @@ require([
       var preCheckMap = _.object(
         preCheckedIds.map(function (id) {
           return [id, {
+            id: id,
             state: 'indeterminate',
             transition: RowTriStateCheckboxProjection.CheckTransitionRule.indeterminateToCheckedFullCycle,
           }];
@@ -294,7 +317,9 @@ require([
     // TODO [akamel] remove demo pipes
     // mock.pipe(memquery).pipe(map).pipe(proptmpl).pipe(colq).pipe(coli18n)
     // mock.pipe(memquery).pipe(map).pipe(colq).pipe(coli18n).pipe(proptmpl)
-    src = odata.pipe(map).pipe(coli18n).pipe(page).pipe(colq).pipe(proptmpl)
+    src = odata.pipe(map)
+      .pipe(columns)
+      .pipe(coli18n).pipe(page).pipe(colq).pipe(proptmpl)
       .pipe(colshifter).pipe(group).pipe(checkbox).pipe(rowindex)
       .pipe(aggregateRow).pipe(editable).pipe(columnTmpl);
 
@@ -312,23 +337,6 @@ require([
         template: tmplJade,
         renderers: [Virtualization, FixedHeader],
         hideHeaders: false,
-        columns: {
-          name: {},
-          first: {
-            $metadata: {
-              'attr.head': { class: ['row__cell'] },
-              'attr.body': { class: ['row__cell cell--text'] },
-            },
-          },
-          CustomerID: {
-            sortable: true,
-          },
-          ShipCity: {
-            cell: {
-              class: ['text-right'],
-            },
-          },
-        },
       }),
       schema: s$Northwind,
     });
