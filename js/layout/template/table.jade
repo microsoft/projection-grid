@@ -1,6 +1,6 @@
 mixin columnHeader(column)
-  if column.htmlBuilder
-    != column.htmlBuilder(column)
+  if column.headerBuilder
+    != column.headerBuilder(column)
   else
     if column.$orderby
       if column.$orderby.dir > 0
