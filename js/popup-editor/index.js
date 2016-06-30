@@ -2,8 +2,9 @@ define([
   'jquery',
   'bluebird',
   'backbone',
+  'underscore',
   './index.jade',
-], function ($, Promise, Backbone, template) {
+], function ($, Promise, Backbone, _, template) {
   var PopupEditor = Backbone.View.extend({
     events: {
       'click .save': function () {
@@ -27,7 +28,8 @@ define([
     },
 
     render: function () {
-      this.$el.html(template({ value: this.model[this.property] }));
+      var val = _.isFunction(this.property) ? this.property(this.model) : this.model[this.property];
+      this.$el.html(template({ value: val }));
       this.$el.css({
         position: 'absolute',
         left: this.position.left,
