@@ -61,6 +61,7 @@ var grid = pgrid.factory().use(pagerViewPlugin).create({
       title: 'City',
       sortable: true,
       editable: true,
+      headerBuilder: (column => 'Great ' + column.property),
     },
     {
       name: 'Contact',
