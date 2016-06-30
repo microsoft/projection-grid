@@ -551,6 +551,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	;var locals_for_with = (locals || {});(function ($metadata, columns, hideHeaders, isApplyGroup, subSelect, undefined, value) {
 	jade_mixins["columnHeader"] = jade_interp = function(column){
 	var block = (this && this.block), attributes = (this && this.attributes) || {};
+	if ( column.headerBuilder)
+	{
+	buf.push(null == (jade_interp = column.headerBuilder(column)) ? "" : jade_interp);
+	}
+	else
+	{
 	if ( column.$orderby)
 	{
 	if ( column.$orderby.dir > 0)
@@ -569,6 +575,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	else
 	{
 	buf.push(jade.escape(null == (jade_interp = (typeof column.$text != 'undefined')? column.$text : (column.property || column)) ? "" : jade_interp));
+	}
 	}
 	};
 	jade_mixins["th"] = jade_interp = function(column, hasGroup, isSubColumn){
@@ -1519,6 +1526,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      columns[column.name] = {
 	        sortable: column.sortable,
 	        $metadata: $metadata,
+	        headerBuilder: column.headerBuilder,
 	        config: column
 	      };
 	
