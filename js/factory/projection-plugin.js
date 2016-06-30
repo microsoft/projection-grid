@@ -67,6 +67,7 @@ const projectionConfigs = {
       columns[column.name] = {
         sortable: column.sortable,
         $metadata,
+        headerBuilder: column.headerBuilder,
         config: column,
       };
 
