@@ -28,7 +28,7 @@ define([
     update: function (options) {
       var model = this.src.data;
       var size = Math.max(this.get('page.size'), 0);
-      var count = Math.max(0, model.get('count'));
+      var count = Math.max(1, model.get('count'));
       var number = Math.max(this.get('page.number'), 0);
       var pageCount = Math.ceil(count / size);
       var pageNumber = Math.min(number, pageCount - 1);

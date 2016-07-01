@@ -14,10 +14,16 @@ define([
         this.trigger('cancel');
       },
       'change .editor': function (e) {
-        this.model[this.property] = e.target.value;
+        this.setValue(e.target.value);
       },
       'click form': function (e) {
         e.stopPropagation();
+      },
+      'keypress .editor': function (e) {
+        if (e.key === 'Enter') {
+          this.setValue(e.target.value);
+          this.trigger('save', this.model);
+        }
       },
     },
 
@@ -27,8 +33,27 @@ define([
       this.property = options.property;
     },
 
+    getValue: function () {
+      if (this.property && _.isObject(this.property)) {
+        const { name, value } = this.property;
+        return value(this.model)[name];
+      }
+
+      return (this.model || {})[this.property];
+    },
+
+    setValue: function (val) {
+      if (this.property && _.isObject(this.property)) {
+        const { name, value } = this.property;
+        value(this.model)[name] = val;
+      } else {
+        this.model[this.property] = val;
+      }
+    },
+
     render: function () {
-      var val = _.isFunction(this.property) ? this.property(this.model) : this.model[this.property];
+      var val = this.getValue();
+
       this.$el.html(template({ value: val }));
       this.$el.css({
         position: 'absolute',
@@ -52,12 +77,19 @@ define([
       Backbone.View.prototype.remove.apply(this, arguments);
     },
 
+    focus: function () {
+      var input = this.$el.find('.editor');
+      input.select();
+    },
+
   });
 
   return function (options) {
     var editor = new PopupEditor(options);
 
     document.body.appendChild(editor.render().el);
+
+    editor.focus();
 
     editor.on('save', function (model) {
       editor.remove();

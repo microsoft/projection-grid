@@ -82,12 +82,18 @@ define([
         var value = _.map(model.get('value'), function (item) {
           return isReadonlyRow(item) ? item : _.mapObject(item, function (value, key) {
             if (this.isEditable(key, item)) {
-              if (!_.isObject(value)) {
-                value = new Object(value); // eslint-disable-line
+              var $html = null;
+              var text = null;
+
+              if (_.isString(value)) {
+                text = value;
+              } else {
+                $html = value.$html;
               }
 
               value.$html = editableTemplate({
-                $html: value.$html || String(value),
+                $html: $html,
+                text: text,
                 classes: iconClasses,
               });
             }

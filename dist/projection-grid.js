@@ -156,7 +156,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }, { config: config });
 	    }
 	  }]);
-	
+
 	  return GridFactory;
 	}();
 
@@ -308,7 +308,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var $closestTH = $el.closest('th', this.el);
 	      var $td = _.size($closestTD) ? $closestTD : $closestTH;
 	      var virtualizer = this.getRenderer('virtualization');
-	      var i = $tr.index() + (virtualizer ? virtualizer.first : 0);
+	      var i = $tr.index();
 	      var j = $td.index();
 	      // TODO [akamel] 1- check if $td is th; 2- throw if el is neither th or td as it is assumed in this function
 	      var isHeader = $td.closest('thead', this.el).length;
@@ -324,6 +324,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          ret.property = this.data.selectExpand[j];
 	        }
 	      } else {
+	        i += virtualizer ? virtualizer.first : 0;
 	        ret.model = this.data.value[i];
 	        if (this.data.selectExpand) {
 	          ret.property = this.data.selectExpand[j];
@@ -551,6 +552,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	;var locals_for_with = (locals || {});(function ($metadata, columns, hideHeaders, isApplyGroup, subSelect, undefined, value) {
 	jade_mixins["columnHeader"] = jade_interp = function(column){
 	var block = (this && this.block), attributes = (this && this.attributes) || {};
+	if ( column.headerBuilder)
+	{
+	buf.push(null == (jade_interp = column.headerBuilder(column)) ? "" : jade_interp);
+	}
+	else
+	{
 	if ( column.$orderby)
 	{
 	if ( column.$orderby.dir > 0)
@@ -569,6 +576,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	else
 	{
 	buf.push(jade.escape(null == (jade_interp = (typeof column.$text != 'undefined')? column.$text : (column.property || column)) ? "" : jade_interp));
+	}
 	}
 	};
 	jade_mixins["th"] = jade_interp = function(column, hasGroup, isSubColumn){
@@ -1519,6 +1527,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      columns[column.name] = {
 	        sortable: column.sortable,
 	        $metadata: $metadata,
+	        headerBuilder: column.headerBuilder,
 	        config: column
 	      };
 	
@@ -1864,7 +1873,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    onSrcUpdate: function onSrcUpdate() /* model */{
 	      this.update();
 	    },
-	    /* { model : model } */bubble: function bubble() {
+	    bubble: function bubble() {
 	      var key = _.first(arguments);
 	
 	      if (_.has(this.events, key)) {
@@ -2449,12 +2458,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var value = _.map(model.get('value'), function (item) {
 	          return isReadonlyRow(item) ? item : _.mapObject(item, function (value, key) {
 	            if (this.isEditable(key, item)) {
-	              if (!_.isObject(value)) {
-	                value = new Object(value); // eslint-disable-line
+	              var $html = null;
+	              var text = null;
+	
+	              if (_.isString(value)) {
+	                text = value;
+	              } else {
+	                $html = value.$html;
 	              }
 	
 	              value.$html = editableTemplate({
-	                $html: value.$html || String(value),
+	                $html: $html,
+	                text: text,
 	                classes: iconClasses
 	              });
 	            }
@@ -2481,7 +2496,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        editor({
 	          model: arg.model,
 	          schema: schema,
-	          position: $(e.target).closest('td').offset(),
+	          position: arg.grid.layout.container.offset(e.target),
 	          property: property,
 	          onSubmit: function onSubmit(model) {
 	            _this2.trigger('edit', model);
@@ -2489,6 +2504,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	      }
 	    }
+	
 	  });
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -2502,8 +2518,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var buf = [];
 	var jade_mixins = {};
 	var jade_interp;
-	;var locals_for_with = (locals || {});(function ($html, classes) {
-	buf.push("<div title=\"Edit\"" + (jade.cls(['grid-edit-icon',classes], [null,true])) + "></div>" + (null == (jade_interp = $html) ? "" : jade_interp));}.call(this,"$html" in locals_for_with?locals_for_with.$html:typeof $html!=="undefined"?$html:undefined,"classes" in locals_for_with?locals_for_with.classes:typeof classes!=="undefined"?classes:undefined));;return buf.join("");
+	;var locals_for_with = (locals || {});(function ($html, classes, text) {
+	buf.push("<div title=\"Edit\"" + (jade.cls(['grid-edit-icon',classes], [null,true])) + "></div>" + (null == (jade_interp = $html) ? "" : jade_interp) + (jade.escape(null == (jade_interp = text) ? "" : jade_interp)));}.call(this,"$html" in locals_for_with?locals_for_with.$html:typeof $html!=="undefined"?$html:undefined,"classes" in locals_for_with?locals_for_with.classes:typeof classes!=="undefined"?classes:undefined,"text" in locals_for_with?locals_for_with.text:typeof text!=="undefined"?text:undefined));;return buf.join("");
 	}
 
 /***/ },
@@ -2512,7 +2528,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 	
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(31), __webpack_require__(7), __webpack_require__(32)], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, Promise, Backbone, template) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(31), __webpack_require__(7), __webpack_require__(2), __webpack_require__(32)], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, Promise, Backbone, _, template) {
 	  var PopupEditor = Backbone.View.extend({
 	    events: {
 	      'click .save': function clickSave() {
@@ -2522,10 +2538,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.trigger('cancel');
 	      },
 	      'change .editor': function changeEditor(e) {
-	        this.model[this.property] = e.target.value;
+	        this.setValue(e.target.value);
 	      },
 	      'click form': function clickForm(e) {
 	        e.stopPropagation();
+	      },
+	      'keypress .editor': function keypressEditor(e) {
+	        if (e.key === 'Enter') {
+	          this.setValue(e.target.value);
+	          this.trigger('save', this.model);
+	        }
 	      }
 	    },
 	
@@ -2535,10 +2557,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.property = options.property;
 	    },
 	
+	    getValue: function getValue() {
+	      if (this.property && _.isObject(this.property)) {
+	        var _property = this.property;
+	        var name = _property.name;
+	        var value = _property.value;
+	
+	        return value(this.model)[name];
+	      }
+	
+	      return (this.model || {})[this.property];
+	    },
+	
+	    setValue: function setValue(val) {
+	      if (this.property && _.isObject(this.property)) {
+	        var _property2 = this.property;
+	        var name = _property2.name;
+	        var value = _property2.value;
+	
+	        value(this.model)[name] = val;
+	      } else {
+	        this.model[this.property] = val;
+	      }
+	    },
+	
 	    render: function render() {
 	      var _this = this;
 	
-	      this.$el.html(template({ value: this.model[this.property] }));
+	      var val = this.getValue();
+	
+	      this.$el.html(template({ value: val }));
 	      this.$el.css({
 	        position: 'absolute',
 	        left: this.position.left,
@@ -2559,6 +2607,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    remove: function remove() {
 	      $(window).off('click', this.dismiss);
 	      Backbone.View.prototype.remove.apply(this, arguments);
+	    },
+	
+	    focus: function focus() {
+	      var input = this.$el.find('.editor');
+	      input.select();
 	    }
 	
 	  });
@@ -2567,6 +2620,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var editor = new PopupEditor(options);
 	
 	    document.body.appendChild(editor.render().el);
+	
+	    editor.focus();
 	
 	    editor.on('save', function (model) {
 	      editor.remove();
@@ -3314,7 +3369,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    defaults: {
 	      'page.size': 20,
 	      'page.number': 0 },
-	    // zero based
 	    name: 'page',
 	    // todo [akamel] what if we piped after the data was set?
 	    beforeSet: function beforeSet(local, other) {
@@ -3333,17 +3387,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    update: function update(options) {
 	      var model = this.src.data;
 	      var size = Math.max(this.get('page.size'), 0);
-	      var count = Math.max(0, model.get('count'));
+	      var count = Math.max(1, model.get('count'));
+	      var number = Math.max(this.get('page.number'), 0);
+	      var pageCount = Math.ceil(count / size);
+	      var pageNumber = Math.min(number, pageCount - 1);
 	
 	      options = options || {};
 	
 	      if (options.deep) {
 	        if (this.src) {
-	          var number = Math.max(this.get('page.number'), 0);
-	
 	          this.src.set({
 	            take: size,
-	            skip: size * number
+	            skip: size * pageNumber
 	          }, { silent: true });
 	        }
 	      }
@@ -3352,8 +3407,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      // if we came in with an update:deep
 	      if (Model.__super__.update.call(this, options)) {
-	        var pageCount = Math.ceil(count / size);
-	
 	        this.patch({ 'page.count': pageCount });
 	      } else {
 	        // todo [akamel] unset our properties only
