@@ -4,6 +4,8 @@ define([
   'component/grid/layout/measure',
   'component/grid/layout/px',
 ], function ($, _, measure, px) {
+  var state = 'normal';
+
   function Renderer(options) {
     this.options = options || {};
 
@@ -12,10 +14,13 @@ define([
   }
 
   Renderer.prototype.draw = function (data, cb) {
+    var newState = 'normal';
+
     data.vpMeasures = data.vpMeasures = measure.viewport.call(this.layout);
     if (data.vpMeasures.top > 0) {
       var $el = this.layout.$el;
 
+      newState = 'sticky';
       // todo [akamel] assumes we have table rendered; measure/estimate otherwise
 
       // a. compensate for header displacement
@@ -81,11 +86,18 @@ define([
         'z-index': 1000,
       });
     } else {
+      newState = 'normal';
+
       _.extend(data.css, {
         'padding-top': px.pixelify(px.parse(data.css['padding-top'])),
       });
 
       cb(undefined, data);
+    }
+
+    if (state !== newState) {
+      this.layout.grid.trigger('change:header-state', newState);
+      state = newState;
     }
   };
 
