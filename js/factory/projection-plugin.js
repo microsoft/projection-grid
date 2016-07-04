@@ -155,7 +155,16 @@ const projectionConfigs = {
     };
   },
 
-  MemoryQueryable() { },
+  MemoryQueryable(config) {
+    return {
+      'column.sortable': _.reduce(config.columns, (columnSortable, column) => {
+        if (column.sortable) {
+          columnSortable[column.name] = column.sortable;
+        }
+        return columnSortable;
+      }, {}),
+    };
+  },
 
   PropertyTemplate(config) {
     return {
