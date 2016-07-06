@@ -28,17 +28,18 @@ define([
     update: function (options) {
       var model = this.src.data;
       var size = Math.max(this.get('page.size'), 0);
-      var count = Math.max(0, model.get('count'));
+      var count = Math.max(1, model.get('count'));
+      var number = Math.max(this.get('page.number'), 0);
+      var pageCount = Math.ceil(count / size);
+      var pageNumber = Math.min(number, pageCount - 1);
 
       options = options || {};
 
       if (options.deep) {
         if (this.src) {
-          var number = Math.max(this.get('page.number'), 0);
-
           this.src.set({
             take: size,
-            skip: size * number,
+            skip: size * pageNumber,
           }, { silent: true });
         }
       }
@@ -47,8 +48,6 @@ define([
 
       // if we came in with an update:deep
       if (Model.__super__.update.call(this, options)) {
-        var pageCount = Math.ceil(count / size);
-
         this.patch({ 'page.count': pageCount });
       } else {
         // todo [akamel] unset our properties only
