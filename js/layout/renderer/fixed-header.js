@@ -16,8 +16,12 @@ define([
   Renderer.prototype.draw = function (data, cb) {
     var newState = 'normal';
 
-    data.vpMeasures = data.vpMeasures = measure.viewport.call(this.layout);
-    if (data.vpMeasures.top > 0) {
+    data.vpMeasures = measure.viewport.call(this.layout);
+
+    // TODO [wewei] this is a hack to temporarily solve the sticky header doesn't
+    // respect the navbar problem.
+    // We need a better solution on this.
+    if (data.vpMeasures.viewportTop + (this.layout.top || 0) > data.vpMeasures.boundsTop) {
       var $el = this.layout.$el;
 
       newState = 'sticky';
