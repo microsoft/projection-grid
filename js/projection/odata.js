@@ -4,9 +4,8 @@ define([
   'lib/backbone',
   'lib/jquery',
   'component/grid/projection/base',
-  'component/grid/projection/mock',
   'component/grid/schema/properties',
-], function (Promise, _, Backbone, $, BaseProjection, MemoryMock, schemaProperties) {
+], function (Promise, _, Backbone, $, BaseProjection, schemaProperties) {
   var Model = BaseProjection.extend({
     defaults: {
       verb: 'get',

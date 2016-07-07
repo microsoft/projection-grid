@@ -166,6 +166,17 @@ const projectionConfigs = {
     };
   },
 
+  Odata(config) {
+    return _.extend(_.pick(config.dataSource, [
+      'url',
+      'skip',
+      'take',
+      'filter',
+      'orderby',
+      'select',
+    ]));
+  },
+
   PropertyTemplate(config) {
     return {
       'property.template': _.reduce(config.columns, (propTmpl, column) => {
@@ -253,6 +264,8 @@ export default definePlugin => definePlugin('projection', [
       };
       config.dataSource.data.on('all', scheduleUpdate);
     }
+  } else if (dataSourceType === 'odata') {
+    pipeProjection('Odata');
   } else {
     throw new Error(`dataSource.type "${config.dataSource.type}" is not supported`);
   }
