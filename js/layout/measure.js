@@ -21,6 +21,8 @@ define([
     // var visibleLeft = Math.max(boundsLeft, viewportLeft);
 
     return {
+      boundsTop: boundsTop,
+      viewportTop: viewportTop,
       top: visibleTop - boundsTop,
       bottom: visibleBottom - boundsTop,
       offsetLeft: viewportLeft,
