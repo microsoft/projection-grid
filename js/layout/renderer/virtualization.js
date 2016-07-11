@@ -123,6 +123,8 @@ define([
     delete this.__measures;
   };
 
+  Renderer.prototype.remove = _.noop;
+
   Renderer.partial = function (options) {
     return function (o) {
       return new Renderer(_.defaults({}, o, options));
