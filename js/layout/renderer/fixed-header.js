@@ -11,6 +11,12 @@ define([
 
     this.name = 'fixed-header';
     this.layout = this.options.layout;
+    this.adjustColumnWidth = () => {
+      if (_.isFunction(this.freezeColumnWidth)) {
+        this.freezeColumnWidth();
+      }
+    };
+    $(window).on('resize', this.adjustColumnWidth);
   }
 
   Renderer.prototype.draw = function (data, cb) {
@@ -49,38 +55,42 @@ define([
       var $ref = $bodyTD;
       var $target = $headTD;
 
-      // d. capture header col computed width
-      // todo [akamel] [perf] 16%
-      this.colWidth = this.colWidth || _.map($ref, function (td) {
-        return $(td).width();
-      });
+      this.freezeColumnWidth = () => {
+        // d. capture header col computed width
+        // todo [akamel] [perf] 16%
+        this.colWidth = this.colWidth || _.map($ref, function (td) {
+          return $(td).width();
+        });
 
-      // todo [akamel] [perf] 12% -- consider replacing with css rule generation
-      // e. freeze column width
-      // e.1 freeze col width
-      var colIndex = 0;
-      var secondHeadTDIndex = 0;
-      _.each($target, function (td) {
-        var colspan = parseInt($(td).attr('colspan'), 10);
-        var rowspan = parseInt($(td).attr('rowspan'), 10);
-        var width = 0;
-        for (var i = 0; i < colspan; ++i) {
-          var colWidth = px.pixelify(this.colWidth[colIndex + i]);
-          width += colWidth;
-          if (rowspan === 1) {
-            $secondHeadTD.eq(secondHeadTDIndex + i).width(colWidth);
+        // todo [akamel] [perf] 12% -- consider replacing with css rule generation
+        // e. freeze column width
+        // e.1 freeze col width
+        var colIndex = 0;
+        var secondHeadTDIndex = 0;
+        _.each($target, function (td) {
+          var colspan = parseInt($(td).attr('colspan'), 10);
+          var rowspan = parseInt($(td).attr('rowspan'), 10);
+          var width = 0;
+          for (var i = 0; i < colspan; ++i) {
+            var colWidth = px.pixelify(this.colWidth[colIndex + i]);
+            width += colWidth;
+            if (rowspan === 1) {
+              $secondHeadTD.eq(secondHeadTDIndex + i).width(colWidth);
+            }
           }
-        }
-        $(td).width(width);
-        colIndex += colspan;
-        if (rowspan === 1) {
-          secondHeadTDIndex += colspan;
-        }
-      }.bind(this));
+          $(td).width(width);
+          colIndex += colspan;
+          if (rowspan === 1) {
+            secondHeadTDIndex += colspan;
+          }
+        }.bind(this));
 
-      _.each($ref, function (td, index) {
-        $(td).width(px.pixelify(this.colWidth[index]));
-      }.bind(this));
+        _.each($ref, function (td, index) {
+          $(td).width(px.pixelify(this.colWidth[index]));
+        }.bind(this));
+      }
+
+      this.freezeColumnWidth();
 
       // f. set position 'fixed' and lock header at top of table
       $thead.css({
@@ -103,6 +113,10 @@ define([
       this.layout.grid.trigger('change:header-state', newState);
       state = newState;
     }
+  };
+
+  Renderer.prototype.remove = function () {
+    $(window).off('resize', this.adjustColumnWidth);
   };
 
   Renderer.partial = function (options) {

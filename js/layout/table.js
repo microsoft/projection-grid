@@ -47,6 +47,7 @@ define([
     remove: function () {
       this.removeSubviews();
       this.container.stopListening(this.container);
+      _.each(this.renderers, renderer => renderer.remove());
       Backbone.View.prototype.remove.apply(this, arguments);
     },
 
