@@ -126,6 +126,8 @@ const projectionConfigs = {
     return colqConfig;
   },
 
+  ColumnGroup() {},
+
   ColumnShifter() {},
 
   ColumnTemplate(config) {
@@ -279,6 +281,9 @@ export default definePlugin => definePlugin('projection', [
   }
   pipeProjection('ColumnQueryable');
   pipeProjection('ColumnI18n');
+  if (config.enablePoP) {
+    pipeProjection('ColumnGroup');
+  }
 
   if (_.has(config.columnShifter, 'totalColumns')) {
     pipeProjection('ColumnShifter');
