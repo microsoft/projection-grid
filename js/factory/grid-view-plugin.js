@@ -21,6 +21,7 @@ export default definePlugin => definePlugin('gridView', [
       renderers,
       template: layout.templates.table,
       hideHeaders: config.hideHeaders,
+      $metadata: config.layoutOptions || {},
     }),
   });
 

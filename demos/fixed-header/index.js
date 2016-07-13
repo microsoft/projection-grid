@@ -1,4 +1,6 @@
 import pgrid from 'projection-grid';
+import 'bootstrap-webpack';
+import './index.css';
 
 const grid = pgrid.factory().create({
   el: '.grid-root',
@@ -12,6 +14,12 @@ const grid = pgrid.factory().create({
     { name: 'City', sortable: true },
     { name: 'ContactName', sortable: true },
   ],
+  scrollable: {
+    fixedHeader: true,
+  },
+  layoutOptions: {
+    class: 'table-bordered',
+  },
 });
 
 grid.gridView.on('update:beginning', function () {

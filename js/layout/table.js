@@ -47,6 +47,7 @@ define([
     remove: function () {
       this.removeSubviews();
       this.container.stopListening(this.container);
+      _.each(this.renderers, renderer => renderer.remove());
       Backbone.View.prototype.remove.apply(this, arguments);
     },
 
@@ -91,7 +92,7 @@ define([
       var $closestTH = $el.closest('th', this.el);
       var $td = _.size($closestTD) ? $closestTD : $closestTH;
       var virtualizer = this.getRenderer('virtualization');
-      var i = $tr.index() + (virtualizer ? virtualizer.first : 0);
+      var i = $tr.index();
       var j = $td.index();
       // TODO [akamel] 1- check if $td is th; 2- throw if el is neither th or td as it is assumed in this function
       var isHeader = $td.closest('thead', this.el).length;
@@ -107,6 +108,7 @@ define([
           ret.property = this.data.selectExpand[j];
         }
       } else {
+        i += (virtualizer ? virtualizer.first : 0);
         ret.model = this.data.value[i];
         if (this.data.selectExpand) {
           ret.property = this.data.selectExpand[j];

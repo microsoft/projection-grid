@@ -4,18 +4,33 @@ define([
   'component/grid/layout/measure',
   'component/grid/layout/px',
 ], function ($, _, measure, px) {
+  var state = 'normal';
+
   function Renderer(options) {
     this.options = options || {};
 
     this.name = 'fixed-header';
     this.layout = this.options.layout;
+    this.adjustColumnWidth = () => {
+      if (_.isFunction(this.freezeColumnWidth)) {
+        this.freezeColumnWidth();
+      }
+    };
+    $(window).on('resize', this.adjustColumnWidth);
   }
 
   Renderer.prototype.draw = function (data, cb) {
-    data.vpMeasures = data.vpMeasures = measure.viewport.call(this.layout);
-    if (data.vpMeasures.top > 0) {
+    var newState = 'normal';
+
+    data.vpMeasures = measure.viewport.call(this.layout);
+
+    // TODO [wewei] this is a hack to temporarily solve the sticky header doesn't
+    // respect the navbar problem.
+    // We need a better solution on this.
+    if (data.vpMeasures.viewportTop + (this.layout.top || 0) > data.vpMeasures.boundsTop) {
       var $el = this.layout.$el;
 
+      newState = 'sticky';
       // todo [akamel] assumes we have table rendered; measure/estimate otherwise
 
       // a. compensate for header displacement
@@ -40,38 +55,42 @@ define([
       var $ref = $bodyTD;
       var $target = $headTD;
 
-      // d. capture header col computed width
-      // todo [akamel] [perf] 16%
-      this.colWidth = this.colWidth || _.map($ref, function (td) {
-        return $(td).width();
-      });
+      this.freezeColumnWidth = () => {
+        // d. capture header col computed width
+        // todo [akamel] [perf] 16%
+        this.colWidth = this.colWidth || _.map($ref, function (td) {
+          return $(td).width();
+        });
 
-      // todo [akamel] [perf] 12% -- consider replacing with css rule generation
-      // e. freeze column width
-      // e.1 freeze col width
-      var colIndex = 0;
-      var secondHeadTDIndex = 0;
-      _.each($target, function (td) {
-        var colspan = parseInt($(td).attr('colspan'), 10);
-        var rowspan = parseInt($(td).attr('rowspan'), 10);
-        var width = 0;
-        for (var i = 0; i < colspan; ++i) {
-          var colWidth = px.pixelify(this.colWidth[colIndex + i]);
-          width += colWidth;
-          if (rowspan === 1) {
-            $secondHeadTD.eq(secondHeadTDIndex + i).width(colWidth);
+        // todo [akamel] [perf] 12% -- consider replacing with css rule generation
+        // e. freeze column width
+        // e.1 freeze col width
+        var colIndex = 0;
+        var secondHeadTDIndex = 0;
+        _.each($target, function (td) {
+          var colspan = parseInt($(td).attr('colspan'), 10);
+          var rowspan = parseInt($(td).attr('rowspan'), 10);
+          var width = 0;
+          for (var i = 0; i < colspan; ++i) {
+            var colWidth = px.pixelify(this.colWidth[colIndex + i]);
+            width += colWidth;
+            if (rowspan === 1) {
+              $secondHeadTD.eq(secondHeadTDIndex + i).width(colWidth);
+            }
           }
-        }
-        $(td).width(width);
-        colIndex += colspan;
-        if (rowspan === 1) {
-          secondHeadTDIndex += colspan;
-        }
-      }.bind(this));
+          $(td).width(width);
+          colIndex += colspan;
+          if (rowspan === 1) {
+            secondHeadTDIndex += colspan;
+          }
+        }.bind(this));
 
-      _.each($ref, function (td, index) {
-        $(td).width(px.pixelify(this.colWidth[index]));
-      }.bind(this));
+        _.each($ref, function (td, index) {
+          $(td).width(px.pixelify(this.colWidth[index]));
+        }.bind(this));
+      }
+
+      this.freezeColumnWidth();
 
       // f. set position 'fixed' and lock header at top of table
       $thead.css({
@@ -81,12 +100,23 @@ define([
         'z-index': 1000,
       });
     } else {
+      newState = 'normal';
+
       _.extend(data.css, {
         'padding-top': px.pixelify(px.parse(data.css['padding-top'])),
       });
 
       cb(undefined, data);
     }
+
+    if (state !== newState) {
+      this.layout.grid.trigger('change:header-state', newState);
+      state = newState;
+    }
+  };
+
+  Renderer.prototype.remove = function () {
+    $(window).off('resize', this.adjustColumnWidth);
   };
 
   Renderer.partial = function (options) {

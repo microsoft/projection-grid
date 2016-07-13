@@ -1,6 +1,15 @@
 var pgrid = require('projection-grid');
 var Customer = require('./js-data-resource');
 
+var ColumnGroup = pgrid.projections.ColumnGroup;
+var group = new ColumnGroup({
+  "column.group": {
+    CustomerID: ['CustomerID', 'Country', 'Phone'],
+  },
+  'column.groupExpansion': ['CustomerID'],
+});
+
+
 var jsdata = new pgrid.projections.JSData({
   'jsdata.entity': Customer,
 });
@@ -8,7 +17,8 @@ var projection = jsdata.pipe(
   new pgrid.projections.ColumnI18n()
 ).pipe(new pgrid.projections.ColumnQueryable({
   'column.take': 10,
-}));
+})).pipe(group);
+
 
 var grid = new pgrid.GridView({
   el: '.grid-root',

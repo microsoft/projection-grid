@@ -156,7 +156,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }, { config: config });
 	    }
 	  }]);
-	
+
 	  return GridFactory;
 	}();
 
@@ -264,6 +264,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    remove: function remove() {
 	      this.removeSubviews();
 	      this.container.stopListening(this.container);
+	      _.each(this.renderers, function (renderer) {
+	        return renderer.remove();
+	      });
 	      Backbone.View.prototype.remove.apply(this, arguments);
 	    },
 	
@@ -308,7 +311,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var $closestTH = $el.closest('th', this.el);
 	      var $td = _.size($closestTD) ? $closestTD : $closestTH;
 	      var virtualizer = this.getRenderer('virtualization');
-	      var i = $tr.index() + (virtualizer ? virtualizer.first : 0);
+	      var i = $tr.index();
 	      var j = $td.index();
 	      // TODO [akamel] 1- check if $td is th; 2- throw if el is neither th or td as it is assumed in this function
 	      var isHeader = $td.closest('thead', this.el).length;
@@ -324,6 +327,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          ret.property = this.data.selectExpand[j];
 	        }
 	      } else {
+	        i += virtualizer ? virtualizer.first : 0;
 	        ret.model = this.data.value[i];
 	        if (this.data.selectExpand) {
 	          ret.property = this.data.selectExpand[j];
@@ -1102,18 +1106,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 	
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(2), __webpack_require__(13), __webpack_require__(14)], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, _, measure, px) {
+	  var state = 'normal';
+	
 	  function Renderer(options) {
+	    var _this = this;
+	
 	    this.options = options || {};
 	
 	    this.name = 'fixed-header';
 	    this.layout = this.options.layout;
+	    this.adjustColumnWidth = function () {
+	      if (_.isFunction(_this.freezeColumnWidth)) {
+	        _this.freezeColumnWidth();
+	      }
+	    };
+	    $(window).on('resize', this.adjustColumnWidth);
 	  }
 	
 	  Renderer.prototype.draw = function (data, cb) {
-	    data.vpMeasures = data.vpMeasures = measure.viewport.call(this.layout);
-	    if (data.vpMeasures.top > 0) {
+	    var _this2 = this;
+	
+	    var newState = 'normal';
+	
+	    data.vpMeasures = measure.viewport.call(this.layout);
+	
+	    // TODO [wewei] this is a hack to temporarily solve the sticky header doesn't
+	    // respect the navbar problem.
+	    // We need a better solution on this.
+	    if (data.vpMeasures.viewportTop + (this.layout.top || 0) > data.vpMeasures.boundsTop) {
 	      var $el = this.layout.$el;
 	
+	      newState = 'sticky';
 	      // todo [akamel] assumes we have table rendered; measure/estimate otherwise
 	
 	      // a. compensate for header displacement
@@ -1138,38 +1161,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var $ref = $bodyTD;
 	      var $target = $headTD;
 	
-	      // d. capture header col computed width
-	      // todo [akamel] [perf] 16%
-	      this.colWidth = this.colWidth || _.map($ref, function (td) {
-	        return $(td).width();
-	      });
+	      this.freezeColumnWidth = function () {
+	        // d. capture header col computed width
+	        // todo [akamel] [perf] 16%
+	        _this2.colWidth = _this2.colWidth || _.map($ref, function (td) {
+	          return $(td).width();
+	        });
 	
-	      // todo [akamel] [perf] 12% -- consider replacing with css rule generation
-	      // e. freeze column width
-	      // e.1 freeze col width
-	      var colIndex = 0;
-	      var secondHeadTDIndex = 0;
-	      _.each($target, function (td) {
-	        var colspan = parseInt($(td).attr('colspan'), 10);
-	        var rowspan = parseInt($(td).attr('rowspan'), 10);
-	        var width = 0;
-	        for (var i = 0; i < colspan; ++i) {
-	          var colWidth = px.pixelify(this.colWidth[colIndex + i]);
-	          width += colWidth;
-	          if (rowspan === 1) {
-	            $secondHeadTD.eq(secondHeadTDIndex + i).width(colWidth);
+	        // todo [akamel] [perf] 12% -- consider replacing with css rule generation
+	        // e. freeze column width
+	        // e.1 freeze col width
+	        var colIndex = 0;
+	        var secondHeadTDIndex = 0;
+	        _.each($target, function (td) {
+	          var colspan = parseInt($(td).attr('colspan'), 10);
+	          var rowspan = parseInt($(td).attr('rowspan'), 10);
+	          var width = 0;
+	          for (var i = 0; i < colspan; ++i) {
+	            var colWidth = px.pixelify(this.colWidth[colIndex + i]);
+	            width += colWidth;
+	            if (rowspan === 1) {
+	              $secondHeadTD.eq(secondHeadTDIndex + i).width(colWidth);
+	            }
 	          }
-	        }
-	        $(td).width(width);
-	        colIndex += colspan;
-	        if (rowspan === 1) {
-	          secondHeadTDIndex += colspan;
-	        }
-	      }.bind(this));
+	          $(td).width(width);
+	          colIndex += colspan;
+	          if (rowspan === 1) {
+	            secondHeadTDIndex += colspan;
+	          }
+	        }.bind(_this2));
 	
-	      _.each($ref, function (td, index) {
-	        $(td).width(px.pixelify(this.colWidth[index]));
-	      }.bind(this));
+	        _.each($ref, function (td, index) {
+	          $(td).width(px.pixelify(this.colWidth[index]));
+	        }.bind(_this2));
+	      };
+	
+	      this.freezeColumnWidth();
 	
 	      // f. set position 'fixed' and lock header at top of table
 	      $thead.css({
@@ -1179,12 +1206,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	        'z-index': 1000
 	      });
 	    } else {
+	      newState = 'normal';
+	
 	      _.extend(data.css, {
 	        'padding-top': px.pixelify(px.parse(data.css['padding-top']))
 	      });
 	
 	      cb(undefined, data);
 	    }
+	
+	    if (state !== newState) {
+	      this.layout.grid.trigger('change:header-state', newState);
+	      state = newState;
+	    }
+	  };
+	
+	  Renderer.prototype.remove = function () {
+	    $(window).off('resize', this.adjustColumnWidth);
 	  };
 	
 	  Renderer.partial = function (options) {
@@ -1222,6 +1260,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // var visibleLeft = Math.max(boundsLeft, viewportLeft);
 	
 	        return {
+	            boundsTop: boundsTop,
+	            viewportTop: viewportTop,
 	            top: visibleTop - boundsTop,
 	            bottom: visibleBottom - boundsTop,
 	            offsetLeft: viewportLeft
@@ -1430,6 +1470,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    delete this.__measures;
 	  };
 	
+	  Renderer.prototype.remove = _.noop;
+	
 	  Renderer.partial = function (options) {
 	    return function (o) {
 	      return new Renderer(_.defaults({}, o, options));
@@ -1576,6 +1618,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    return colqConfig;
 	  },
+	  ColumnGroup: function ColumnGroup() {},
 	  ColumnShifter: function ColumnShifter() {},
 	  ColumnTemplate: function ColumnTemplate(config) {
 	    return {
@@ -1602,7 +1645,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	      'column.editable': editableConf
 	    };
 	  },
-	  MemoryQueryable: function MemoryQueryable() {},
+	  MemoryQueryable: function MemoryQueryable(config) {
+	    return {
+	      'column.sortable': _underscore2.default.reduce(config.columns, function (columnSortable, column) {
+	        if (column.sortable) {
+	          columnSortable[column.name] = column.sortable;
+	        }
+	        return columnSortable;
+	      }, {})
+	    };
+	  },
+	  Odata: function Odata(config) {
+	    return _underscore2.default.extend(_underscore2.default.pick(config.dataSource, ['url', 'skip', 'take', 'filter', 'orderby', 'select']));
+	  },
 	  PropertyTemplate: function PropertyTemplate(config) {
 	    return {
 	      'property.template': _underscore2.default.reduce(config.columns, function (propTmpl, column) {
@@ -1680,6 +1735,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          config.dataSource.data.on('all', scheduleUpdate);
 	        })();
 	      }
+	    } else if (dataSourceType === 'odata') {
+	      pipeProjection('Odata');
 	    } else {
 	      throw new Error('dataSource.type "' + config.dataSource.type + '" is not supported');
 	    }
@@ -1693,6 +1750,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    pipeProjection('ColumnQueryable');
 	    pipeProjection('ColumnI18n');
+	    if (config.enablePoP) {
+	      pipeProjection('ColumnGroup');
+	    }
 	
 	    if (_underscore2.default.has(config.columnShifter, 'totalColumns')) {
 	      pipeProjection('ColumnShifter');
@@ -1872,7 +1932,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    onSrcUpdate: function onSrcUpdate() /* model */{
 	      this.update();
 	    },
-	    /* { model : model } */bubble: function bubble() {
+	    bubble: function bubble() {
 	      var key = _.first(arguments);
 	
 	      if (_.has(this.events, key)) {
@@ -2457,12 +2517,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var value = _.map(model.get('value'), function (item) {
 	          return isReadonlyRow(item) ? item : _.mapObject(item, function (value, key) {
 	            if (this.isEditable(key, item)) {
-	              if (!_.isObject(value)) {
-	                value = new Object(value); // eslint-disable-line
+	              var $html = null;
+	              var text = null;
+	
+	              if (_.isString(value)) {
+	                text = value;
+	              } else {
+	                $html = value.$html;
 	              }
 	
 	              value.$html = editableTemplate({
-	                $html: value.$html || String(value),
+	                $html: $html,
+	                text: text,
 	                classes: iconClasses
 	              });
 	            }
@@ -2489,7 +2555,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        editor({
 	          model: arg.model,
 	          schema: schema,
-	          position: $(e.target).closest('td').offset(),
+	          position: arg.grid.layout.container.offset(e.target),
 	          property: property,
 	          onSubmit: function onSubmit(model) {
 	            _this2.trigger('edit', model);
@@ -2497,6 +2563,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	      }
 	    }
+	
 	  });
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -2510,8 +2577,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var buf = [];
 	var jade_mixins = {};
 	var jade_interp;
-	;var locals_for_with = (locals || {});(function ($html, classes) {
-	buf.push("<div title=\"Edit\"" + (jade.cls(['grid-edit-icon',classes], [null,true])) + "></div>" + (null == (jade_interp = $html) ? "" : jade_interp));}.call(this,"$html" in locals_for_with?locals_for_with.$html:typeof $html!=="undefined"?$html:undefined,"classes" in locals_for_with?locals_for_with.classes:typeof classes!=="undefined"?classes:undefined));;return buf.join("");
+	;var locals_for_with = (locals || {});(function ($html, classes, text) {
+	buf.push("<div title=\"Edit\"" + (jade.cls(['grid-edit-icon',classes], [null,true])) + "></div>" + (null == (jade_interp = $html) ? "" : jade_interp) + (jade.escape(null == (jade_interp = text) ? "" : jade_interp)));}.call(this,"$html" in locals_for_with?locals_for_with.$html:typeof $html!=="undefined"?$html:undefined,"classes" in locals_for_with?locals_for_with.classes:typeof classes!=="undefined"?classes:undefined,"text" in locals_for_with?locals_for_with.text:typeof text!=="undefined"?text:undefined));;return buf.join("");
 	}
 
 /***/ },
@@ -2520,7 +2587,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 	
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(31), __webpack_require__(7), __webpack_require__(32)], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, Promise, Backbone, template) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(31), __webpack_require__(7), __webpack_require__(2), __webpack_require__(32)], __WEBPACK_AMD_DEFINE_RESULT__ = function ($, Promise, Backbone, _, template) {
 	  var PopupEditor = Backbone.View.extend({
 	    events: {
 	      'click .save': function clickSave() {
@@ -2530,10 +2597,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.trigger('cancel');
 	      },
 	      'change .editor': function changeEditor(e) {
-	        this.model[this.property] = e.target.value;
+	        this.setValue(e.target.value);
 	      },
 	      'click form': function clickForm(e) {
 	        e.stopPropagation();
+	      },
+	      'keypress .editor': function keypressEditor(e) {
+	        if (e.key === 'Enter') {
+	          this.setValue(e.target.value);
+	          this.trigger('save', this.model);
+	        }
 	      }
 	    },
 	
@@ -2543,10 +2616,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.property = options.property;
 	    },
 	
+	    getValue: function getValue() {
+	      if (this.property && _.isObject(this.property)) {
+	        var _property = this.property;
+	        var name = _property.name;
+	        var value = _property.value;
+	
+	        return value(this.model)[name];
+	      }
+	
+	      return (this.model || {})[this.property];
+	    },
+	
+	    setValue: function setValue(val) {
+	      if (this.property && _.isObject(this.property)) {
+	        var _property2 = this.property;
+	        var name = _property2.name;
+	        var value = _property2.value;
+	
+	        value(this.model)[name] = val;
+	      } else {
+	        this.model[this.property] = val;
+	      }
+	    },
+	
 	    render: function render() {
 	      var _this = this;
 	
-	      this.$el.html(template({ value: this.model[this.property] }));
+	      var val = this.getValue();
+	
+	      this.$el.html(template({ value: val }));
 	      this.$el.css({
 	        position: 'absolute',
 	        left: this.position.left,
@@ -2567,6 +2666,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    remove: function remove() {
 	      $(window).off('click', this.dismiss);
 	      Backbone.View.prototype.remove.apply(this, arguments);
+	    },
+	
+	    focus: function focus() {
+	      var input = this.$el.find('.editor');
+	      input.select();
 	    }
 	
 	  });
@@ -2575,6 +2679,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var editor = new PopupEditor(options);
 	
 	    document.body.appendChild(editor.render().el);
+	
+	    editor.focus();
 	
 	    editor.on('save', function (model) {
 	      editor.remove();
@@ -3235,7 +3341,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 	
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(31), __webpack_require__(2), __webpack_require__(7), __webpack_require__(6), __webpack_require__(19), __webpack_require__(41), __webpack_require__(22)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Promise, _, Backbone, $, BaseProjection, MemoryMock, schemaProperties) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(31), __webpack_require__(2), __webpack_require__(7), __webpack_require__(6), __webpack_require__(19), __webpack_require__(22)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Promise, _, Backbone, $, BaseProjection, schemaProperties) {
 	  var Model = BaseProjection.extend({
 	    defaults: {
 	      verb: 'get',
@@ -3322,7 +3428,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    defaults: {
 	      'page.size': 20,
 	      'page.number': 0 },
-	    // zero based
 	    name: 'page',
 	    // todo [akamel] what if we piped after the data was set?
 	    beforeSet: function beforeSet(local, other) {
@@ -3341,17 +3446,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    update: function update(options) {
 	      var model = this.src.data;
 	      var size = Math.max(this.get('page.size'), 0);
-	      var count = Math.max(0, model.get('count'));
+	      var count = Math.max(1, model.get('count'));
+	      var number = Math.max(this.get('page.number'), 0);
+	      var pageCount = Math.ceil(count / size);
+	      var pageNumber = Math.min(number, pageCount - 1);
 	
 	      options = options || {};
 	
 	      if (options.deep) {
 	        if (this.src) {
-	          var number = Math.max(this.get('page.number'), 0);
-	
 	          this.src.set({
 	            take: size,
-	            skip: size * number
+	            skip: size * pageNumber
 	          }, { silent: true });
 	        }
 	      }
@@ -3360,8 +3466,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      // if we came in with an update:deep
 	      if (Model.__super__.update.call(this, options)) {
-	        var pageCount = Math.ceil(count / size);
-	
 	        this.patch({ 'page.count': pageCount });
 	      } else {
 	        // todo [akamel] unset our properties only
@@ -4013,8 +4117,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	          isApplyGroup = true;
 	          columns[name].group = subColumns;
-	          // remove the columns that appear in the select
-	          select = _.difference(select, subColumns);
+	          // remove the columns that appear in the select, except the one that has itself in the subColumns;
+	          select = _.difference(select, _.without(subColumns, name));
 	          columns[name].groupExpansion = _.has(groupExpansion, name);
 	        }, this);
 	        var selectExpand = select.slice(0);
@@ -4165,7 +4269,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      Layout: _index2.default.TableLayout.partial({
 	        renderers: renderers,
 	        template: _index2.default.templates.table,
-	        hideHeaders: config.hideHeaders
+	        hideHeaders: config.hideHeaders,
+	        $metadata: config.layoutOptions || {}
 	      })
 	    });
 	

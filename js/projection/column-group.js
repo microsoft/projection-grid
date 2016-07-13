@@ -35,8 +35,8 @@ define([
           }
           isApplyGroup = true;
           columns[name].group = subColumns;
-          // remove the columns that appear in the select
-          select = _.difference(select, subColumns);
+          // remove the columns that appear in the select, except the one that has itself in the subColumns;
+          select = _.difference(select, _.without(subColumns, name));
           columns[name].groupExpansion = _.has(groupExpansion, name);
         }, this);
         var selectExpand = select.slice(0);

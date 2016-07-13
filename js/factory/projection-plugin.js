@@ -126,6 +126,8 @@ const projectionConfigs = {
     return colqConfig;
   },
 
+  ColumnGroup() {},
+
   ColumnShifter() {},
 
   ColumnTemplate(config) {
@@ -155,7 +157,27 @@ const projectionConfigs = {
     };
   },
 
-  MemoryQueryable() { },
+  MemoryQueryable(config) {
+    return {
+      'column.sortable': _.reduce(config.columns, (columnSortable, column) => {
+        if (column.sortable) {
+          columnSortable[column.name] = column.sortable;
+        }
+        return columnSortable;
+      }, {}),
+    };
+  },
+
+  Odata(config) {
+    return _.extend(_.pick(config.dataSource, [
+      'url',
+      'skip',
+      'take',
+      'filter',
+      'orderby',
+      'select',
+    ]));
+  },
 
   PropertyTemplate(config) {
     return {
@@ -244,6 +266,8 @@ export default definePlugin => definePlugin('projection', [
       };
       config.dataSource.data.on('all', scheduleUpdate);
     }
+  } else if (dataSourceType === 'odata') {
+    pipeProjection('Odata');
   } else {
     throw new Error(`dataSource.type "${config.dataSource.type}" is not supported`);
   }
@@ -257,6 +281,9 @@ export default definePlugin => definePlugin('projection', [
   }
   pipeProjection('ColumnQueryable');
   pipeProjection('ColumnI18n');
+  if (config.enablePoP) {
+    pipeProjection('ColumnGroup');
+  }
 
   if (_.has(config.columnShifter, 'totalColumns')) {
     pipeProjection('ColumnShifter');
