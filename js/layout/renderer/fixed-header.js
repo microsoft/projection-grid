@@ -88,7 +88,7 @@ define([
         _.each($ref, function (td, index) {
           $(td).width(px.pixelify(this.colWidth[index]));
         }.bind(this));
-      }
+      };
 
       this.freezeColumnWidth();
 
