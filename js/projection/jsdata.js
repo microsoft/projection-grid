@@ -66,6 +66,7 @@ define([
               value: data,
               count: data.totalCount,
               select: schemaProperties.from(data),
+              error: undefined,
             };
             if (_.has(data, 'raw')) {
               delta.rawValue = data.raw;
@@ -73,16 +74,14 @@ define([
             this.patch(delta);
           }
         }.bind(this))
-        .catch(function (jqXHR, textStatus, errorThrown) {
+        .catch(function (error) {
           if (this.p$fetchData === p$fetchData) {
-            this.patch({
-              error: errorThrown,
-            });
+            this.patch({ error });
           }
         }.bind(this))
         .finally(function () {
           if (this.p$fetchData === p$fetchData) {
-            this.trigger('update:finished');
+            this.trigger('update:finished', this.data.get('error'));
             this.p$fetchData = null;
           }
         }.bind(this));

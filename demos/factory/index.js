@@ -80,8 +80,12 @@ grid.gridView.on('update:beginning', function () {
   console.log('begin update');
 });
 
-grid.gridView.on('update:finished', function () {
-  console.log('end update');
+grid.gridView.on('update:finished', function (error) {
+  if (error) {
+    console.log('fail update');
+  } else {
+    console.log('success update');
+  }
 });
 
 grid.gridView.on('data:edit', model => {

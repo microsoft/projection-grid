@@ -53,8 +53,8 @@ define([
       var p$fetchData = this.p$fetchData = new Promise(function (resolve, reject) {
         $.getJSON(op.url, _.omit(op, 'url'))
           .success(resolve)
-          .error(function (jqXHR, textStatus, errorThrown) {
-            reject(errorThrown);
+          .fail(function (jqXHR, textStatus, errorThrown) {
+            reject(new Error(errorThrown));
           });
       }).then(function (data) {
         if (p$fetchData === this.p$fetchData) {
@@ -71,9 +71,9 @@ define([
         if (p$fetchData === this.p$fetchData) {
           this.patch({ error: error });
         }
-      }).finally(function () {
+      }.bind(this)).finally(function () {
         if (p$fetchData === this.p$fetchData) {
-          this.trigger('update:finished');
+          this.trigger('update:finished', this.data.get('error'));
           this.p$fetchData = null;
         }
       }.bind(this));
