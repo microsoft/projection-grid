@@ -73,7 +73,7 @@ define([
         }
       }).finally(function () {
         if (p$fetchData === this.p$fetchData) {
-          this.trigger('update:finished');
+          this.trigger('update:finished', this.data.get('error'));
           this.p$fetchData = null;
         }
       }.bind(this));
