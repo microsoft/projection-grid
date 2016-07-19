@@ -22,7 +22,7 @@ function getWebpackConfig() {
   _.extend(webpackConfig.resolve.alias, {
     sinon: 'sinon/pkg/sinon.js',
   });
-
+  webpackConfig.devtool = 'inline-source-map';
   return webpackConfig;
 }
 
@@ -45,7 +45,7 @@ module.exports = function (config) {
     reporters: ['mocha', 'coverage', 'junit'],
 
     preprocessors: {
-      'spec/$speclist.js': ['webpack'],
+      'spec/$speclist.js': ['webpack', 'sourcemap'],
     },
 
     webpack: getWebpackConfig(),

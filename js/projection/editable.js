@@ -85,8 +85,9 @@ define([
               var $html = null;
               var text = null;
 
-              if (_.isString(value)) {
+              if (!_.isObject(value)) {
                 text = value;
+                value = {};
               } else {
                 $html = value.$html;
               }
