@@ -22,7 +22,6 @@ function getWebpackConfig() {
   _.extend(webpackConfig.resolve.alias, {
     sinon: 'sinon/pkg/sinon.js',
   });
-
   webpackConfig.devtool = 'inline-source-map';
   return webpackConfig;
 }
