@@ -69,8 +69,7 @@ gulp.task('coveralls', ['test'], function () {
   if (!process.env.CI) {
     return;
   }
-  process.stdout.write(path.join(__dirname, 'coverage/lcov.info'));
-  return gulp.src(path.join(__dirname, 'coverage/lcov.info')).pipe(coveralls());
+  return gulp.src(path.join(__dirname, 'coverage/report-lcov/lcov.info')).pipe(coveralls());
 });
 // coveralls-end
 gulp.task('test:unit', function (cb) {
