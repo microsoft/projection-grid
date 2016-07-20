@@ -142,7 +142,8 @@ gulp.task('test:demos', ['download-selenium'], function (done) {
   });
 });
 
-gulp.task('test', ['test:unit', 'test:demos']);
+gulp.task('test', ['test:unit']);
+// gulp.task('test', ['test:unit', 'test:demos']);
 
 gulp.task('prepublish', ['webpack']);
 
