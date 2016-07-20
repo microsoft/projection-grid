@@ -66,9 +66,10 @@ function startSeleniumServer() {
 //
 // coveralls
 gulp.task('coveralls', ['test'], function () {
-  if (!process.evn.CI) {
+  if (!process.env.CI) {
     return;
   }
+  process.stdout.write(path.join(__dirname, 'coverage/lcov.info'));
   return gulp.src(path.join(__dirname, 'coverage/lcov.info')).pipe(coveralls());
 });
 // coveralls-end
