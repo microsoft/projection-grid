@@ -18,7 +18,7 @@
     "dist"
   ],
   "scripts": {
-    "test": "gulp test:unit",
+    "test": "gulp test coveralls",
     "prepublish": "gulp prepublish"
   },
   "license": "MIT",
