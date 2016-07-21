@@ -1,5 +1,8 @@
 # projection-grid
-Client side grid control in JavaScript using pipe and filter patterns. Our data starts its journey at a data-source (OData, Memory, Mock) and travels through multiple filters before it makes it to the grid renderer. Those filters are called 'projections'.
+[![Build Status][travis-image]][travis-url]
+[![Coverage percentage][coveralls-image]][coveralls-url]
+
+>Client side grid control in JavaScript using pipe and filter patterns. Our data starts its journey at a data-source (OData, Memory, Mock) and travels through multiple filters before it makes it to the grid renderer. Those filters are called 'projections'.
 
 ## Install
 ```bash
@@ -363,3 +366,7 @@ export default definePlugin => definePlugin('pagerView', [
 
 [js-data-resource]: http://www.js-data.io/docs/resources
 [json-schema]: http://json-schema.org/
+[travis-image]: https://travis-ci.org/lesliekim/projection-grid.svg?branch=master
+[travis-url]: https://travis-ci.org/lesliekim/projection-grid
+[coveralls-image]: https://coveralls.io/repos/github/lesliekim/projection-grid/badge.svg?branch=master
+[coveralls-url]:https://coveralls.io/github/lesliekim/projection-grid?branch=master
