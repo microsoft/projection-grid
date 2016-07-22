@@ -10,6 +10,9 @@ var http = require('http');
 var fs = require('fs');
 var os = require('os');
 var resolve = require('resolve');
+// coveralls
+var coveralls = require('gulp-coveralls');
+// coveralls-end
 
 var childProcess = require('child_process');
 var spawn = childProcess.spawn;
@@ -61,7 +64,14 @@ function startSeleniumServer() {
 //
 // var Server = require('karma').Server;
 //
-
+// coveralls
+gulp.task('coveralls', ['test'], function () {
+  if (!process.env.CI) {
+    return;
+  }
+  return gulp.src(path.join(__dirname, 'coverage/report-lcov/lcov.info')).pipe(coveralls());
+});
+// coveralls-end
 gulp.task('test:unit', function (cb) {
   var handler = function (code) {
     if (code) {
@@ -131,7 +141,8 @@ gulp.task('test:demos', ['download-selenium'], function (done) {
   });
 });
 
-gulp.task('test', ['test:unit', 'test:demos']);
+gulp.task('test', ['test:unit']);
+// gulp.task('test', ['test:unit', 'test:demos']);
 
 gulp.task('prepublish', ['webpack']);
 
@@ -149,4 +160,4 @@ gulp.task('clean:build', function () {
 
 gulp.task('clean', ['clean:build', 'clean:test']);
 
-gulp.task('default', ['static', 'webpack']);
+gulp.task('default', ['static', 'webpack', 'coveralls']);
