@@ -1,0 +1,15 @@
+include ./table-rows.jade
+
+table.table.table-bordered(style="border-collapse: collapse;")
+  if header
+    thead(class=header.classes)
+      +mixinRows(header.rows, 'head')
+  tbody
+    tr.top-filler
+  tbody.list-container
+  tbody
+    tr.bottom-filler
+  if footer
+    tfoot(class=footer.classes)
+      +mixinRows(footer.rows, 'foot')
+
