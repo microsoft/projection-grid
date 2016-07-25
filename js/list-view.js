@@ -13,7 +13,7 @@ class ListView extends Backbone.View {
   }
 
   reset({ items }) {
-    this.$container.html(_.map(items, itemTemplate).join(''));
+    this.$container.html(_.map(items, this.itemTemplate).join(''));
   }
 
   render() {
@@ -25,7 +25,6 @@ class ListView extends Backbone.View {
     this.$container.html(_.map(this.items, this.itemTemplate).join(''));
     return this;
   }
-  
 }
 
 export default ListView;
