@@ -29,6 +29,9 @@ function translateRow(columnGroup, row) {
 
 const listTemplate = ({ headRows, footRows, columnGroup }) => {
   return tableTemplate({
+    cols: _.map(columnGroup.leafColumns, col => ({
+      classes: [`col-${col.name}`]
+    })),
     header: {
       rows: _.reduce(headRows, (memo, row) => {
         if (row === 'column-header-rows') {

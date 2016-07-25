@@ -1,6 +1,9 @@
 include ./table-rows.jade
 
 table.table.table-bordered(style="border-collapse: collapse;")
+  colgroup
+    each col in cols
+      col(class=col.classes)
   if header
     thead(class=header.classes)
       +mixinRows(header.rows, 'head')
