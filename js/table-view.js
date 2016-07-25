@@ -7,34 +7,40 @@ import ColumnGroup from './column-group.js';
 import rowTemplate from './row.jade';
 import tableTemplate from './table.jade';
 
+function translateRow(columnGroup, row) {
+  if (_.has(row, 'html')) {
+    return {
+      classes: row.classes,
+      cells: [{
+        rowspan: 1,
+        colspan: columnGroup.width,
+        html: row.html,
+      }],
+    };
+  }
+  if (_.has(row, 'item')) {
+    return {
+      classes: row.classes,
+      cells: _.map(columnGroup.leafColumns, col => row.item[col.name] || {}),
+    };
+  }
+  return row;
+}
+
 const listTemplate = ({ headRows, footRows, columnGroup }) => {
   return tableTemplate({
     header: {
       rows: _.reduce(headRows, (memo, row) => {
         if (row === 'column-header-rows') {
           return memo.concat(columnGroup.headerRows);
-        } else if (_.has(row, 'html')) {
-          memo.push({
-            classes: row.classes,
-            cells: [{
-              rowspan: 1,
-              colspan: columnGroup.width,
-              html: row.html,
-            }],
-          });
-          return memo;
-        } else if (_.has(row, 'item')) {
-          const columns = columnGroup.leafColumns;
-          memo.push({
-            classes: row.classes,
-            cells: _.map(columns, col => row.item[col.name] || {}),
-          });
-          return memo;
         }
+        memo.push(translateRow(columnGroup, row));
+        return memo;
       }, []),
     },
+
     footer: {
-      rows: footRows,
+      rows: _.map(footRows, translateRow),
     },
   });
 };
