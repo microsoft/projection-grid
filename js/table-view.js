@@ -1,8 +1,7 @@
 import _ from 'underscore';
 import Backbone from 'backbone';
-import VirtualizedListView from 'backbone-virtualized-listview';
+import ListView from 'backbone-virtualized-listview';
 
-import ListView from './list-view.js';
 import ColumnGroup from './column-group.js';
 import rowTemplate from './row.jade';
 import tableTemplate from './table.jade';
@@ -69,15 +68,13 @@ const ITEMS_OPTIONS = ['columnGroup', 'bodyRows'];
 
 class TableView extends Backbone.View {
   initialize({
-    virtualize = false,
-    fixedHeader = false,
+    scrolling = {},
     columns = [],
     headRows = [],
     bodyRows = [],
     footRows = [],
     events = {},
   }) {
-    this.fixedHeader = fixedHeader;
     this.options = {
       columnGroup: new ColumnGroup(columns),
       headRows,
@@ -86,10 +83,16 @@ class TableView extends Backbone.View {
       events,
     };
 
-    const ListViewType = virtualize ? VirtualizedListView : ListView;
+    const { virtualized, stickyHeader, viewport } = _.defaults(scrolling, {
+      virtualized: false,
+      stickyHeader: false,
+      viewport: null,
+    });
 
-    this.listView = new ListViewType({
+    this.listView = new ListView({
       el: this.$el,
+      virtualized,
+      viewport,
       listTemplate,
       itemTemplate,
       items: getItems(_.pick(this.options, ITEMS_OPTIONS)),

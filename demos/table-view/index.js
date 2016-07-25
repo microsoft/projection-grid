@@ -64,7 +64,9 @@ const tableView = window.tableView = new TableView({
     },
   })).value(),
 
-  virtualize: true,
+  scrolling: {
+    virtualized: true,
+  },
 }).render();
 
 $(() => tableView.$el.appendTo('body'));
