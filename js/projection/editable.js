@@ -85,11 +85,11 @@ define([
               var $html = null;
               var text = null;
 
-              if (!_.isObject(value)) {
+              if (_.isObject(value)) {
+                $html = value.$html;
+              } else {
                 text = value;
                 value = {};
-              } else {
-                $html = value.$html;
               }
 
               value.$html = editableTemplate({

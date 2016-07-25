@@ -26,19 +26,20 @@ define([
         });
         var select = this.get('column.select') || model.get('select');
         var columns = model.get('columns');
+        var date = model.get('jsdata.query');
         var subSelect = [];
-        var isApplyGroup = false;
+        var isApplyGroup = date && date.startDate2 && date.endDate2;
 
-        _.each(columnGroup, function (subColumns, name) {
-          if (!_.has(columns, name)) {
-            return;
+        _.chain(columns).keys().each(function (key) {
+          if (isApplyGroup && _.has(columnGroup, key)) {
+            columns[key].group = columnGroup[key];
+            columns[key].groupExpansion = _.has(groupExpansion, key);
+          } else {
+            columns[key].group = null;
+            columns[key].groupExpansion = false;
           }
-          isApplyGroup = true;
-          columns[name].group = subColumns;
-          // remove the columns that appear in the select, except the one that has itself in the subColumns;
-          select = _.difference(select, _.without(subColumns, name));
-          columns[name].groupExpansion = _.has(groupExpansion, name);
-        }, this);
+        });
+
         var selectExpand = select.slice(0);
 
         _.each(select, function (columnName) {
