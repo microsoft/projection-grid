@@ -3,93 +3,60 @@ import Backbone from 'backbone';
 import VirtualizedListView from 'backbone-virtualized-listview';
 
 import ListView from './list-view.js';
+import ColumnGroup from './column-group.js';
 import rowTemplate from './row.jade';
 import tableTemplate from './table.jade';
 
-const getLeafColumns = columns => {
-  return _.chain(columns).map(column => {
-    if (column.columns) {
-      return getLeafColumns(column.columns);
-    } else {
-      return column;
-    }
-  }).flatten().value();
+const listTemplate = ({ headRows, footRows, columnGroup }) => {
+  return tableTemplate({
+    header: {
+      rows: _.reduce(headRows, (memo, row) => {
+        if (row === 'column-header-rows') {
+          return memo.concat(columnGroup.headerRows);
+        } else if (_.has(row, 'html')) {
+          memo.push({
+            classes: row.classes,
+            cells: [{
+              rowspan: 1,
+              colspan: columnGroup.width,
+              html: row.html,
+            }],
+          });
+          return memo;
+        } else if (_.has(row, 'item')) {
+          const columns = columnGroup.leafColumns;
+          memo.push({
+            classes: row.classes,
+            cells: _.map(columns, col => row.item[col.name] || {}),
+          });
+          return memo;
+        }
+      }, []),
+    },
+    footer: {
+      rows: footRows,
+    },
+  });
 };
 
-function buildColumnHeaderRows(columns) {
-  const rows = [];
-  const leaves = [];
-  let depthMax = 0;
+const itemTemplate = rowTemplate;
 
-  function buildColumnHeader(column, depth) {
-    if (depth > depthMax) {
-      depthMax = depth;
-    }
-    if (!rows[depth]) {
-      rows[depth] = { cells: [] };
-    }
-    const cells = rows[depth].cells;
-    const html = column.html || column.name;
-    let cell = { rowspan: 1, colspan: 1, html, depth };
-    if (column.columns) {
-      const height = _.result(column, 'height', 1);
-      cell.colspan = _.reduce(
-        column.columns,
-        (memo, col) => memo + buildColumnHeader(col, depth + height),
-        0
-      );
-      cell.rowspan = height;
-    } else {
-      leaves.push(cell);
-    }
-    cells.push(cell);
-    return cell.colspan;
-  }
-
-  _.each(columns, column => buildColumnHeader(column, 0));
-  _.each(leaves, cell => (cell.rowspan = depthMax - cell.depth + 1));
-
-  return rows;
+function getItems({ columnGroup, bodyRows }) {
+  return {
+    length: bodyRows.length,
+    slice(start, stop) {
+      return _.map(bodyRows.slice(start, stop), row => ({
+        row: {
+          classes: row.classes,
+          cells: _.map(columnGroup.leafColumns, col => row.item[col.name]),
+        },
+      }));
+    },
+  };
 }
 
-function buildBodyCells(columns, item) {
-  const cells = [];
-  function buildColumnCell(column) {
-    if (column.columns) {
-      _.each(column.columns, buildColumnCell);
-    } else {
-      const cell = item[column.name];
-      const html = _.isObject(cell) ? _.result(cell, 'html', '') : cell;
-      cells.push({ html });
-    }
-  }
-  _.each(columns, buildColumnCell);
-  return cells;
-}
-
-function buildHeaderRows(columns, rows) {
-  const result = _.chain(rows).map(row => {
-    if (row === 'column-header-rows') {
-      return buildColumnHeaderRows(columns);
-    } else if (row.item) {
-      return {
-        classes: row.classes || [],
-        cells: buildBodyCells(columns, row.item),
-      };
-    } else if (row.html) {
-      return {
-        classes: row.classes || [],
-        cells: [{
-          colspan: 7,
-          html: row.html,
-        }],
-      }
-    }
-  }).flatten().value();
-  console.log(result);
-
-  return result;
-}
+const MODEL_OPTIONS = ['columnGroup', 'headRows', 'footRows'];
+const ITEMS_OPTIONS = ['columnGroup', 'bodyRows'];
 
 class TableView extends Backbone.View {
   initialize({
@@ -101,40 +68,52 @@ class TableView extends Backbone.View {
     footRows = [],
     events = {},
   }) {
-    const listTemplate = () => tableTemplate({
-      header: {
-        rows: buildHeaderRows(columns, headRows),
-      },
-      footer: {
-        rows: footRows,
-      },
-    });
+    this.fixedHeader = fixedHeader;
+    this.options = {
+      columnGroup: new ColumnGroup(columns),
+      headRows,
+      bodyRows,
+      footRows,
+      events,
+    };
 
-    const itemTemplate = row => rowTemplate({
-      row: {
-        cells: buildBodyCells(columns, row.item),
-      },
-    });
+    const ListViewType = virtualize ? VirtualizedListView : ListView;
 
-
-    this.listView = virtualize ? new VirtualizedListView({
+    this.listView = new ListViewType({
       el: this.$el,
       listTemplate,
       itemTemplate,
-      items: bodyRows,
-    }) : new ListView({
-      el: this.$el,
-      listTemplate,
-      itemTemplate,
-      items: bodyRows,
+      items: getItems(_.pick(this.options, ITEMS_OPTIONS)),
+      model: _.pick(this.options, MODEL_OPTIONS),
+      events,
     });
   }
 
-  reset({}) {
+  reset(options = {}, callback) {
+    const isSet = key => _.has(options, key);
+    const changed = {};
+
+    if (isSet('columns')) {
+      options.columnGroup = new ColumnGroup(options.columns);
+      delete options.columns;
+    }
+
+    _.extend(this.options, options);
+
+    if (_.some(MODEL_OPTIONS, isSet)) {
+      changed.model = _.pick(this.options, MODEL_OPTIONS);
+    }
+    if (_.some(ITEMS_OPTIONS, isSet)) {
+      changed.items = getItems(_.pick(this.options, ITEMS_OPTIONS));
+    }
+    if (_.has(options, 'events')) {
+      changed.events = options.events;
+    }
+    this.listView.reset(changed, callback);
   }
 
-  render() {
-    this.listView.render();
+  render(callback) {
+    this.listView.render(callback);
     return this;
   }
 

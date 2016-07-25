@@ -7,17 +7,18 @@ const tableView = window.tableView = new TableView({
   columns: [{
     name: 'Group 0',
     html: '<i>Group 0</i>',
+    height: 2,
     columns: [{
       name: 'Index',
     }, {
-      name: 'Column 0',
+      name: 'Column0',
     }],
   }, {
     name: 'Group 1',
     columns: [{
-      name: 'Foo'
+      name: 'Foo',
     }, {
-      name: 'Bar'
+      name: 'Bar',
     }, {
       name: 'Group 2',
       columns: [{
@@ -26,7 +27,7 @@ const tableView = window.tableView = new TableView({
         name: 'Tac',
       }, {
         name: 'Toe',
-      }]
+      }],
     }],
   }],
 
@@ -48,18 +49,18 @@ const tableView = window.tableView = new TableView({
           html: '<b>Bar</b>',
         },
       },
-    }
+    },
   ],
   bodyRows: _.chain(2000).range().map(i => ({
     classes: ['body-row'],
     item: {
-      Index: i,
-      'Column 0': (_.random(100) + i) % 100,
-      Foo: (_.random(100) + i) % 100,
-      Bar: (_.random(100) + i) % 100,
-      Tic: (_.random(100) + i) % 100,
-      Tac: (_.random(100) + i) % 100,
-      Toe: (_.random(100) + i) % 100,
+      Index: { html: i },
+      Column0: { html: (_.random(100) + i) % 100 },
+      Foo: { html: (_.random(100) + i) % 100 },
+      Bar: { html: (_.random(100) + i) % 100 },
+      Tic: { html: (_.random(100) + i) % 100 },
+      Tac: { html: (_.random(100) + i) % 100 },
+      Toe: { html: (_.random(100) + i) % 100 },
     },
   })).value(),
 
