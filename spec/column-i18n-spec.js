@@ -12,6 +12,9 @@ describe('projection ColumnI18n', function () {
           return '$' + name;
         },
       },
+      'subColumn.i18n': {
+        name: 'SubName',
+      },
     });
     var originalData = new Base();
     originalData.data = new Response({
@@ -22,6 +25,7 @@ describe('projection ColumnI18n', function () {
     });
     originalData.pipe(model);
     expect(model.data.get('columns').name.$text).to.be.equal('Name');
+    expect(model.data.get('columns').name.config.subColTitle).to.be.equal('SubName');
     expect(model.data.get('columns').id.$text).to.be.equal('$id');
   });
 });

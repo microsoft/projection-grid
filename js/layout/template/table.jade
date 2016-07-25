@@ -1,6 +1,6 @@
-mixin columnHeader(column)
+mixin columnHeader(column, isSubHeader)
   if column.headerBuilder
-    != column.headerBuilder(column)
+    != column.headerBuilder(column, isSubHeader)
   else
     if column.$orderby
       if column.$orderby.dir > 0
@@ -10,7 +10,10 @@ mixin columnHeader(column)
     if (column && column.$html)
       != column.$html
     else
-      = (typeof column.$text != 'undefined')? column.$text : (column.property || column)
+      if isSubHeader && column.config.subColTitle
+        = column.config.subColTitle
+      else
+        = (typeof column.$text != 'undefined')? column.$text : (column.property || column)
 
 mixin th(column, hasGroup, isSubColumn)
   - var attr = (column.$metadata || {})['attr.head'] || {}
@@ -27,7 +30,7 @@ mixin th(column, hasGroup, isSubColumn)
   if isSubColumn 
     - var colspan = 1, rowspan = 1;
     th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)
-      +columnHeader(column)
+      +columnHeader(column, true)
   else if hasGroup && column.groupExpansion
       - var colspan = column.group.length, rowspan = 1;
       th(class=cls, colspan=colspan, rowspan=rowspan)&attributes(attributes)&attributes(attr)

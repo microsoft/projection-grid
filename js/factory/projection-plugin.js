@@ -93,12 +93,11 @@ const projectionConfigs = {
   },
 
   ColumnI18n(config) {
-    return {
-      'column.i18n': _.reduce(config.columns, (columnI18n, column) => {
-        columnI18n[column.name] = column.title || column.name;
-        return columnI18n;
-      }, {}),
-    };
+    return _.reduce(config.columns, (columnI18n, column) => {
+      columnI18n['column.i18n'][column.name] = column.title || column.name;
+      columnI18n['subColumn.i18n'][column.name] = column.subColTitle;
+      return columnI18n;
+    }, { 'column.i18n': {}, 'subColumn.i18n': {} });
   },
 
   ColumnQueryable(config) {
@@ -126,7 +125,11 @@ const projectionConfigs = {
     return colqConfig;
   },
 
-  ColumnGroup() {},
+  ColumnGroup(config) {
+    return {
+      'column.group': config.columnGroup,
+    };
+  },
 
   ColumnShifter() {},
 

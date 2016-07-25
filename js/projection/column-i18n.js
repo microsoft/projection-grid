@@ -12,6 +12,7 @@ define([
           return name;
         },
       },
+      'subColumn.i18n': {},
     },
     name: 'column-i18n',
     beforeSet: function (local) {
@@ -28,6 +29,7 @@ define([
       if (Model.__super__.update.call(this, options)) {
         var model = this.src.data;
         var colOptions = this.get('column.i18n');
+        var subColOptions = this.get('subColumn.i18n');
         var columns = model.get('columns') || {};
         var $default = colOptions[''];
 
@@ -42,6 +44,9 @@ define([
             $text: _.isFunction(opt) ? opt(element) : opt,
             property: element,
           }, columns[element]);
+
+          i18nColumns[element].config = i18nColumns[element].config || {};
+          i18nColumns[element].config.subColTitle = subColOptions[element];
         });
 
         this.patch({
