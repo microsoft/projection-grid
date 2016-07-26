@@ -75,6 +75,10 @@ window.tableViewEl = new TableView({
 
 window.tableViewWin = new TableView({
   el: '.container-window-viewport',
-  stickyHeader: true,
+  stickyHeader: {
+    offset() {
+      return $('.navbar-container').height();
+    },
+  },
   virtualized: true,
 }).set(state).render();
