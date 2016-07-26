@@ -63,74 +63,72 @@ function getItems({ columnGroup, bodyRows }) {
   };
 }
 
+const STATE_OPTIONS = ['columnGroup', 'headRows', 'bodyRows', 'footRows', 'events'];
 const MODEL_OPTIONS = ['columnGroup', 'headRows', 'footRows'];
 const ITEMS_OPTIONS = ['columnGroup', 'bodyRows'];
 
 class TableView extends Backbone.View {
   initialize({
-    scrolling = {},
-    columns = [],
-    headRows = [],
-    bodyRows = [],
-    footRows = [],
-    events = {},
+    virtualized = false,
+    viewport = false,
+    stickyHeader = false,
   }) {
-    this.options = {
-      columnGroup: new ColumnGroup(columns),
-      headRows,
-      bodyRows,
-      footRows,
-      events,
+    this._props = {
+      virtualized,
+      viewport,
+      stickyHeader,
     };
 
-    const { virtualized, stickyHeader, viewport } = _.defaults(scrolling, {
-      virtualized: false,
-      stickyHeader: false,
-      viewport: null,
-    });
+    this._state = {
+      columnGroup: new ColumnGroup([]),
+      headRows: [],
+      bodyRows: [],
+      footRows: [],
+      events: {},
+    };
 
-    this.listView = new ListView({
+    this._listView = new ListView({
       el: this.$el,
       virtualized,
       viewport,
+    }).set({
       listTemplate,
       itemTemplate,
-      items: getItems(_.pick(this.options, ITEMS_OPTIONS)),
-      model: _.pick(this.options, MODEL_OPTIONS),
-      events,
     });
   }
 
-  reset(options = {}, callback) {
-    const isSet = key => _.has(options, key);
-    const changed = {};
+  set(state = {}, callback = _.noop) {
+    const isSet = key => !_.isUndefined(state[key]);
+    const listState = {};
 
     if (isSet('columns')) {
-      options.columnGroup = new ColumnGroup(options.columns);
-      delete options.columns;
+      state.columnGroup = new ColumnGroup(state.columns);
     }
 
-    _.extend(this.options, options);
+    _.extend(this._state, _.pick(state, STATE_OPTIONS));
 
     if (_.some(MODEL_OPTIONS, isSet)) {
-      changed.model = _.pick(this.options, MODEL_OPTIONS);
+      listState.model = _.pick(this._state, MODEL_OPTIONS);
     }
     if (_.some(ITEMS_OPTIONS, isSet)) {
-      changed.items = getItems(_.pick(this.options, ITEMS_OPTIONS));
+      listState.items = getItems(_.pick(this._state, ITEMS_OPTIONS));
     }
-    if (_.has(options, 'events')) {
-      changed.events = options.events;
+    if (isSet('events')) {
+      listState.events = this._state.events;
     }
-    this.listView.reset(changed, callback);
+
+    this._listView.set(listState, callback);
+
+    return this;
   }
 
   render(callback) {
-    this.listView.render(callback);
+    this._listView.render(callback);
     return this;
   }
 
   scrollToItem(...args) {
-    this.listView.scrollToItem(...args);
+    this._listView.scrollToItem(...args);
   }
 }
 
