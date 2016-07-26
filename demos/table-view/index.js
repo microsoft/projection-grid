@@ -1,11 +1,10 @@
 import _ from 'underscore';
 import $ from 'jquery';
 import TableView from '../../js/table-view.js';
+import './index.less';
 import 'bootstrap-webpack';
 
-const tableView = window.tableView = new TableView({
-  virtualized: true,
-}).set({
+const state = {
   columns: [{
     name: 'Group 0',
     html: '<i>Group 0</i>',
@@ -65,7 +64,17 @@ const tableView = window.tableView = new TableView({
       Toe: { html: (_.random(100) + i) % 100 },
     },
   })).value(),
-}).render();
+};
 
-$(() => tableView.$el.appendTo('body'));
+window.tableViewEl = new TableView({
+  el: '.container-element-viewport',
+  viewport: '.container-element-viewport',
+  stickyHeader: true,
+  virtualized: true,
+}).set(state).render();
 
+window.tableViewWin = new TableView({
+  el: '.container-window-viewport',
+  stickyHeader: true,
+  virtualized: true,
+}).set(state).render();

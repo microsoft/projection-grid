@@ -1,10 +1,12 @@
 import _ from 'underscore';
+import $ from 'jquery';
 import Backbone from 'backbone';
 import ListView from 'backbone-virtualized-listview';
 
 import ColumnGroup from './column-group.js';
 import rowTemplate from './row.jade';
 import tableTemplate from './table.jade';
+import stickyHeaderTemplate from './sticky-header.jade';
 
 function translateRow(columnGroup, row) {
   if (_.has(row, 'html')) {
@@ -26,21 +28,28 @@ function translateRow(columnGroup, row) {
   return row;
 }
 
+function translateColumnGroup(columnGroup) {
+  return _.map(columnGroup.leafColumns, col => ({
+    classes: [`col-${col.name}`]
+  }));
+}
+
+function translateHeader(columnGroup, rows) {
+  return {
+    rows:  _.reduce(rows, (memo, row) => {
+      if (row === 'column-header-rows') {
+        return memo.concat(columnGroup.headerRows);
+      }
+      memo.push(translateRow(columnGroup, row));
+      return memo;
+    }, []),
+  };
+}
+
 const listTemplate = ({ headRows, footRows, columnGroup }) => {
   return tableTemplate({
-    cols: _.map(columnGroup.leafColumns, col => ({
-      classes: [`col-${col.name}`]
-    })),
-    header: {
-      rows: _.reduce(headRows, (memo, row) => {
-        if (row === 'column-header-rows') {
-          return memo.concat(columnGroup.headerRows);
-        }
-        memo.push(translateRow(columnGroup, row));
-        return memo;
-      }, []),
-    },
-
+    cols: translateColumnGroup(columnGroup),
+    header: translateHeader(columnGroup, headRows),
     footer: {
       rows: _.map(footRows, translateRow),
     },
@@ -66,6 +75,28 @@ function getItems({ columnGroup, bodyRows }) {
 const STATE_OPTIONS = ['columnGroup', 'headRows', 'bodyRows', 'footRows', 'events'];
 const MODEL_OPTIONS = ['columnGroup', 'headRows', 'footRows'];
 const ITEMS_OPTIONS = ['columnGroup', 'bodyRows'];
+const HEADER_OPTIONS = ['columnGroup', 'headRows', 'events'];
+
+class StickyHeaderView extends Backbone.View {
+  initialize({ tableView }) {
+    this.tableView = tableView;
+  }
+
+  _redraw() {
+    const { columnGroup, headRows, events } = this.tableView._state;
+    this.undelegateEvents();
+    this.$el.html(stickyHeaderTemplate({
+      cols: translateColumnGroup(columnGroup),
+      header: translateHeader(columnGroup, headRows),
+    }));
+    this.delegateEvents(events);
+  }
+
+  render() {
+    this._redraw();
+    return this;
+  }
+}
 
 class TableView extends Backbone.View {
   initialize({
@@ -95,6 +126,10 @@ class TableView extends Backbone.View {
       listTemplate,
       itemTemplate,
     });
+
+    if (stickyHeader) {
+      this._stickyHeaderView = new StickyHeaderView({ tableView: this });
+    }
   }
 
   set(state = {}, callback = _.noop) {
@@ -119,11 +154,52 @@ class TableView extends Backbone.View {
 
     this._listView.set(listState, callback);
 
+    if (_.some(HEADER_OPTIONS, isSet) && this._stickyHeaderView) {
+      this._stickyHeaderView._redraw();
+    }
+
     return this;
+  }
+
+  _hookUpStickyHeader() {
+    const viewport = this._listView.viewport;
+    const $el = viewport.$el;
+    const isWindow = $el.get(0) === window;
+
+    const ensureStickyHeader = _.once(() => {
+      const rectVP = viewport.getMetrics().outer;
+      const $elViewport =  isWindow ? $(document.body) : $el;
+
+      $elViewport.append(this._stickyHeaderView.render().el);
+      this._stickyHeaderView.$el.css({
+        position: isWindow ? 'fixed' : 'absolute',
+      });
+    });
+
+    this._listView.on('didRedraw', () => {
+      const rectTable = this.$('table').get(0).getBoundingClientRect();
+      const offset = _.result(this._props.stickyHeader, 'offset', 0);
+      const top = (isWindow ? 0 : $el.offset().top) + offset;
+
+      if (rectTable.top < top) {
+        ensureStickyHeader();
+        this._stickyHeaderView.$el.show();
+        this._stickyHeaderView.$el.css({
+          width: rectTable.width,
+          left: rectTable.left,
+          top,
+        });
+      } else {
+        this._stickyHeaderView.$el.hide();
+      }
+    });
   }
 
   render(callback) {
     this._listView.render(callback);
+    if (this._stickyHeaderView) {
+      this._hookUpStickyHeader();
+    }
     return this;
   }
 

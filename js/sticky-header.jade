@@ -1,0 +1,10 @@
+include ./table-rows.jade
+
+table.table.table-bordered(style="border-collapse: collapse; position: relative; top: 0;")
+  colgroup
+    each col in cols
+      col(class=col.classes)
+  if header
+    thead(class=header.classes)
+      +mixinRows(header.rows, 'head')
+
