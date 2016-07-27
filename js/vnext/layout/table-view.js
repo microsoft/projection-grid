@@ -30,7 +30,8 @@ function translateRow(columnGroup, row) {
 
 function translateColumnGroup(columnGroup) {
   return _.map(columnGroup.leafColumns, col => ({
-    classes: [`col-${col.name}`]
+    classes: [`col-${col.name}`],
+    width: _.isNumber(col.width) ? `${col.width}px` : col.width,
   }));
 }
 
@@ -46,13 +47,18 @@ function translateHeader(columnGroup, rows) {
   };
 }
 
-const listTemplate = ({ headRows, footRows, columnGroup }) => {
+const getListTemplate = stickyHeader => ({
+  headRows = [],
+  footRows = [],
+  columnGroup = [],
+} = {}) => {
   return tableTemplate({
     cols: translateColumnGroup(columnGroup),
     header: translateHeader(columnGroup, headRows),
     footer: {
       rows: _.map(footRows, translateRow),
     },
+    stickyHeader,
   });
 };
 
@@ -119,11 +125,10 @@ export class TableView extends Backbone.View {
     };
 
     this._listView = new ListView({
-      el: this.$el,
       virtualized,
       viewport,
     }).set({
-      listTemplate,
+      listTemplate: getListTemplate(stickyHeader),
       itemTemplate,
     });
 
@@ -166,46 +171,51 @@ export class TableView extends Backbone.View {
     const $el = viewport.$el;
     const isWindow = $el.get(0) === window;
 
-    const ensureStickyHeader = _.once(() => {
+    this._listView.once('didRedraw', () => {
       const rectVP = viewport.getMetrics().outer;
       const $elViewport =  isWindow ? $(document.body) : $el;
 
-      $elViewport.append(this._stickyHeaderView.render().el);
+      $elViewport.prepend(this._stickyHeaderView.render().el);
+      if (!isWindow) {
+        $elViewport.css({ position: 'relative' });
+      }
       this._stickyHeaderView.$el.css({
         position: isWindow ? 'fixed' : 'absolute',
+        display: 'none',
       });
-    });
 
-    this._listView.on('didRedraw', () => {
-      const rectVP = viewport.getMetrics().outer;
-      const rectTable = this.$('table').get(0).getBoundingClientRect();
-      const offset = _.result(this._props.stickyHeader, 'offset', 0);
-      const stickyTop = rectVP.top + offset;
+      viewport.on('change', () => {
+        const metricsVP = viewport.getMetrics();
+        const rectVP = metricsVP.outer;
+        const rectTable = this._listView.$('table').get(0).getBoundingClientRect();
+        const offset = _.result(this._props.stickyHeader, 'offset', 0);
+        const stickyTop = rectVP.top + offset;
 
-      if (rectTable.top < stickyTop) {
-        ensureStickyHeader();
+        if (rectTable.top < stickyTop) {
+          let left = rectTable.left;
+          let top = stickyTop;
 
-        let left = rectTable.left;
-        let top = stickyTop;
+          this._stickyHeaderView.$el.show();
+          if (!isWindow) {
+            // If we are using the absolute postion
+            //  * Add the left/top scroll offset
+            //  * Minus the left/top of the offset parent
+            const elOffsetParent = this._stickyHeaderView.el.offsetParent || document.documentElement;
+            const rectParent = elOffsetParent.getBoundingClientRect();
+            left += metricsVP.scroll.x - rectParent.left;
+            top += metricsVP.scroll.y - rectParent.top;
+          }
 
-        if (!isWindow) {
-          // If we are using the absolute postion, minus the left/top of the offset parent
-          const elOffsetParent = this._stickyHeaderView.el.offsetParent || document.documentElement;
-          const rectParent = elOffsetParent.getBoundingClientRect();
-          left -= rectParent.left;
-          top -= rectParent.top;
+          this._stickyHeaderView.$el.css({ left, top });
+        } else {
+          this._stickyHeaderView.$el.hide();
         }
-
-        this._stickyHeaderView.$el.css({ width: rectTable.width, left, top });
-        this._stickyHeaderView.$el.show();
-      } else {
-        this._stickyHeaderView.$el.hide();
-      }
+      });
     });
   }
 
   render(callback) {
-    this._listView.render(callback);
+    this.$el.html(this._listView.render(callback).el);
     if (this._stickyHeaderView) {
       this._hookUpStickyHeader();
     }

@@ -7,12 +7,13 @@ class ColumnGroup {
 
     const buildColumn = ({
       name,
+      width,
       parent = null,
       columns = [],
       html = name,
       height = 1,
     }) => {
-      const col = { name, parent, html, height };
+      const col = { name, width, parent, html, height };
 
       col.rowIndex = parent ? parent.rowIndex + parent.height : 0;
       col.columns = _.map(columns, c => buildColumn(_.extend({ parent: col }, c)));
