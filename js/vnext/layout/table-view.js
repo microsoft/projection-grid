@@ -98,7 +98,7 @@ class StickyHeaderView extends Backbone.View {
   }
 }
 
-class TableView extends Backbone.View {
+export class TableView extends Backbone.View {
   initialize({
     virtualized = false,
     viewport = false,
@@ -216,6 +216,4 @@ class TableView extends Backbone.View {
     this._listView.scrollToItem(...args);
   }
 }
-
-export default TableView;
 
