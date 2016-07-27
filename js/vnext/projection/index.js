@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import odata from './odata.js'
 
 class ProjectionChain extends Backbone.Model {
 			initialize(options) {
@@ -19,4 +20,7 @@ class ProjectionChain extends Backbone.Model {
 			}
 
 		};
-export default ProjectionChain;
+module.exports = {
+	ProjectionChain: ProjectionChain,
+	odata: odata,
+};

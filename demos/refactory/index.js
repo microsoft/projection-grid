@@ -2,10 +2,8 @@ import _ from 'underscore';
 import $ from 'jquery';
 import Backbone from 'backbone';
 import 'bootstrap-webpack';
-import TableView from '../../js/table-view.js'
-import ProjectionChain from '../../js/projection-chain/pg-chain.js'
-import odata from '../../js/projection-chain/odata.js'
-import map from '../../js/projection-chain/map.js'
+import TableView from '../../js/vnext//layout/table-view.js'
+import projection from '../../js/vnext/projection/index.js'
 
 function renderTable (p$state, {} = {}) {
 	return p$state.then(function (data) {
@@ -34,7 +32,7 @@ function renderTable (p$state, {} = {}) {
 		$(() => tableView.$el.appendTo('body'));
 	});
 }
-
+/*
 function mapProj (item) {
 	var names = (item.name || item.ContactName || item.ShipName).split(' ');
 
@@ -44,10 +42,10 @@ function mapProj (item) {
     email: names[0] + '.' + names[1] + '@outlook.com',
   });
 }
-
-var pchain = new ProjectionChain();
-pchain.pipe(odata).pipe(map).pipe(renderTable);
+*/
+var pchain = new projection.ProjectionChain();
+pchain.pipe(projection.odata).pipe(renderTable);
 pchain.set({
 	url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
-	map: mapProj});
+	});
 
