@@ -1,9 +1,8 @@
-import Promise from 'bluebird';
 import _ from 'underscore';
 import $ from 'jquery';
-import Backbone from 'backbone';
+import Promise from 'bluebird';
 
-function odata (p$state, {
+export function odata (p$state, {
 	verb = 'get',
 	url,
 	skip,
@@ -13,9 +12,8 @@ function odata (p$state, {
 	select = [],
 } = {}) {
 
-	var url = _.isFunction(url) ? url() : url;
-	var op = {
-		url: url,
+	const op = {
+		url,
 		$format: 'json',
 		$count: true,
 	};
@@ -29,24 +27,19 @@ function odata (p$state, {
 	}
 
 	if (_.size(orderby)) {
-		var col = _.first(orderby);
-		var key = _.keys(col)[0];
-		var dir = col[key];
+		const col = _.first(orderby);
+		const key = _.keys(col)[0];
+		const dir = col[key];
 
 		op.$orderby = key + ' ' + (dir > 0 ? 'asc' : 'desc');
 	}
 
-	
-	return new Promise(function (resolve, reject) {
-		$.getJSON(op.url, _.omit(op, 'url'))
-		  .success(resolve)
-		  .fail(function (jqXHR, textStatus, errorThrown) {
-		    reject(new Error(errorThrown));
-		  });
-	}).then(function (data) {
-		return data.value;
-	});
-
+	return new Promise((resolve, reject) => {
+		$.getJSON(_.result(op, 'url'), _.omit(op, 'url'))
+		.success(resolve)
+		.fail((jqXHR, textStatus, errorThrown) => {
+			reject(new Error(errorThrown));
+		});
+	}).then(_.property('value'));
 }
 
-export default odata;

@@ -3,12 +3,10 @@ import _ from 'underscore';
 import $ from 'jquery';
 import Backbone from 'backbone';
 
-function map (state, {map,} = {}) {
-	return state.then(function (data) {
-		var mapData = _.isFunction(map) ? _.map(data, map) : data;
-		mapData = _.flatten(mapData);
-		return mapData;
+export function map (p$state, { map = _.identity } = {}) {
+	return p$state.then(state => {
+		const stateMapped = _.chain(state).map(map).flatten().value();
+		return stateMapped;
 	});
 }
 
-export default map;
