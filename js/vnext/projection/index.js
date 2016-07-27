@@ -4,14 +4,14 @@ export { odata } from './odata.js';
 export class ProjectionChain extends Backbone.Model {
 	initialize(options) {
 		this.projections = [];
-		this.on('change', () => this.update());
 	}
 
 	update() {
-		return _.reduce(this.projections, 
+    return _.reduce(
+      this.projections, 
 			(memo, proj)  => proj(memo, this.attributes),
 			Promise.resolve({})
-			);
+    );
 	}
 
 	pipe(projection) {
