@@ -177,18 +177,27 @@ class TableView extends Backbone.View {
     });
 
     this._listView.on('didRedraw', () => {
+      const rectVP = viewport.getMetrics().outer;
       const rectTable = this.$('table').get(0).getBoundingClientRect();
       const offset = _.result(this._props.stickyHeader, 'offset', 0);
-      const top = (isWindow ? 0 : $el.offset().top) + offset;
+      const stickyTop = rectVP.top + offset;
 
-      if (rectTable.top < top) {
+      if (rectTable.top < stickyTop) {
         ensureStickyHeader();
+
+        let left = rectTable.left;
+        let top = stickyTop;
+
+        if (!isWindow) {
+          // If we are using the absolute postion, minus the left/top of the offset parent
+          const elOffsetParent = this._stickyHeaderView.el.offsetParent || document.documentElement;
+          const rectParent = elOffsetParent.getBoundingClientRect();
+          left -= rectParent.left;
+          top -= rectParent.top;
+        }
+
+        this._stickyHeaderView.$el.css({ width: rectTable.width, left, top });
         this._stickyHeaderView.$el.show();
-        this._stickyHeaderView.$el.css({
-          width: rectTable.width,
-          left: rectTable.left,
-          top,
-        });
       } else {
         this._stickyHeaderView.$el.hide();
       }
