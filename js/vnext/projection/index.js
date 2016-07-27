@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import Promise from 'bluebird';
 export { odata } from './odata.js';
+export { jsdata } from './jsdata.js';
 
 export class ProjectionChain extends Backbone.Model {
   initialize(options) {

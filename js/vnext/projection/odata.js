@@ -41,5 +41,5 @@ export function odata (p$state, {
 			reject(new Error(errorThrown));
 		});
 	}).then(_.property('value'));
-}
+};
 
