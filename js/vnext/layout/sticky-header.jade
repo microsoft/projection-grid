@@ -1,10 +1,7 @@
 include ./table-rows.jade
 
 table.table.table-bordered(style="border-collapse: collapse; table-layout: fixed;")
-  colgroup
-    each col in cols
-      - var columnStyle = col.width ? 'width: ' + col.width : null;
-      col(class=col.classes, style=columnStyle)
+  +mixinColGroup(cols)
   if header
     thead(class=header.classes)
       +mixinRows(header.rows, 'head')
