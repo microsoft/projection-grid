@@ -4,7 +4,7 @@ import $ from 'jquery';
 import Backbone from 'backbone';
 
 function map (state, {map,} = {}) {
-	var promiseData = state.then(function (data) {
+	return state.then(function (data) {
 		var mapData = _.isFunction(map) ? _.map(data, map) : data;
 		mapData = _.flatten(mapData);
 		return mapData;

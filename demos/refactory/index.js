@@ -5,9 +5,10 @@ import 'bootstrap-webpack';
 import TableView from '../../js/table-view.js'
 import ProjectionChain from '../../js/projection-chain/pg-chain.js'
 import odata from '../../js/projection-chain/odata.js'
+import map from '../../js/projection-chain/map.js'
 
-function renderTable (state, {} = {}) {
-	var promiseData = state.then(function (data) {
+function renderTable (p$state, {} = {}) {
+	return p$state.then(function (data) {
 		var columns = [];
 		for (var key in data[0]) {
 			columns.push({name: key});
@@ -32,9 +33,21 @@ function renderTable (state, {} = {}) {
 		}).render();
 		$(() => tableView.$el.appendTo('body'));
 	});
-	return promiseData;
+}
+
+function mapProj (item) {
+	var names = (item.name || item.ContactName || item.ShipName).split(' ');
+
+  return _.extend({}, item, {
+    first: names[0],
+    last: names[1],
+    email: names[0] + '.' + names[1] + '@outlook.com',
+  });
 }
 
 var pchain = new ProjectionChain();
-pchain.pipe(odata).pipe(renderTable);
-pchain.set({url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',});
+pchain.pipe(odata).pipe(map).pipe(renderTable);
+pchain.set({
+	url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
+	map: mapProj});
+

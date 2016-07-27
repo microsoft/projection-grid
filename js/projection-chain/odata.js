@@ -3,7 +3,7 @@ import _ from 'underscore';
 import $ from 'jquery';
 import Backbone from 'backbone';
 
-function odata (state, {
+function odata (p$state, {
 	verb = 'get',
 	url,
 	skip,
@@ -37,7 +37,7 @@ function odata (state, {
 	}
 
 	
-	var promiseData  = new Promise(function (resolve, reject) {
+	return new Promise(function (resolve, reject) {
 		$.getJSON(op.url, _.omit(op, 'url'))
 		  .success(resolve)
 		  .fail(function (jqXHR, textStatus, errorThrown) {
@@ -47,7 +47,6 @@ function odata (state, {
 		return data.value;
 	});
 
-	return promiseData;
 }
 
 export default odata;
