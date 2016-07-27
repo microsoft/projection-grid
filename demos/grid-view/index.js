@@ -5,9 +5,10 @@ import { odata } from '../../js/vnext/projection';
 import './index.less';
 import 'bootstrap-webpack';
 
-const columns = state => {
+const columns = (state, {
+  columns = _.chain(state).first().keys().map(name => ({ name, width: 120 })).value(),
+} = {}) => {
   const headRows = ['column-header-rows'];
-  const columns = _.chain(state).first().keys().map(name => ({ name, width: 120 })).value();
   const bodyRows = _.map(state, item => ({
     classes: ['body-row'],
     item: _.mapObject(item, value => ({ html: value })),

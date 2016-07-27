@@ -4,48 +4,14 @@ import Backbone from 'backbone';
 import ListView from 'backbone-virtualized-listview';
 
 import ColumnGroup from './column-group.js';
+import {
+  translateRow,
+  translateColumnGroup,
+  translateHeader,
+} from './table-util.js';
+import { StickyHeaderView } from './sticky-header.js'; 
 import rowTemplate from './row.jade';
 import tableTemplate from './table.jade';
-import stickyHeaderTemplate from './sticky-header.jade';
-
-function translateRow(columnGroup, row) {
-  if (_.has(row, 'html')) {
-    return {
-      classes: row.classes,
-      cells: [{
-        rowspan: 1,
-        colspan: columnGroup.width,
-        html: row.html,
-      }],
-    };
-  }
-  if (_.has(row, 'item')) {
-    return {
-      classes: row.classes,
-      cells: _.map(columnGroup.leafColumns, col => row.item[col.name] || {}),
-    };
-  }
-  return row;
-}
-
-function translateColumnGroup(columnGroup) {
-  return _.map(columnGroup.leafColumns, col => ({
-    classes: [`col-${col.name}`],
-    width: _.isNumber(col.width) ? `${col.width}px` : col.width,
-  }));
-}
-
-function translateHeader(columnGroup, rows) {
-  return {
-    rows:  _.reduce(rows, (memo, row) => {
-      if (row === 'column-header-rows') {
-        return memo.concat(columnGroup.headerRows);
-      }
-      memo.push(translateRow(columnGroup, row));
-      return memo;
-    }, []),
-  };
-}
 
 const getListTemplate = stickyHeader => ({
   headRows = [],
@@ -82,27 +48,6 @@ const STATE_OPTIONS = ['columnGroup', 'headRows', 'bodyRows', 'footRows', 'event
 const MODEL_OPTIONS = ['columnGroup', 'headRows', 'footRows'];
 const ITEMS_OPTIONS = ['columnGroup', 'bodyRows'];
 const HEADER_OPTIONS = ['columnGroup', 'headRows', 'events'];
-
-class StickyHeaderView extends Backbone.View {
-  initialize({ tableView }) {
-    this.tableView = tableView;
-  }
-
-  _redraw() {
-    const { columnGroup, headRows, events } = this.tableView._state;
-    this.undelegateEvents();
-    this.$el.html(stickyHeaderTemplate({
-      cols: translateColumnGroup(columnGroup),
-      header: translateHeader(columnGroup, headRows),
-    }));
-    this.delegateEvents(events);
-  }
-
-  render() {
-    this._redraw();
-    return this;
-  }
-}
 
 export class TableView extends Backbone.View {
   initialize({
@@ -166,58 +111,10 @@ export class TableView extends Backbone.View {
     return this;
   }
 
-  _hookUpStickyHeader() {
-    const viewport = this._listView.viewport;
-    const $el = viewport.$el;
-    const isWindow = $el.get(0) === window;
-
-    this._listView.once('didRedraw', () => {
-      const rectVP = viewport.getMetrics().outer;
-      const $elViewport =  isWindow ? $(document.body) : $el;
-
-      $elViewport.prepend(this._stickyHeaderView.render().el);
-      if (!isWindow) {
-        $elViewport.css({ position: 'relative' });
-      }
-      this._stickyHeaderView.$el.css({
-        position: isWindow ? 'fixed' : 'absolute',
-        display: 'none',
-      });
-
-      viewport.on('change', () => {
-        const metricsVP = viewport.getMetrics();
-        const rectVP = metricsVP.outer;
-        const rectTable = this._listView.$('table').get(0).getBoundingClientRect();
-        const offset = _.result(this._props.stickyHeader, 'offset', 0);
-        const stickyTop = rectVP.top + offset;
-
-        if (rectTable.top < stickyTop) {
-          let left = rectTable.left;
-          let top = stickyTop;
-
-          this._stickyHeaderView.$el.show();
-          if (!isWindow) {
-            // If we are using the absolute postion
-            //  * Add the left/top scroll offset
-            //  * Minus the left/top of the offset parent
-            const elOffsetParent = this._stickyHeaderView.el.offsetParent || document.documentElement;
-            const rectParent = elOffsetParent.getBoundingClientRect();
-            left += metricsVP.scroll.x - rectParent.left;
-            top += metricsVP.scroll.y - rectParent.top;
-          }
-
-          this._stickyHeaderView.$el.css({ left, top });
-        } else {
-          this._stickyHeaderView.$el.hide();
-        }
-      });
-    });
-  }
-
   render(callback) {
     this.$el.html(this._listView.render(callback).el);
     if (this._stickyHeaderView) {
-      this._hookUpStickyHeader();
+      this._stickyHeaderView.render();
     }
     return this;
   }
