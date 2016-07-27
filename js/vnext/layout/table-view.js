@@ -100,13 +100,13 @@ class StickyHeaderView extends Backbone.View {
 
 export class TableView extends Backbone.View {
   initialize({
+    viewport,
     virtualized = false,
-    viewport = false,
     stickyHeader = false,
   }) {
     this._props = {
-      virtualized,
       viewport,
+      virtualized,
       stickyHeader,
     };
 
@@ -210,6 +210,14 @@ export class TableView extends Backbone.View {
       this._hookUpStickyHeader();
     }
     return this;
+  }
+
+  remove() {
+    this._listView.remove();
+    if (this._stickyHeaderView) {
+      this._stickyHeaderView.remove();
+    }
+    super.remove();
   }
 
   scrollToItem(...args) {
