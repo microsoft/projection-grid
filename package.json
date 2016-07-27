@@ -70,7 +70,7 @@
     "lodash": "^4.6.1",
     "mocha": "^2.4.5",
     "node-static": "^0.7.7",
-    "pagination-control": "git+https://github.com/Microsoft/pagination-control.git#publish",
+    "pagination-control": "^0.0.2",
     "phantomjs-prebuilt": "^2.1.7",
     "requirejs": "^2.2.0",
     "resolve": "^1.1.7",
@@ -93,7 +93,7 @@
     "jquery": "^2.2.2",
     "js-data": "^2.9.0",
     "knockout": "^3.4.0",
-    "pagination-control": "git+https://github.com/Microsoft/pagination-control.git#publish",
+    "pagination-control": "^0.0.2",
     "underscore": "^1.8.3"
   }
 }
