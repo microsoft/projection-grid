@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import $ from 'jquery';
-import TableView from '../../js/vnext/layout/table-view.js';
+import { TableView } from '../../js/vnext/layout/table-view.js';
 import './index.less';
 import 'bootstrap-webpack';
 
