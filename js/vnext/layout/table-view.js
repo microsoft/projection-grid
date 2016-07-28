@@ -3,22 +3,28 @@ import $ from 'jquery';
 import Backbone from 'backbone';
 import ListView from 'backbone-virtualized-listview';
 
-import ColumnGroup from './column-group.js';
+import { ColumnGroup } from './column-group.js';
+import { StickyHeaderView } from './sticky-header.js'; 
 import {
   translateRow,
   translateColumnGroup,
   translateHeader,
 } from './table-util.js';
-import { StickyHeaderView } from './sticky-header.js'; 
+
 import rowTemplate from './row.jade';
 import tableTemplate from './table.jade';
 
-const getListTemplate = stickyHeader => ({
-  headRows = [],
-  footRows = [],
-  columnGroup = [],
-} = {}) => {
-  return tableTemplate({
+const STATE_OPTIONS = ['columnGroup', 'headRows', 'bodyRows', 'footRows', 'events'];
+const MODEL_OPTIONS = ['columnGroup', 'headRows', 'footRows'];
+const ITEMS_OPTIONS = ['columnGroup', 'bodyRows'];
+const HEADER_OPTIONS = ['columnGroup', 'headRows', 'events'];
+
+function getListTemplate(stickyHeader) {
+  return ({
+    headRows = [],
+    footRows = [],
+    columnGroup = [],
+  } = {}) => tableTemplate({
     cols: translateColumnGroup(columnGroup),
     header: translateHeader(columnGroup, headRows),
     footer: {
@@ -26,9 +32,7 @@ const getListTemplate = stickyHeader => ({
     },
     stickyHeader,
   });
-};
-
-const itemTemplate = rowTemplate;
+}
 
 function getItems({ columnGroup, bodyRows }) {
   return {
@@ -43,11 +47,6 @@ function getItems({ columnGroup, bodyRows }) {
     },
   };
 }
-
-const STATE_OPTIONS = ['columnGroup', 'headRows', 'bodyRows', 'footRows', 'events'];
-const MODEL_OPTIONS = ['columnGroup', 'headRows', 'footRows'];
-const ITEMS_OPTIONS = ['columnGroup', 'bodyRows'];
-const HEADER_OPTIONS = ['columnGroup', 'headRows', 'events'];
 
 export class TableView extends Backbone.View {
   initialize({
@@ -74,7 +73,7 @@ export class TableView extends Backbone.View {
       viewport,
     }).set({
       listTemplate: getListTemplate(stickyHeader),
-      itemTemplate,
+      itemTemplate: rowTemplate,
     });
 
     if (stickyHeader) {

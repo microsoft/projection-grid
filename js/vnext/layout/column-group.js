@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-class ColumnGroup {
+export class ColumnGroup {
   constructor(columns) {
     this.headerRows = [];
     this.leafColumns = [];
@@ -65,4 +65,3 @@ class ColumnGroup {
   }
 }
 
-export default ColumnGroup;
