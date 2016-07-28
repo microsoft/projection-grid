@@ -26,7 +26,7 @@ window.gridViewEl = new GridView({
   cells,
 ]).set({
   url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
-  selection: true,
+  selection: {},
 }).render();
 
 window.gridViewWin = new GridView({
@@ -46,6 +46,6 @@ window.gridViewWin = new GridView({
   cells,
 ]).set({
   url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
-  selection: true,
+  selection: {},
 }).render();
 

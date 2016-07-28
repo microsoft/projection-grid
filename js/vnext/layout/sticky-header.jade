@@ -1,8 +1,6 @@
 include ./table-mixins.jade
 
 table.table.table-bordered(style="border-collapse: collapse; table-layout: fixed;")
-  +mixinColGroup(cols)
-  if header
-    thead(class=header.classes)
-      +mixinRows(header.rows, 'head')
+  colgroup
+  thead
 

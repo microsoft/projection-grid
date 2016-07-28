@@ -1,21 +1,25 @@
 import _ from 'underscore';
 import $ from 'jquery';
 import Backbone from 'backbone';
+import { ColumnGroupView } from './column-group-view.js';
+import { HeaderView } from './header-view.js';
+
 import stickyHeaderTemplate from './sticky-header.jade';
 
 export class StickyHeaderView extends Backbone.View {
   initialize({ tableView }) {
     this.tableView = tableView;
+    this._columnGroupView = new ColumnGroupView({ tableView });
+    this._headerView = new HeaderView({ tableView });
   }
 
   _redraw() {
-    const { cols, headRows, events } = this.tableView._state;
     this.undelegateEvents();
-    this.$el.html(stickyHeaderTemplate({
-      cols,
-      header: { rows: headRows },
-    }));
-    this.delegateEvents(events);
+
+    this._columnGroupView.redraw();
+    this._headerView.redraw();
+
+    this.delegateEvents(this.tableView._state.events);
   }
 
   _adjust() {
@@ -55,6 +59,10 @@ export class StickyHeaderView extends Backbone.View {
     const isWindow = viewport.$el.get(0) === window;
     const $elViewport =  isWindow ? $(document.body) : viewport.$el;
 
+    this.$el.html(stickyHeaderTemplate());
+    this._columnGroupView.setElement(this.$('colgroup'));
+    this._headerView.setElement(this.$('thead'));
+
     this._redraw();
     $elViewport.prepend(this.el);
 
@@ -72,6 +80,12 @@ export class StickyHeaderView extends Backbone.View {
     });
 
     return this;
+  }
+
+  remove() {
+    this._columnGroupView.remove();
+    this._headerView.remove();
+    super.remove();
   }
 }
 

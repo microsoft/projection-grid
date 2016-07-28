@@ -4,16 +4,12 @@ include ./table-mixins.jade
 - tableStyle += stickyHeader ? "table-layout: fixed;" : "";
 
 table.table.table-bordered(style=tableStyle)
-  +mixinColGroup(cols)
-  if header
-    thead(class=header.classes)
-      +mixinRows(header.rows, 'head')
+  colgroup
+  thead
   tbody
     tr.top-filler
   tbody.list-container
   tbody
     tr.bottom-filler
-  if footer
-    tfoot(class=footer.classes)
-      +mixinRows(footer.rows, 'foot')
+  tfoot
 

@@ -16,10 +16,16 @@ export class GridView extends Backbone.View {
       stickyHeader,
     });
     this._projectionChain = new ProjectionChain();
+
+    const patchEvents = state => _.extend(state, {
+      events: _.mapObject(state.events, handler => handler.bind(this)),
+    });
+
     this._projectionChain.on('change', () => {
       this.trigger('willUpdate', this._projectionChain.changedAttributes());
       this._projectionChain.update()
-        .then(data => this._tableView.set(data))
+        .then(patchEvents)
+        .then(state => this._tableView.set(state))
         .finally(() => this.trigger('didUpdate'));
     });
   }
@@ -32,6 +38,10 @@ export class GridView extends Backbone.View {
   set(state = {}) {
     this._projectionChain.set(state);
     return this;
+  }
+
+  get(attribute) {
+    return this._projectionChain.get(attribute);
   }
 
   render(callback) {
