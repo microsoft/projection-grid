@@ -17,7 +17,9 @@ export class ProjectionChain extends Backbone.Model {
   update() {
     return _.reduce(
       this.projections, 
-      (p$state, proj) => p$state.then(state => proj(state, this.attributes)),
+      (p$state, proj) => p$state.then(state => {
+        const newState = proj(state, this.attributes);
+        return newState;}),
       Promise.resolve({})
     );
   }

@@ -12,10 +12,19 @@ function translateRow(columnGroup, row) {
     };
   }
   if (_.has(row, 'item')) {
-    return {
+    const obj =  {
       classes: row.classes,
-      cells: _.map(columnGroup.leafColumns, col => (row.item[col.name] || {})),
+      cells: _.map(columnGroup.leafColumns, col => {
+        const cell = row.item[col.name] || {};
+        const tpl = cell.template || cell.headerTemplate || cell.footerTemplate;
+        if (tpl) {
+          cell.html = _.template(tpl, cell);
+        }
+        return cell;
+      }),
     };
+
+    return obj;
   }
   return row;
 }
