@@ -1,4 +1,5 @@
-include ./table-mixins.jade
+each col in cols || []
+  - var columnStyle = col.width ? 'width: ' + col.width + ';' : null;
+  col(class=col.classes, style=columnStyle)
 
-+mixinCols(cols)
 
