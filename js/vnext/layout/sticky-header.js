@@ -1,10 +1,6 @@
 import _ from 'underscore';
 import $ from 'jquery';
 import Backbone from 'backbone';
-import {
-  translateColumnGroup,
-  translateHeader,
-} from './table-util.js';
 import stickyHeaderTemplate from './sticky-header.jade';
 
 export class StickyHeaderView extends Backbone.View {
@@ -13,11 +9,11 @@ export class StickyHeaderView extends Backbone.View {
   }
 
   _redraw() {
-    const { columnGroup, headRows, events } = this.tableView._state;
+    const { cols, headRows, events } = this.tableView._state;
     this.undelegateEvents();
     this.$el.html(stickyHeaderTemplate({
-      cols: translateColumnGroup(columnGroup),
-      header: translateHeader(columnGroup, headRows),
+      cols,
+      header: { rows: headRows },
     }));
     this.delegateEvents(events);
   }

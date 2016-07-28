@@ -3,47 +3,30 @@ import $ from 'jquery';
 import Backbone from 'backbone';
 import ListView from 'backbone-virtualized-listview';
 
-import { ColumnGroup } from './column-group.js';
 import { StickyHeaderView } from './sticky-header.js'; 
-import {
-  translateRow,
-  translateColumnGroup,
-  translateHeader,
-} from './table-util.js';
 
 import rowTemplate from './row.jade';
 import tableTemplate from './table.jade';
 
-const STATE_OPTIONS = ['columnGroup', 'headRows', 'bodyRows', 'footRows', 'events'];
-const MODEL_OPTIONS = ['columnGroup', 'headRows', 'footRows'];
-const ITEMS_OPTIONS = ['columnGroup', 'bodyRows'];
-const HEADER_OPTIONS = ['columnGroup', 'headRows', 'events'];
+const STATE_OPTIONS = ['cols', 'headRows', 'bodyRows', 'footRows', 'events'];
+const MODEL_OPTIONS = ['cols', 'headRows', 'footRows'];
+const ITEMS_OPTIONS = ['bodyRows'];
+const HEADER_OPTIONS = ['cols', 'headRows', 'events'];
 
 function getListTemplate(stickyHeader) {
-  return ({
-    headRows = [],
-    footRows = [],
-    columnGroup = [],
-  } = {}) => tableTemplate({
-    cols: translateColumnGroup(columnGroup),
-    header: translateHeader(columnGroup, headRows),
-    footer: {
-      rows: _.map(footRows, translateRow),
-    },
+  return model => tableTemplate({
     stickyHeader,
+    header: { rows: model.headRows },
+    footer: { rows: model.footRows },
+    cols: model.cols,
   });
 }
 
-function getItems({ columnGroup, bodyRows }) {
+function getItems({ bodyRows }) {
   return {
     length: bodyRows.length,
     slice(start, stop) {
-      return _.map(bodyRows.slice(start, stop), row => ({
-        row: {
-          classes: row.classes,
-          cells: _.map(columnGroup.leafColumns, col => row.item[col.name]),
-        },
-      }));
+      return _.map(bodyRows.slice(start, stop), row => ({ row }))
     },
   };
 }
@@ -61,7 +44,7 @@ export class TableView extends Backbone.View {
     };
 
     this._state = {
-      columnGroup: new ColumnGroup([]),
+      cols: [],
       headRows: [],
       bodyRows: [],
       footRows: [],
@@ -84,10 +67,6 @@ export class TableView extends Backbone.View {
   set(state = {}, callback = _.noop) {
     const isSet = key => !_.isUndefined(state[key]);
     const listState = {};
-
-    if (isSet('columns')) {
-      state.columnGroup = new ColumnGroup(state.columns);
-    }
 
     _.extend(this._state, _.pick(state, STATE_OPTIONS));
 
