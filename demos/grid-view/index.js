@@ -17,11 +17,13 @@ window.gridViewEl = new GridView({
   viewport: '.container-element-viewport',
   stickyHeader: true,
   virtualized: true,
-}).pipeProjections([
+}).pipeDataProjections([
   odata,
+]).pipeStructureProjections([
   columns,
   rows,
   selection,
+]).pipeContentProjections([
   columnGroup,
   cells,
 ]).set({
@@ -37,11 +39,13 @@ window.gridViewWin = new GridView({
     },
   },
   virtualized: true,
-}).pipeProjections([
+}).pipeDataProjections([
   odata,
+]).pipeStructureProjections([
   columns,
   rows,
   selection,
+]).pipeContentProjections([
   columnGroup,
   cells,
 ]).set({

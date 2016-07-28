@@ -123,5 +123,14 @@ export class TableView extends Backbone.View {
   scrollToItem(...args) {
     this._listView.scrollToItem(...args);
   }
+
+  indexOfElement(el) {
+    const $elTr = this._listView.$(el).closest('tr', this._listView.$container);
+    if ($elTr.length > 0) {
+      return $elTr.index() + this._listView.indexFirst;
+    }
+    return null;
+  }
+
 }
 
