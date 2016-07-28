@@ -65,4 +65,18 @@ class ColumnGroup {
   }
 }
 
-export default ColumnGroup;
+function translateColumnGroup(columnGroup) {
+  return _.map(columnGroup.leafColumns, col => ({
+    classes: [`col-${col.name}`],
+    width: _.isNumber(col.width) ? `${col.width}px` : col.width,
+  }));
+}
+
+export function columnGroup(state) {
+  const columnGroup = new ColumnGroup(state.columns || []);
+  return _.extend(state, {
+    columnGroup,
+    cols: translateColumnGroup(columnGroup),
+  });
+}
+

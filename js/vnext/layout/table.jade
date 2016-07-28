@@ -1,13 +1,10 @@
-include ./table-rows.jade
+include ./table-mixins.jade
 
 - var tableStyle = "border-collapse: collapse;";
 - tableStyle += stickyHeader ? "table-layout: fixed;" : "";
 
 table.table.table-bordered(style=tableStyle)
-  colgroup
-    each col in cols
-      - var columnStyle = col.width ? 'width: ' + col.width : null;
-      col(class=col.classes, style=columnStyle)
+  +mixinColGroup(cols)
   if header
     thead(class=header.classes)
       +mixinRows(header.rows, 'head')
