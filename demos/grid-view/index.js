@@ -25,7 +25,7 @@ window.gridViewEl = new GridView({
   columnGroup,
   cells,
 ]).set({
-	url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
+  url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
   selection: true,
 }).render();
 
@@ -45,7 +45,7 @@ window.gridViewWin = new GridView({
   columnGroup,
   cells,
 ]).set({
-	url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
+  url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
   selection: true,
 }).render();
 
