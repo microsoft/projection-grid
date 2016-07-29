@@ -31,6 +31,12 @@ window.gridViewEl = new GridView({
 ]).set({
   url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
   selection: true,
+  columns: [{
+    name: 'CustomerID',
+    //template:tmpl.default,
+  },{
+    name: 'ShipCity',
+  }],
 }).render();
 
 /*
