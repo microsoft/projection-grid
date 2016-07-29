@@ -29,7 +29,7 @@ function translateRow(columnGroup, row, group) {
           }
         }
         
-        return {classes, html};
+        return { classes, html };
       }),
     };
 
