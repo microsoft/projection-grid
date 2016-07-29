@@ -10,8 +10,10 @@ import {
   cells,
 } from '../../js/vnext/projection';
 import './index.less';
+import * as tmpl from '../cell-view/key-column-header.jade';
 import 'bootstrap-webpack';
 
+window.t = tmpl;
 window.gridViewEl = new GridView({
   el: '.container-element-viewport',
   viewport: '.container-element-viewport',
@@ -29,6 +31,11 @@ window.gridViewEl = new GridView({
 ]).set({
   url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
   selection: true,
+  columns: [{name: 'CustomerID',
+    template:tmpl.default,
+    },{
+      name: 'ShipCity',
+    }],
 }).render();
 
 /*
