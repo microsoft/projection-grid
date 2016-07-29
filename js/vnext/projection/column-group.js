@@ -15,9 +15,9 @@ class ColumnGroup {
       col.treeWidth = 1;
       if (!_.isEmpty(col.columns)) {
         col.treeHeight += _.chain(col.columns)
-          .map(_.property('treeHeight')).max().value();
+        .map(_.property('treeHeight')).max().value();
         col.treeWidth = _.chain(col.columns)
-          .map(_.property('treeWidth')).reduce((a, b) => a + b, 0).value();
+        .map(_.property('treeWidth')).reduce((a, b) => a + b, 0).value();
       }
 
       if (_.isEmpty(col.columns)) {
