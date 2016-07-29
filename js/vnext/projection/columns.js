@@ -1,11 +1,11 @@
 import _ from 'underscore';
 
-export function columns(state, {
-  columns = _.chain(state.items).first().keys().map(name => ({
-    name,
-    width: 120,
-  })).value(),
-} = {}) {
-  return _.defaults({ columns }, state);
+export function columns(state, columns) {
+  return _.defaults({
+    columns: columns || _.chain(state.items).first().keys().map(name => ({
+      name,
+      width: 120,
+    })).value(),
+  }, state);
 }
 

@@ -47,7 +47,7 @@ function changeSelectRow(e) {
   this.set({ selection });
 }
 
-export function selection (state, { selection } = {}) {
+export function selection (state, selection) {
   if (!selection) {
     return _.clone(state);
   }

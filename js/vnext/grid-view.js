@@ -35,7 +35,7 @@ class ProjectionChain {
       if (updated || !p$output || _.has(this.model.changed, name)) {
         result.updated = true;
         result.p$state = proj.p$output = p$state.then(
-          state => handler(state, this.model.attributes)
+          state => handler(state, this.model.get(name))
         );
       } else {
         result.updated = false;

@@ -10,7 +10,9 @@ window.gridViewEl = new GridView({
   stickyHeader: true,
   virtualized: true,
 }).set({
-  url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
+  odata: {
+    url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
+  },
   selection: true,
 }).render();
 
@@ -22,7 +24,10 @@ window.gridViewWin = new GridView({
     },
   },
   virtualized: true,
-]).set({
-  url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
+}).set({
+  odata: {
+    url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
+  },
   selection: { single: true },
 }).render();
+
