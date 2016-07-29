@@ -13,7 +13,6 @@ import './index.less';
 import * as tmpl from './bodyTemplate.jade';
 import 'bootstrap-webpack';
 
-window.t = tmpl;
 window.gridViewEl = new GridView({
   el: '.container-element-viewport',
   viewport: '.container-element-viewport',
