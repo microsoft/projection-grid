@@ -10,7 +10,7 @@ export const rows = (state, {
     item: _.mapObject(item, value => ({ html: value })),
   }));
 
-  return _.extend(state, { headRows, bodyRows, footRows });
+  return { headRows, bodyRows, footRows, columns: state.columns };
 };
 */
 export function rows(state, {

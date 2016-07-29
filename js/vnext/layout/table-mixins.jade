@@ -1,9 +1,3 @@
-mixin mixinColGroup(cols)
-  colgroup
-    each col in cols || []
-      - var columnStyle = col.width ? 'width: ' + col.width + ';' : null;
-      col(class=col.classes, style=columnStyle)
-
 mixin mixinHeadCell(cell)
   th(class=cell.classes, colspan=cell.colspan, rowspan=cell.rowspan)
     != cell.html

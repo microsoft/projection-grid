@@ -7,6 +7,6 @@ export function columns(state, {
     width: 120,
   })).value(),
 } = {}) {
-  return _.defaults(state, { columns });
+  return _.defaults({ columns }, state);
 }
 

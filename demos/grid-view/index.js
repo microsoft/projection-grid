@@ -17,11 +17,13 @@ window.gridViewEl = new GridView({
   viewport: '.container-element-viewport',
   stickyHeader: true,
   virtualized: true,
-}).pipeProjections([
+}).pipeDataProjections([
   odata,
+]).pipeStructureProjections([
   columns,
   rows,
   selection,
+]).pipeContentProjections([
   columnGroup,
   cells,
 ]).set({
@@ -29,6 +31,7 @@ window.gridViewEl = new GridView({
   selection: true,
 }).render();
 
+/*
 window.gridViewWin = new GridView({
   el: '.container-window-viewport',
   stickyHeader: {
@@ -37,15 +40,17 @@ window.gridViewWin = new GridView({
     },
   },
   virtualized: true,
-}).pipeProjections([
+}).pipeDataProjections([
   odata,
+]).pipeStructureProjections([
   columns,
   rows,
   selection,
+]).pipeContentProjections([
   columnGroup,
   cells,
 ]).set({
   url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
-  selection: true,
+  selection: { single: true },
 }).render();
-
+*/

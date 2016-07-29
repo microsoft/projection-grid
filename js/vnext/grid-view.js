@@ -1,7 +1,56 @@
 import _ from 'underscore';
 import Backbone from 'backbone';
+import Promise from 'bluebird';
+
 import { TableView } from './layout';
-import { ProjectionChain } from './projection';
+
+class ProjectionChain {
+  constructor(model) {
+    this.model = model;
+    this.projections = [];
+    this.state = null;
+    this.input = null;
+  }
+
+  update(input) {
+    const updated = input !== this.input;
+
+    this.input = input;
+
+    return _.reduce(this.projections, ({
+      updated,
+      p$state,
+    }, proj) => {
+      const { name, handler, p$output } = proj;
+      const result = {};
+
+      if (updated || !p$output || _.has(this.model.changed, name)) {
+        result.updated = true;
+        result.p$state = proj.p$output = p$state.then(
+          state => handler(state, this.model.attributes)
+        );
+      } else {
+        result.updated = false;
+        result.p$state = p$output;
+      }
+
+      return result;
+    }, {
+      updated,
+      p$state: Promise.resolve(input),
+    }).p$state.tap(state => {
+      this.state = state;
+    });
+  }
+
+  pipe(...projs) {
+    _.chain(projs)
+      .flatten()
+      .each(proj => this.projections.push(proj))
+      .value();
+    return this;
+  }
+}
 
 export class GridView extends Backbone.View {
   initialize({
@@ -15,23 +64,74 @@ export class GridView extends Backbone.View {
       virtualized,
       stickyHeader,
     });
-    this._projectionChain = new ProjectionChain();
-    this._projectionChain.on('change', () => {
-      this.trigger('willUpdate', this._projectionChain.changedAttributes());
-      this._projectionChain.update()
-        .then(data => this._tableView.set(data))
+    this.model = new Backbone.Model;
+
+    this._chainData = new ProjectionChain(this.model);
+    this._chainStructure = new ProjectionChain(this.model);
+    this._chainContent = new ProjectionChain(this.model);
+
+    const patchEvents = state => _.extend(state, {
+      events: _.mapObject(state.events, handler => handler.bind(this)),
+    });
+
+    this.model.on('change', () => {
+      this.trigger('willUpdate', this.model.changedAttributes());
+      _.reduce([
+        this._chainData,
+        this._chainStructure,
+        this._chainContent,
+      ], (memo, chain) => chain.update(memo), null)
+        .then(patchEvents)
+        .then(state => this._tableView.set(state))
         .finally(() => this.trigger('didUpdate'));
     });
   }
 
-  pipeProjections(...projections) {
-    _.each(_.flatten(projections), proj => this._projectionChain.pipe(proj));
+  pipeDataProjections(...projs) {
+    this._chainData.pipe(
+      _.map(_.flatten(projs), proj => ({
+        name: proj.name,
+        handler: (_.isFunction(proj) ? proj : proj.handler).bind(this),
+      }))
+    );
     return this;
   }
 
-  set(state = {}) {
-    this._projectionChain.set(state);
+  pipeStructureProjections(...projs) {
+    this._chainStructure.pipe(
+      _.map(_.flatten(projs), proj => ({
+        name: proj.name,
+        handler: (_.isFunction(proj) ? proj : proj.handler).bind(this),
+      }))
+    );
     return this;
+  }
+
+  pipeContentProjections(...projs) {
+    this._chainContent.pipe(
+      _.map(_.flatten(projs), proj => ({
+        name: proj.name,
+        handler: (_.isFunction(proj) ? proj : proj.handler).bind(this),
+      }))
+    );
+    return this;
+  }
+
+  get countRows() {
+    return _.result(this._chainData.state, 'length', 0);
+  }
+
+  set(state = {}) {
+    this.model.set(state);
+    return this;
+  }
+
+  get(attribute) {
+    return this.model.get(attribute);
+  }
+
+  indexOfElement(el) {
+    return this._tableView.indexOfElement(el);
   }
 
   render(callback) {

@@ -30,14 +30,14 @@ function translateRow(columnGroup, row) {
 }
 
 export function cells(state) {
-  const {
+  let {
     headRows,
     bodyRows,
     footRows,
     columnGroup,
   } = state;
 
-  state.headRows = _.reduce(headRows, (memo, row) => {
+  headRows = _.reduce(headRows, (memo, row) => {
     if (row === 'column-header-rows') {
       return memo.concat(columnGroup.headerRows);
     }
@@ -45,8 +45,12 @@ export function cells(state) {
     return memo;
   }, []);
 
-  state.bodyRows = _.map(bodyRows, row => translateRow(columnGroup, row));
-  state.footRows = _.map(footRows, row => translateRow(columnGroup, row));
+  bodyRows = _.map(bodyRows, row => translateRow(columnGroup, row));
+  footRows = _.map(footRows, row => translateRow(columnGroup, row));
 
-  return state;
+  return _.defaults({
+    headRows,
+    bodyRows,
+    footRows,
+  }, state);
 }

@@ -4,6 +4,8 @@ import Backbone from 'backbone';
 import ListView from 'backbone-virtualized-listview';
 
 import { StickyHeaderView } from './sticky-header.js'; 
+import { ColumnGroupView } from './column-group-view.js';
+import { HeaderView } from './header-view.js';
 
 import rowTemplate from './row.jade';
 import tableTemplate from './table.jade';
@@ -59,6 +61,9 @@ export class TableView extends Backbone.View {
       itemTemplate: rowTemplate,
     });
 
+    this._columnGroupView = new ColumnGroupView({ tableView: this });
+    this._headerView = new HeaderView({ tableView: this });
+
     if (stickyHeader) {
       this._stickyHeaderView = new StickyHeaderView({ tableView: this });
     }
@@ -70,9 +75,6 @@ export class TableView extends Backbone.View {
 
     _.extend(this._state, _.pick(state, STATE_OPTIONS));
 
-    if (_.some(MODEL_OPTIONS, isSet)) {
-      listState.model = _.pick(this._state, MODEL_OPTIONS);
-    }
     if (_.some(ITEMS_OPTIONS, isSet)) {
       listState.items = getItems(_.pick(this._state, ITEMS_OPTIONS));
     }
@@ -82,15 +84,26 @@ export class TableView extends Backbone.View {
 
     this._listView.set(listState, callback);
 
-    if (_.some(HEADER_OPTIONS, isSet) && this._stickyHeaderView) {
+    this._columnGroupView.redraw();
+    this._headerView.redraw();
+    if (this._stickyHeaderView) {
       this._stickyHeaderView._redraw();
     }
 
     return this;
   }
 
-  render(callback) {
-    this.$el.html(this._listView.render(callback).el);
+  render(callback = _.noop) {
+    this.$el.html(this._listView.render(() => {
+      this._columnGroupView.setElement(this.$('colgroup'));
+      this._columnGroupView.render();
+
+      this._headerView.setElement(this.$('thead'));
+      this._headerView.render();
+
+      callback();
+    }).el);
+
     if (this._stickyHeaderView) {
       this._stickyHeaderView.render();
     }
@@ -98,15 +111,26 @@ export class TableView extends Backbone.View {
   }
 
   remove() {
-    this._listView.remove();
+    this._columnGroupView.remove();
+    this._headerView.remove();
     if (this._stickyHeaderView) {
       this._stickyHeaderView.remove();
     }
+    this._listView.remove();
     super.remove();
   }
 
   scrollToItem(...args) {
     this._listView.scrollToItem(...args);
   }
+
+  indexOfElement(el) {
+    const $elTr = this._listView.$(el).closest('tr', this._listView.$container);
+    if ($elTr.length > 0) {
+      return $elTr.index() + this._listView.indexFirst;
+    }
+    return null;
+  }
+
 }
 
