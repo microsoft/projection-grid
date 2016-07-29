@@ -22,6 +22,7 @@ function changeSelectAll(e) {
       selected: [],
     }, selection);
   }
+
   this.set({ selection });
 }
 
@@ -48,7 +49,7 @@ function changeSelectRow(e) {
 
 export function selection (state, { selection } = {}) {
   if (!selection) {
-    return state;
+    return _.clone(state);
   }
 
   const model = normalize(selection);
@@ -57,28 +58,30 @@ export function selection (state, { selection } = {}) {
     return memo;
   }, {});
 
-  state.columns.unshift({
+  const columns = [{
     name: 'selection',
     width: '30px',
     html: selectionHeadTemplate({
+      single: model.single,
       checked: model.selected.length === this.countRows,
     }),
-  });
+  }].concat(state.columns);
 
-  state.bodyRows = state.bodyRows.map((row, index) => {
-    row.item.selection = {
-      html: selectionBodyTemplate({
-        single: model.single,
-        checked: selectedIndex[index],
-      }),
-    };
-    return row;
-  });
+  const bodyRows = state.bodyRows.map((row, index) => _.defaults({
+    item: _.defaults({
+      selection: {
+        html: selectionBodyTemplate({
+          single: model.single,
+          checked: selectedIndex[index],
+        }),
+      },
+    }, row.item),
+  }, row));
 
-  state.events = _.extend({}, state.events, {
+  const events = _.defaults({
     'change th input.select-all': changeSelectAll,
     'change td input.select-row': changeSelectRow,
-  });
+  }, state.events);
 
-  return state;
+  return _.defaults({ columns, bodyRows, events }, state);
 }

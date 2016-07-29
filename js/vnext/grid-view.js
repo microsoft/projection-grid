@@ -9,12 +9,36 @@ class ProjectionChain {
     this.model = model;
     this.projections = [];
     this.state = null;
+    this.input = null;
   }
 
   update(input) {
-    return _.reduce(this.projections, (p$state, proj) => {
-      return p$state.then(state => proj(state, this.model.attributes));
-    }, Promise.resolve(input)).tap(state => {
+    const updated = input !== this.input;
+
+    this.input = input;
+
+    return _.reduce(this.projections, ({
+      updated,
+      p$state,
+    }, proj) => {
+      const { name, handler, p$output } = proj;
+      const result = {};
+
+      if (updated || !p$output || _.has(this.model.changed, name)) {
+        result.updated = true;
+        result.p$state = proj.p$output = p$state.then(
+          state => handler(state, this.model.attributes)
+        );
+      } else {
+        result.updated = false;
+        result.p$state = p$output;
+      }
+
+      return result;
+    }, {
+      updated,
+      p$state: Promise.resolve(input),
+    }).p$state.tap(state => {
       this.state = state;
     });
   }
@@ -56,7 +80,7 @@ export class GridView extends Backbone.View {
         this._chainData,
         this._chainStructure,
         this._chainContent,
-      ], (memo, chain) => chain.update(memo), {})
+      ], (memo, chain) => chain.update(memo), null)
         .then(patchEvents)
         .then(state => this._tableView.set(state))
         .finally(() => this.trigger('didUpdate'));
@@ -65,21 +89,30 @@ export class GridView extends Backbone.View {
 
   pipeDataProjections(...projs) {
     this._chainData.pipe(
-      _.map(_.flatten(projs), proj => proj.bind(this))
+      _.map(_.flatten(projs), proj => ({
+        name: proj.name,
+        handler: (_.isFunction(proj) ? proj : proj.handler).bind(this),
+      }))
     );
     return this;
   }
 
   pipeStructureProjections(...projs) {
     this._chainStructure.pipe(
-      _.map(_.flatten(projs), proj => proj.bind(this))
+      _.map(_.flatten(projs), proj => ({
+        name: proj.name,
+        handler: (_.isFunction(proj) ? proj : proj.handler).bind(this),
+      }))
     );
     return this;
   }
 
   pipeContentProjections(...projs) {
     this._chainContent.pipe(
-      _.map(_.flatten(projs), proj => proj.bind(this))
+      _.map(_.flatten(projs), proj => ({
+        name: proj.name,
+        handler: (_.isFunction(proj) ? proj : proj.handler).bind(this),
+      }))
     );
     return this;
   }

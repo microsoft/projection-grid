@@ -74,9 +74,9 @@ function translateColumnGroup(columnGroup) {
 
 export function columnGroup(state) {
   const columnGroup = new ColumnGroup(state.columns || []);
-  return _.extend(state, {
+  return _.defaults({
     columnGroup,
     cols: translateColumnGroup(columnGroup),
-  });
+  }, state);
 }
 

@@ -28,9 +28,10 @@ window.gridViewEl = new GridView({
   cells,
 ]).set({
   url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
-  selection: {},
+  selection: true,
 }).render();
 
+/*
 window.gridViewWin = new GridView({
   el: '.container-window-viewport',
   stickyHeader: {
@@ -50,6 +51,6 @@ window.gridViewWin = new GridView({
   cells,
 ]).set({
   url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
-  selection: {},
+  selection: { single: true },
 }).render();
-
+*/
