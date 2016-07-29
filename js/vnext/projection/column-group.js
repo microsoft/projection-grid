@@ -7,9 +7,11 @@ class ColumnGroup {
 
     const buildColumn = col => {
       const { parent, columns, height } = col;
+      
+      col.height  = _.isNumber(height) ? height : 1;
       col.rowIndex = parent ? parent.rowIndex + parent.height : 0;
       col.columns = _.map(columns, c => buildColumn(_.extend({ parent: col }, c)));
-      col.treeHeight = height;
+      col.treeHeight = _.isNumber(height) ? height : 1;
       col.treeWidth = 1;
       if (!_.isEmpty(col.columns)) {
         col.treeHeight += _.chain(col.columns)
@@ -30,7 +32,8 @@ class ColumnGroup {
         const colspan = col.treeWidth;
         const rowspan = _.isEmpty(col.columns) ? this.root.treeHeight - col.rowIndex : col.height;
         const html = col.html || col.name;
-
+        console.log(this.headerRows);
+        console.log(col.rowIndex);
         while (this.headerRows.length <= col.rowIndex) {
           this.headerRows.push({ cells: [] });
         }

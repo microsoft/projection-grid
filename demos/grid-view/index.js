@@ -16,8 +16,14 @@ window.gridViewEl = new GridView({
   },
   selection: true,
   columns: [{
-    name: 'Group0',
-    bodyTemplate: bodyTemplate,
+    name: 'Group 0',
+    html: '<i>Group 0</i>',
+    columns: [{
+      name: 'CustomerID',
+      bodyTemplate: bodyTemplate,
+    },{
+      name: 'OrderID',
+    }], 
   },{
     name: 'ShipCity',
   }],
