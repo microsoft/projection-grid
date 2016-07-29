@@ -1,14 +1,6 @@
 import _ from 'underscore';
 import $ from 'jquery';
 import { GridView } from '../../js/vnext/grid-view.js';
-import {
-  odata,
-  selection,
-  columns,
-  rows,
-  columnGroup,
-  cells,
-} from '../../js/vnext/projection';
 import './index.less';
 import 'bootstrap-webpack';
 
@@ -17,21 +9,11 @@ window.gridViewEl = new GridView({
   viewport: '.container-element-viewport',
   stickyHeader: true,
   virtualized: true,
-}).pipeDataProjections([
-  odata,
-]).pipeStructureProjections([
-  columns,
-  rows,
-  selection,
-]).pipeContentProjections([
-  columnGroup,
-  cells,
-]).set({
+}).set({
   url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
   selection: true,
 }).render();
 
-/*
 window.gridViewWin = new GridView({
   el: '.container-window-viewport',
   stickyHeader: {
@@ -40,17 +22,7 @@ window.gridViewWin = new GridView({
     },
   },
   virtualized: true,
-}).pipeDataProjections([
-  odata,
-]).pipeStructureProjections([
-  columns,
-  rows,
-  selection,
-]).pipeContentProjections([
-  columnGroup,
-  cells,
 ]).set({
   url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
   selection: { single: true },
 }).render();
-*/

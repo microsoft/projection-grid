@@ -40,6 +40,6 @@ export function odata (p$state, {
       .fail((jqXHR, textStatus, errorThrown) => {
         reject(new Error(errorThrown));
       });
-  }).then(_.property('value'));
+  }).then(data => ({ items: data.value || [] }));
 }
 
