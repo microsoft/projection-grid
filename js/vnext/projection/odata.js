@@ -2,7 +2,7 @@ import _ from 'underscore';
 import $ from 'jquery';
 import Promise from 'bluebird';
 
-export function odata (p$state, {
+export function odata (state, {
   verb = 'get',
   url,
   skip,
@@ -36,10 +36,11 @@ export function odata (p$state, {
 
   return new Promise((resolve, reject) => {
     $.getJSON(_.result(op, 'url'), _.omit(op, 'url'))
-      .success(resolve)
-      .fail((jqXHR, textStatus, errorThrown) => {
-        reject(new Error(errorThrown));
-      });
+    .success(resolve)
+    .fail((jqXHR, textStatus, errorThrown) => {
+      reject(new Error(errorThrown));
+    });
   }).then(data => ({ items: data.value || [] }));
 }
+
 
