@@ -20,7 +20,7 @@ export function rows(state, {
   const columns = state.columns;
   const bodyRows = _.map(state, item => ({
     classes: ['body-row'],
-    item: _.mapObject(item, value => ({ html: value })),
+    item:  _.mapObject(item, value => ({ html: value , $text: 'only hehe', })),
   }));
 
   return _.defaults(state, { headRows, bodyRows, footRows });
