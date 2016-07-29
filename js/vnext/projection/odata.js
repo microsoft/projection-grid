@@ -2,7 +2,7 @@ import _ from 'underscore';
 import $ from 'jquery';
 import Promise from 'bluebird';
 
-export function odata (p$state, {
+export function odata (state, {
   verb = 'get',
   url,
   skip,
@@ -42,4 +42,5 @@ export function odata (p$state, {
       });
   }).then(data => ({ items: data.value || [] }));
 }
+
 
