@@ -18,7 +18,7 @@ export function rows(state, {
   footRows = [],
 } = {}) {
   const columns = state.columns;
-  const bodyRows = _.map(state, item => ({
+  const bodyRows = _.map(_.omit(state, 'columns'), item => ({
     classes: ['body-row'],
     item:  _.mapObject(item, value => ({ html: value })),
   }));

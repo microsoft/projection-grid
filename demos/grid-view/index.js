@@ -32,7 +32,7 @@ window.gridViewEl = new GridView({
   selection: true,
   columns: [{
     name: 'CustomerID',
-    //template:tmpl.default,
+    bodyTemplate:tmpl.default,
   },{
     name: 'ShipCity',
   }],

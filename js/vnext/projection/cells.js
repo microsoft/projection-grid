@@ -16,9 +16,9 @@ function translateRow(columnGroup, row) {
       classes: row.classes,
       cells: _.map(columnGroup.leafColumns, col => {
         const cell = row.item[col.name] || {};
-        const tpl = col.template || col.headTemplate || col.footTemplate;
+        const tpl = col.bodyTemplate ||  col.footTemplate || col.headTemplate;
         if (tpl) {
-          cell.html =  _.isFunction(tpl) ? tpl(row.item) : tpl;
+          cell.html =  _.isFunction(tpl) ? tpl(col.headTemplate? '' : row.item) : tpl;
         }
         return cell;
       }),

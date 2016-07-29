@@ -8,15 +8,16 @@ class ColumnGroup {
     const buildColumn = ({
       name,
       width,
-      template,
+      bodyTemplate,
+      footTemplate,
       parent = null,
       columns = [],
       html = name,
       height = 1,
     }) => {
-      const col = { name, width, template, parent, html, height };
+      const col = { name, width, bodyTemplate, footTemplate, parent, html, height };
       
-      col.template = template ? template : (parent? parent.template : null);
+      col.template = bodyTemplate || footTemplate;
       col.rowIndex = parent ? parent.rowIndex + parent.height : 0;
       col.columns = _.map(columns, c => buildColumn(_.extend({ parent: col }, c)));
       col.treeHeight = height;
