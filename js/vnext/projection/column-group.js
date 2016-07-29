@@ -5,19 +5,8 @@ class ColumnGroup {
     this.headerRows = [];
     this.leafColumns = [];
 
-    const buildColumn = ({
-      name,
-      width,
-      bodyTemplate,
-      footTemplate,
-      parent = null,
-      columns = [],
-      html = name,
-      height = 1,
-    }) => {
-      const col = { name, width, bodyTemplate, footTemplate, parent, html, height };
-      
-      col.template = bodyTemplate || footTemplate;
+    const buildColumn = col => {
+      const { parent, columns, height } = col;
       col.rowIndex = parent ? parent.rowIndex + parent.height : 0;
       col.columns = _.map(columns, c => buildColumn(_.extend({ parent: col }, c)));
       col.treeHeight = height;
@@ -40,12 +29,12 @@ class ColumnGroup {
       if (col.parent) {
         const colspan = col.treeWidth;
         const rowspan = _.isEmpty(col.columns) ? this.root.treeHeight - col.rowIndex : col.height;
-        const html = col.html;
+        const html = col.html || col.name;
 
         while (this.headerRows.length <= col.rowIndex) {
           this.headerRows.push({ cells: [] });
         }
-        this.headerRows[col.rowIndex].cells.push({ colspan, rowspan, html });
+        this.headerRows[col.rowIndex].cells.push({ colspan, rowspan, html, name });
       }
       _.each(col.columns, buildColumnHeader);
     };

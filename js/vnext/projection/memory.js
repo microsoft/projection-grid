@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-export function memory (p$state, {
+export function memory (state, {
   skip,
   take,
   filter,

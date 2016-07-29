@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import Promise from 'bluebird';
 
-export function jsdataProj (p$state, {
+export function jsdata (state, {
 	query,
 	entity,
 	options,

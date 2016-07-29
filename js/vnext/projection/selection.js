@@ -47,7 +47,7 @@ function changeSelectRow(e) {
   this.set({ selection });
 }
 
-export function selection (state, { selection } = {}) {
+export function selection (state, selection) {
   if (!selection) {
     return _.clone(state);
   }
@@ -63,7 +63,7 @@ export function selection (state, { selection } = {}) {
     width: '30px',
     html: selectionHeadTemplate({
       single: model.single,
-      checked: model.selected.length === this.countRows,
+      checked: this.countRows > 0 && model.selected.length === this.countRows,
     }),
   }].concat(state.columns);
 

@@ -1,6 +1,14 @@
 import _ from 'underscore';
 import Backbone from 'backbone';
 import Promise from 'bluebird';
+import {
+  odata,
+  selection,
+  columns,
+  rows,
+  columnGroup,
+  cells,
+} from './projection';
 
 import { TableView } from './layout';
 
@@ -27,7 +35,7 @@ class ProjectionChain {
       if (updated || !p$output || _.has(this.model.changed, name)) {
         result.updated = true;
         result.p$state = proj.p$output = p$state.then(
-          state => handler(state, this.model.attributes)
+          state => handler(state, this.model.get(name))
         );
       } else {
         result.updated = false;
@@ -66,9 +74,18 @@ export class GridView extends Backbone.View {
     });
     this.model = new Backbone.Model;
 
+    this._wrapProjection = proj => ({
+      name: proj.name,
+      handler: (_.isFunction(proj) ? proj : proj.handler).bind(this),
+    });
+
     this._chainData = new ProjectionChain(this.model);
     this._chainStructure = new ProjectionChain(this.model);
     this._chainContent = new ProjectionChain(this.model);
+
+    this.pipeDataProjections(odata);
+    this.pipeStructureProjections(columns, rows, selection);
+    this.pipeContentProjections(columnGroup, cells);
 
     const patchEvents = state => _.extend(state, {
       events: _.mapObject(state.events, handler => handler.bind(this)),
@@ -88,37 +105,22 @@ export class GridView extends Backbone.View {
   }
 
   pipeDataProjections(...projs) {
-    this._chainData.pipe(
-      _.map(_.flatten(projs), proj => ({
-        name: proj.name,
-        handler: (_.isFunction(proj) ? proj : proj.handler).bind(this),
-      }))
-    );
+    this._chainData.pipe(_.map(_.flatten(projs), this._wrapProjection));
     return this;
   }
 
   pipeStructureProjections(...projs) {
-    this._chainStructure.pipe(
-      _.map(_.flatten(projs), proj => ({
-        name: proj.name,
-        handler: (_.isFunction(proj) ? proj : proj.handler).bind(this),
-      }))
-    );
+    this._chainStructure.pipe(_.map(_.flatten(projs), this._wrapProjection));
     return this;
   }
 
   pipeContentProjections(...projs) {
-    this._chainContent.pipe(
-      _.map(_.flatten(projs), proj => ({
-        name: proj.name,
-        handler: (_.isFunction(proj) ? proj : proj.handler).bind(this),
-      }))
-    );
+    this._chainContent.pipe(_.map(_.flatten(projs), this._wrapProjection));
     return this;
   }
 
   get countRows() {
-    return _.result(this._chainData.state, 'length', 0);
+    return _.result(this._chainData.state, 'items', []).length;
   }
 
   set(state = {}) {

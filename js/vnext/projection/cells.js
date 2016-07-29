@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-function translateRow(columnGroup, row) {
+function translateRow(columnGroup, row, group) {
   if (_.has(row, 'html')) {
     return {
       classes: row.classes,
@@ -16,11 +16,20 @@ function translateRow(columnGroup, row) {
       classes: row.classes,
       cells: _.map(columnGroup.leafColumns, col => {
         const cell = row.item[col.name] || {};
-        const tpl = col.bodyTemplate ||  col.footTemplate || col.headTemplate;
-        if (tpl) {
-          cell.html =  _.isFunction(tpl) ? tpl(col.headTemplate? '' : row.item) : tpl;
+        const classes = col.classes;
+        const template = col[group + 'Template'];
+        let html = '';
+        if (cell.html) {
+          html = cell.html;
+        } else {
+          if (template) {
+            html = _.isFunction(template) ? template(group == 'head' ? columnGroup : row.item) : template;
+          } else {
+            html = _.isObject(cell) ? cell.name : cell;
+          }
         }
-        return cell;
+        
+        return {classes, html};
       }),
     };
 
@@ -36,17 +45,17 @@ export function cells(state) {
     footRows,
     columnGroup,
   } = state;
-
+  
   headRows = _.reduce(headRows, (memo, row) => {
     if (row === 'column-header-rows') {
       return memo.concat(columnGroup.headerRows);
     }
-    memo.push(translateRow(columnGroup, row));
+    memo.push(translateRow(columnGroup, row, 'head'));
     return memo;
   }, []);
 
-  bodyRows = _.map(bodyRows, row => translateRow(columnGroup, row));
-  footRows = _.map(footRows, row => translateRow(columnGroup, row));
+  bodyRows = _.map(bodyRows, row => translateRow(columnGroup, row, 'body'));
+  footRows = _.map(footRows, row => translateRow(columnGroup, row, 'foot'));
 
   return _.defaults({
     headRows,
