@@ -1,13 +1,16 @@
 include ./table-mixins.jade
 
-- var tableStyle = "border-collapse: collapse; margin: 0;";
-- tableStyle += stickyHeader ? " table-layout: fixed;" : "";
+- var tableStyle = 'border-collapse: collapse; margin: 0;';
+- tableStyle += stickyHeader ? ' table-layout: fixed;' : '';
 
-.sticky-header
-.content
+.table-container
+  table.table.table-bordered.sticky-header(style=tableStyle + 'position: relative;')
+    colgroup.column-group
+    thead.header
   table.table.table-bordered(style=tableStyle)
-    colgroup
-    thead
+    colgroup.column-group
+    if !stickyHeader
+      thead.header
     tbody
       tr.top-filler
     tbody.list-container
