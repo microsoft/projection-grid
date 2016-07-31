@@ -62,10 +62,11 @@ export class TableView extends Backbone.View {
     });
 
     this._columnGroupView = new ColumnGroupView({ tableView: this });
-    this._headerView = new HeaderView({ tableView: this });
 
     if (stickyHeader) {
       this._stickyHeaderView = new StickyHeaderView({ tableView: this });
+    } else {
+      this._headerView = new HeaderView({ tableView: this });
     }
   }
 
@@ -85,7 +86,9 @@ export class TableView extends Backbone.View {
     this._listView.set(listState, callback);
 
     this._columnGroupView.redraw();
-    this._headerView.redraw();
+    if (this._headerView) {
+      this._headerView.redraw();
+    }
     if (this._stickyHeaderView) {
       this._stickyHeaderView._redraw();
     }
@@ -98,15 +101,17 @@ export class TableView extends Backbone.View {
       this._columnGroupView.setElement(this.$('colgroup'));
       this._columnGroupView.render();
 
-      this._headerView.setElement(this.$('thead'));
-      this._headerView.render();
-
+      if (this._stickyHeaderView) {
+        this._stickyHeaderView.setElement(this.$('.sticky-header'));
+        this._stickyHeaderView.render();
+      }
+      if (this._headerView) {
+        this._headerView.setElement(this.$('.content thead'));
+        this._headerView.render();
+      }
       callback();
     }).el);
 
-    if (this._stickyHeaderView) {
-      this._stickyHeaderView.render();
-    }
     return this;
   }
 

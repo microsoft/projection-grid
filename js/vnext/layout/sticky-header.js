@@ -22,7 +22,7 @@ export class StickyHeaderView extends Backbone.View {
     this.delegateEvents(this.tableView._state.events);
   }
 
-  _adjust() {
+  _adjust2() {
     const listView = this.tableView._listView;
     const viewport = listView.viewport;
     const metricsVP = viewport.getMetrics();
@@ -36,7 +36,6 @@ export class StickyHeaderView extends Backbone.View {
       let left = rectTable.left;
       let top = stickyTop;
 
-      this.$el.show();
       if (!isWindow) {
         // If we are using the absolute postion
         //  * Add the left/top scroll offset
@@ -48,9 +47,18 @@ export class StickyHeaderView extends Backbone.View {
       }
 
       this.$el.css({ left, top });
-    } else {
-      this.$el.hide();
     }
+  }
+
+  _adjust() {
+    const listView = this.tableView._listView;
+    const viewport = listView.viewport;
+    const metricsVP = viewport.getMetrics();
+    const topVP = metricsVP.outer.top;
+    const offset = _.result(this.tableView._props.stickyHeader, 'offset', 0);
+    const topHeader = this.tableView.$('.content').get(0).getBoundingClientRect().top - this.$el.height();
+
+    this.$el.css({ top: Math.max(topVP + offset - topHeader, 0) });
   }
 
   render() {
@@ -64,20 +72,14 @@ export class StickyHeaderView extends Backbone.View {
     this._headerView.setElement(this.$('thead'));
 
     this._redraw();
-    $elViewport.prepend(this.el);
 
     if (!isWindow) {
       $elViewport.css({ position: 'relative' });
     }
 
-    this.$el.css({
-      position: isWindow ? 'fixed' : 'absolute',
-      display: 'none',
-    });
+    this.$el.css({ position: 'relative' });
 
-    listView.once('didRedraw', () => {
-      viewport.on('change', () => this._adjust());
-    });
+    viewport.on('change', () => this._adjust());
 
     return this;
   }
