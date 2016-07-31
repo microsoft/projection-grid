@@ -86,11 +86,12 @@ export class TableView extends Backbone.View {
     this._listView.set(listState, callback);
 
     this._columnGroupView.redraw();
+
     if (this._headerView) {
       this._headerView.redraw();
     }
     if (this._stickyHeaderView) {
-      this._stickyHeaderView._redraw();
+      this._stickyHeaderView.redraw();
     }
 
     return this;
