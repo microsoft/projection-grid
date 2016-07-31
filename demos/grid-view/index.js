@@ -1,7 +1,10 @@
 import _ from 'underscore';
 import $ from 'jquery';
 import Backbone from 'backbone';
+
 import { GridView } from '../../js/vnext/grid-view.js';
+import bodyTemplate from './body-template.jade';
+
 import './index.less';
 import 'bootstrap-webpack';
 
@@ -31,13 +34,18 @@ window.gridViewEl = new GridView({
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
   },
   selection: true,
-  rows: {
-    headRows: [{
-      view: window.customView,
-    },
-    'column-header-rows',
-    ],
-  },
+  columns: [{
+    name: 'Group 0',
+    html: '<i>Group 0</i>',
+    columns: [{
+      name: 'CustomerID',
+      bodyTemplate: bodyTemplate,
+    },{
+      name: 'OrderID',
+    }], 
+  },{
+    name: 'ShipCity',
+  }],
 }).render();
 
 window.gridViewWin = new GridView({
@@ -54,5 +62,12 @@ window.gridViewWin = new GridView({
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
   },
   selection: { single: true },
+  rows: {
+    headRows: [{
+      view: window.customView,
+    },
+    'column-header-rows',
+    ],
+  },
 }).render();
 
