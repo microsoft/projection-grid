@@ -2,7 +2,7 @@ import _ from 'underscore';
 import Backbone from 'backbone';
 import Promise from 'bluebird';
 import {
-  odata,
+  dataSource,
   selection,
   columns,
   rows,
@@ -83,7 +83,7 @@ export class GridView extends Backbone.View {
     this._chainStructure = new ProjectionChain(this.model);
     this._chainContent = new ProjectionChain(this.model);
 
-    this.pipeDataProjections(odata);
+    this.pipeDataProjections(dataSource);
     this.pipeStructureProjections(columns, rows, selection);
     this.pipeContentProjections(columnGroup, cells);
 

@@ -26,7 +26,8 @@ window.gridViewEl = new GridView({
   stickyHeader: true,
   virtualized: true,
 }).set({
-  odata: {
+  dataSource: {
+    type: 'odata',
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
   },
   selection: true,
@@ -48,7 +49,8 @@ window.gridViewWin = new GridView({
   },
   virtualized: true,
 }).set({
-  odata: {
+  dataSource: {
+    type: 'odata',
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
   },
   selection: { single: true },
