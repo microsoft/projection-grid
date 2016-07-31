@@ -11,6 +11,16 @@ function translateRow(columnGroup, row) {
       }],
     };
   }
+  if (_.has(row, 'view')) {
+    return {
+      classes: row.classes,
+      cells: [{
+        rowspan: 1,
+        colspan: columnGroup.width,
+        view: row.view,
+      }],
+    };
+  }
   if (_.has(row, 'item')) {
     return {
       classes: row.classes,

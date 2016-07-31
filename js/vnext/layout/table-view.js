@@ -3,7 +3,7 @@ import $ from 'jquery';
 import Backbone from 'backbone';
 import ListView from 'backbone-virtualized-listview';
 
-import { HeaderView } from './header-view.js';
+import { HeaderView, FooterView } from './header-footer-view.js';
 
 import rowTemplate from './row.jade';
 import tableTemplate from './table.jade';
@@ -61,6 +61,7 @@ export class TableView extends Backbone.View {
     });
 
     this._headerView = new HeaderView({ tableView: this });
+    this._footerView = new FooterView({ tableView: this });
   }
 
   set(state = {}, callback = _.noop) {
