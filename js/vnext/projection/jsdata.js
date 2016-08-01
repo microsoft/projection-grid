@@ -1,7 +1,6 @@
 import _ from 'underscore';
-import Promise from 'bluebird';
 
-export function jsdata (state, {
+export function jsdata ({
   query,
   entity,
   options,
@@ -36,6 +35,5 @@ export function jsdata (state, {
     }, []);
   }
 
-  return entity.fincAll(op, _.defaults(options, { all: true }))
-  .then(_.property('value'));
+  return entity.fincAll(op, _.defaults(options, { all: true }));
 };

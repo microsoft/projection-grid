@@ -3,12 +3,11 @@ import $ from 'jquery';
 import Backbone from 'backbone';
 import ListView from 'backbone-virtualized-listview';
 
-import { StickyHeaderView } from './sticky-header.js'; 
-import { ColumnGroupView } from './column-group-view.js';
-import { HeaderView } from './header-view.js';
+import { HeaderView, FooterView } from './header-footer-view.js';
 
 import rowTemplate from './row.jade';
 import tableTemplate from './table.jade';
+import columnGroupTemplate from './column-group.jade';
 
 const STATE_OPTIONS = ['cols', 'headRows', 'bodyRows', 'footRows', 'events'];
 const MODEL_OPTIONS = ['cols', 'headRows', 'footRows'];
@@ -61,12 +60,8 @@ export class TableView extends Backbone.View {
       itemTemplate: rowTemplate,
     });
 
-    this._columnGroupView = new ColumnGroupView({ tableView: this });
     this._headerView = new HeaderView({ tableView: this });
-
-    if (stickyHeader) {
-      this._stickyHeaderView = new StickyHeaderView({ tableView: this });
-    }
+    this._footerView = new FooterView({ tableView: this });
   }
 
   set(state = {}, callback = _.noop) {
@@ -84,10 +79,16 @@ export class TableView extends Backbone.View {
 
     this._listView.set(listState, callback);
 
-    this._columnGroupView.redraw();
-    this._headerView.redraw();
-    if (this._stickyHeaderView) {
-      this._stickyHeaderView._redraw();
+    if (this.$colgroup) {
+      this.$colgroup.html(columnGroupTemplate(this._state));
+    }
+
+    if (this._headerView) {
+      this._headerView.redraw();
+    }
+
+    if (this.$stickyHeader) {
+      this._adjust();
     }
 
     return this;
@@ -95,27 +96,35 @@ export class TableView extends Backbone.View {
 
   render(callback = _.noop) {
     this.$el.html(this._listView.render(() => {
-      this._columnGroupView.setElement(this.$('colgroup'));
-      this._columnGroupView.render();
+      this.$colgroup = this.$('colgroup.column-group');
+      this.$colgroup.html(columnGroupTemplate(this._state));
 
-      this._headerView.setElement(this.$('thead'));
+      this._headerView.setElement(this.$('thead.header'));
       this._headerView.render();
 
+      this.$tableContainer = this.$('.table-container');
+
+      if (this._props.stickyHeader) {
+        this.$stickyHeader = this.$('.sticky-header');
+        this._listView.viewport.on('change', () => this._adjust());
+        this._adjust();
+      }
       callback();
     }).el);
 
-    if (this._stickyHeaderView) {
-      this._stickyHeaderView.render();
-    }
     return this;
   }
 
+  _adjust() {
+    let topVP = this._listView.viewport.getMetrics().outer.top;
+    let offset = _.result(this._props.stickyHeader, 'offset', 0);
+    let topCur = this.$tableContainer.get(0).getBoundingClientRect().top;
+
+    this.$stickyHeader.css({ top: Math.max(topVP + offset - topCur, 0) });
+  }
+
   remove() {
-    this._columnGroupView.remove();
     this._headerView.remove();
-    if (this._stickyHeaderView) {
-      this._stickyHeaderView.remove();
-    }
     this._listView.remove();
     super.remove();
   }

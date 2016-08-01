@@ -1,9 +1,27 @@
 import _ from 'underscore';
 import $ from 'jquery';
+import Backbone from 'backbone';
+
 import { GridView } from '../../js/vnext/grid-view.js';
-import './index.less';
 import bodyTemplate from './body-template.jade';
+
+import './index.less';
 import 'bootstrap-webpack';
+
+class CustomView extends Backbone.View {
+  events() {
+    return {
+      'click h2': () => console.log('click'),
+    };
+  }
+  render() {
+    this.$el.html('<h2>Custom View</h2>');
+    return this;
+  }
+}
+
+window.customView = new CustomView().render();
+
 
 window.gridViewEl = new GridView({
   el: '.container-element-viewport',
@@ -11,7 +29,8 @@ window.gridViewEl = new GridView({
   stickyHeader: true,
   virtualized: true,
 }).set({
-  odata: {
+  dataSource: {
+    type: 'odata',
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
   },
   selection: true,
@@ -38,9 +57,17 @@ window.gridViewWin = new GridView({
   },
   virtualized: true,
 }).set({
-  odata: {
+  dataSource: {
+    type: 'odata',
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
   },
   selection: { single: true },
+  rows: {
+    headRows: [{
+      view: window.customView,
+    },
+    'column-header-rows',
+    ],
+  },
 }).render();
 

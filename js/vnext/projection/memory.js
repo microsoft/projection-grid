@@ -1,14 +1,12 @@
 import _ from 'underscore';
 
-export function memory (state, {
-  skip,
-  take,
-  filter,
+export function memory ({
+  data,
+  skip = 0,
+  take = 20,
+  filter = () => true,
   orderby = [],
   select = [],
 } = {}) {
-
-  return p$state.then(function(data) {
-    return take ? data.slice(skip || 0, take) : data.slice(skip || 0);
-  });
+  return _.chain(data).slice(skip, take).filter(filter).value();
 }
