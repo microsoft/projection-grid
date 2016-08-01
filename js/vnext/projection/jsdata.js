@@ -37,3 +37,4 @@ export function jsdata ({
 
   return entity.fincAll(op, _.defaults(options, { all: true }));
 };
+

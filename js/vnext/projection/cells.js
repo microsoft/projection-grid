@@ -5,20 +5,26 @@ function translateRow(columnGroup, row, group) {
     return {
       classes: row.classes,
       cells: [{
-        rowspan: 1,
-        colspan: columnGroup.width,
+        attributes: {
+          rowspan: 1,
+          colspan: columnGroup.width,
+        },
         html: row.html,
       }],
+      attributes: row.attributes || {},
     };
   }
   if (_.has(row, 'view')) {
     return {
       classes: row.classes,
       cells: [{
-        rowspan: 1,
-        colspan: columnGroup.width,
+        attributes: {
+          rowspan: 1,
+          colspan: columnGroup.width,
+        },
         view: row.view,
       }],
+      attributes: row.attributes || {},
     };
   }
   if (_.has(row, 'item')) {
@@ -39,12 +45,14 @@ function translateRow(columnGroup, row, group) {
           }
         }
         
-        return { classes, html };
+        return { classes, html, attributes: {} };
       }),
+      attributes: row.attributes || {},
     };
 
     return obj;
   }
+
   return row;
 }
 

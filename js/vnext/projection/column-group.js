@@ -31,13 +31,23 @@ class ColumnGroup {
       if (col.parent) {
         const colspan = col.treeWidth;
         const rowspan = _.isEmpty(col.columns) ? this.root.treeHeight - col.rowIndex : col.height;
-        const html = col.html || col.name;
-        console.log(this.headerRows);
-        console.log(col.rowIndex);
+        const name = col.name;
+        const html = col.html || name;
         while (this.headerRows.length <= col.rowIndex) {
-          this.headerRows.push({ cells: [] });
+          this.headerRows.push({ cells: [], attributes: {} });
         }
-        this.headerRows[col.rowIndex].cells.push({ colspan, rowspan, html, name });
+
+        const classes = ['column-header'];
+        if (_.isEmpty(col.columns)) {
+          classes.push('column-header-leaf');
+        }
+        const attributes = {
+          colspan,
+          rowspan,
+          'data-name': name,
+        };
+        col.cell = { html, name, classes, attributes };
+        this.headerRows[col.rowIndex].cells.push(col.cell);
       }
       _.each(col.columns, buildColumnHeader);
     };
