@@ -1,17 +1,17 @@
 mixin mixinHeadCell(cell)
-  th(class=cell.classes, colspan=cell.colspan, rowspan=cell.rowspan)
+  th&attributes(cell.attributes)(class=cell.classes)
     != cell.html
 
 mixin mixinBodyCell(cell)
-  td(class=cell.classes)
+  td&attributes(cell.attributes)(class=cell.classes)
     != cell.html
 
 mixin mixinFootCell(cell)
-  td(class=cell.classes, colspan=cell.colspan, rowspan=cell.rowspan)
+  td&attributes(cell.attributes)(class=cell.classes)
     != cell.html
 
 mixin mixinRow(row, group)
-  tr(class=row.classes)
+  tr&attributes(row.attributes)(class=row.classes)
     each cell in row.cells || []
       case group
         when 'head'

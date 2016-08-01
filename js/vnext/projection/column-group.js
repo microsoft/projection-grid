@@ -4,9 +4,12 @@ class ColumnGroup {
   constructor(columns) {
     this.headerRows = [];
     this.leafColumns = [];
+    this.columnIndex = {};
 
     const buildColumn = col => {
-      const { parent, columns, height } = col;
+      const { parent, columns, height, name } = col;
+
+      this.columnIndex[name] = col;
       
       col.height  = _.isNumber(height) ? height : 1;
       col.rowIndex = parent ? parent.rowIndex + parent.height : 0;
@@ -33,9 +36,20 @@ class ColumnGroup {
         const html = _.result(col, 'html', template ? template(col) : col.name);
 
         while (this.headerRows.length <= col.rowIndex) {
-          this.headerRows.push({ cells: [] });
+          this.headerRows.push({ cells: [], attributes: {} });
         }
-        this.headerRows[col.rowIndex].cells.push({ colspan, rowspan, html, name });
+
+        const classes = ['column-header'];
+        if (_.isEmpty(col.columns)) {
+          classes.push('column-header-leaf');
+        }
+        const attributes = {
+          colspan,
+          rowspan,
+          'data-name': name,
+        };
+        col.cell = { html, name, classes, attributes };
+        this.headerRows[col.rowIndex].cells.push(col.cell);
       }
       _.each(col.columns, buildColumnHeader);
     };
@@ -47,6 +61,10 @@ class ColumnGroup {
     });
 
     buildColumnHeader(this.root);
+  }
+
+  columnWithName(name) {
+    return this.columnIndex[name];
   }
 
   get height() {
