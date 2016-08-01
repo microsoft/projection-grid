@@ -2,7 +2,7 @@ import _ from 'underscore';
 import $ from 'jquery';
 import Backbone from 'backbone';
 
-import { GridView } from '../../js/vnext/grid-view.js';
+import pgrid from '../../js';
 import bodyTemplate from './body-template.jade';
 
 import './index.less';
@@ -23,12 +23,11 @@ class CustomView extends Backbone.View {
 window.customView = new CustomView().render();
 
 
-window.gridViewEl = new GridView({
+window.gridViewEl = pgrid.factory({ vnext: true }).create({
   el: '.container-element-viewport',
   viewport: '.container-element-viewport',
   stickyHeader: true,
   virtualized: true,
-}).set({
   dataSource: {
     type: 'odata',
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
@@ -49,9 +48,9 @@ window.gridViewEl = new GridView({
   events: {
     'click th.column-header': (e) => console.log(e.target),
   },
-}).render();
+}).gridView.render();
 
-window.gridViewWin = new GridView({
+window.gridViewWin = pgrid.factory({ vnext: true }).create({
   el: '.container-window-viewport',
   stickyHeader: {
     offset() {
@@ -59,7 +58,6 @@ window.gridViewWin = new GridView({
     },
   },
   virtualized: true,
-}).set({
   dataSource: {
     type: 'odata',
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
@@ -72,5 +70,5 @@ window.gridViewWin = new GridView({
     'column-header-rows',
     ],
   },
-}).render();
+}).gridView.render();
 
