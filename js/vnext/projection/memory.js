@@ -8,5 +8,5 @@ export function memory ({
   orderby = [],
   select = [],
 } = {}) {
-  return { items: _.chain(data).slice(skip, (take === undefined) ? data.length : take).filter(filter).value() };
+  return { items: _.chain(data).slice(skip, (take === undefined) ? data.length : take + skip).filter(filter).value() };
 }
