@@ -3,6 +3,13 @@ import _ from 'underscore';
 const regexKey = /\s*(-)?\s*(\w+)/;
 
 function reorder(e) {
+  const name = this.$(e.target).attr('data-name');
+
+  this.set({
+    dataSource: _.defaults({
+      orderby: [{ [name] : 1 }],
+    }, this.get('dataSource')),
+  });
 }
 
 export function sortableHeader(state) {
