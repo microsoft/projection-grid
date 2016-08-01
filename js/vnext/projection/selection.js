@@ -74,7 +74,6 @@ export function selection (state, selection) {
 
   const bodyRows = state.bodyRows.map((row, index) => _.defaults({
     item: _.defaults({
-
       selection: {
         index,
       },
