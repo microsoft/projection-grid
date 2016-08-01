@@ -65,6 +65,7 @@ export function selection (state, selection) {
       single: model.single,
       checked: this.countRows > 0 && model.selected.length === this.countRows,
     }),
+    sortable: false,
   }].concat(state.columns);
 
   const bodyRows = state.bodyRows.map((row, index) => _.defaults({

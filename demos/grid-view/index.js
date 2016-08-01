@@ -2,7 +2,7 @@ import _ from 'underscore';
 import $ from 'jquery';
 import Backbone from 'backbone';
 
-import { GridView } from '../../js/vnext/grid-view.js';
+import pgrid from '../../js';
 import bodyTemplate from './body-template.jade';
 import store from './js-data-resource.js';
 
@@ -25,12 +25,11 @@ window.customView = new CustomView().render();
 
 const headTemplate = _.template('<i><span><%= name%></span></i>');
 
-window.gridViewEl = new GridView({
+window.gridViewEl = pgrid.factory({ vnext: true }).create({
   el: '.container-element-viewport',
   viewport: '.container-element-viewport',
   stickyHeader: true,
   virtualized: true,
-}).set({
   dataSource: {
     type: 'odata',
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
@@ -49,9 +48,12 @@ window.gridViewEl = new GridView({
   },{
     name: 'ShipCity',
   }],
-}).render();
+  events: {
+    'click th.column-header': (e) => console.log(e.target),
+  },
+}).gridView.render();
 
-window.gridViewWin = new GridView({
+window.gridViewWin = pgrid.factory({ vnext: true }).create({
   el: '.container-window-viewport',
   stickyHeader: {
     offset() {
@@ -59,7 +61,6 @@ window.gridViewWin = new GridView({
     },
   },
   virtualized: true,
-}).set({
   dataSource: {
     type: 'jsdata',
     entity: store,
@@ -72,5 +73,5 @@ window.gridViewWin = new GridView({
     'column-header-rows',
     ],
   },
-}).render();
+}).gridView.render();
 
