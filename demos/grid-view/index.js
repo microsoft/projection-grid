@@ -46,6 +46,9 @@ window.gridViewEl = new GridView({
   },{
     name: 'ShipCity',
   }],
+  events: {
+    'click th.column-header': (e) => console.log(e.target),
+  },
 }).render();
 
 window.gridViewWin = new GridView({

@@ -9,6 +9,7 @@ import {
   columnGroup,
   cells,
   sortableHeader,
+  events,
 } from './projection';
 
 import { TableView } from './layout';
@@ -86,7 +87,12 @@ export class GridView extends Backbone.View {
 
     this.pipeDataProjections(dataSource);
     this.pipeStructureProjections(columns, rows, selection);
-    this.pipeContentProjections(columnGroup, cells, sortableHeader);
+    this.pipeContentProjections([
+      columnGroup,
+      cells,
+      sortableHeader,
+      events,
+    ]);
 
     const patchEvents = state => _.extend(state, {
       events: _.mapObject(state.events, handler => handler.bind(this)),
