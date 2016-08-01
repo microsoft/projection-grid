@@ -39,11 +39,14 @@ window.gridViewEl = pgrid.factory({ vnext: true }).create({
     columns: [{
       name: 'CustomerID',
       bodyTemplate: bodyTemplate,
+      sortable: true,
     },{
       name: 'OrderID',
+      sortable: true,
     }], 
   },{
     name: 'ShipCity',
+    sortable: true,
   }],
   events: {
     'click th.column-header': (e) => console.log(e.target),
