@@ -25,8 +25,6 @@ class CustomView extends Backbone.View {
 
 window.customView = new CustomView().render();
 
-const headTemplate = _.template('<i><span><%= name%></span></i>');
-
 window.gridViewEl = pgrid.factory({ vnext: true }).create({
   el: '.container-element-viewport',
   viewport: '.container-element-viewport',
@@ -42,11 +40,17 @@ window.gridViewEl = pgrid.factory({ vnext: true }).create({
     html: '<i>Group 0</i>',
     columns: [{
       name: 'CustomerID',
-      bodyTemplate: bodyTemplate,
+      template: bodyTemplate,
     },{
       name: 'OrderID',
-      headTemplate: headTemplate,
-    }], 
+    }, {
+      name: 'ShipAddressLength',
+      field: 'ShipAddress/length',
+      title: 'Ship Address Length',
+    }, {
+      name: 'Destination',
+      value: item => `${item.Country}/${item.City}`,
+    }],
   },{
     name: 'ShipCity',
   }],

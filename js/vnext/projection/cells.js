@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-function translateRow(columnGroup, row, group) {
+function translateRow(columnGroup, row) {
   if (_.has(row, 'html')) {
     return {
       classes: row.classes,
@@ -31,13 +31,18 @@ function translateRow(columnGroup, row, group) {
     const obj =  {
       classes: row.classes,
       cells: _.map(columnGroup.leafColumns, col => {
-        const cell = row.item[col.name] || {};
-        const classes = col.classes;
-        const template = col[group + 'Template'];
-        const defaultHTML = _.isObject(cell) ? cell.name : cell;
-        const html = _.result(cell, 'html', template ? template(group == 'head' ? col : row.item) : defaultHTML);
+        const cell = { classes: col.classes, attributes: {} };
+        if (col.template) {
+          cell.html = col.template(row.item);
+        } else if (col.value) {
+          cell.value = col.value(row.item);
+        } else if (col.field) {
+          cell.value = _.chain(col.field.split('/')).reduce((memo, key) => (memo[key]), row.item).value();
+        } else {
+          cell.value = _.isNull(row.item[col.name]) ? '' : row.item[col.name];
+        }
         
-        return { classes, html, attributes: {} };
+        return cell;
       }),
       attributes: row.attributes || {},
     };

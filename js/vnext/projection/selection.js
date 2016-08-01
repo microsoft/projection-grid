@@ -65,16 +65,18 @@ export function selection (state, selection) {
       single: model.single,
       checked: this.countRows > 0 && model.selected.length === this.countRows,
     }),
+    template: (index) => selectionBodyTemplate({
+          single: model.single,
+          checked: selectedIndex[index],
+        }),
     sortable: false,
   }].concat(state.columns);
 
   const bodyRows = state.bodyRows.map((row, index) => _.defaults({
     item: _.defaults({
+
       selection: {
-        html: selectionBodyTemplate({
-          single: model.single,
-          checked: selectedIndex[index],
-        }),
+        index,
       },
     }, row.item),
   }, row));
