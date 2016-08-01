@@ -4,6 +4,7 @@ import Backbone from 'backbone';
 
 import { GridView } from '../../js/vnext/grid-view.js';
 import bodyTemplate from './body-template.jade';
+import store from './js-data-resource.js';
 
 import './index.less';
 import 'bootstrap-webpack';
@@ -22,6 +23,7 @@ class CustomView extends Backbone.View {
 
 window.customView = new CustomView().render();
 
+const headTemplate = _.template('<i><span><%= name%></span></i>');
 
 window.gridViewEl = new GridView({
   el: '.container-element-viewport',
@@ -42,6 +44,7 @@ window.gridViewEl = new GridView({
       bodyTemplate: bodyTemplate,
     },{
       name: 'OrderID',
+      headTemplate: headTemplate,
     }], 
   },{
     name: 'ShipCity',
@@ -58,8 +61,8 @@ window.gridViewWin = new GridView({
   virtualized: true,
 }).set({
   dataSource: {
-    type: 'odata',
-    url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
+    type: 'jsdata',
+    entity: store,
   },
   selection: { single: true },
   rows: {

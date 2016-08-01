@@ -35,5 +35,8 @@ export function jsdata ({
     }, []);
   }
 
-  return entity.fincAll(op, _.defaults(options, { all: true }));
+  return entity.findAll(op, _.defaults(options, { all: true }))
+  	.then(function(data) {
+  		return { items: data };
+  	});
 };

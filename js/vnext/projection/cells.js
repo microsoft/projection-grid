@@ -28,7 +28,8 @@ function translateRow(columnGroup, row, group) {
         const cell = row.item[col.name] || {};
         const classes = col.classes;
         const template = col[group + 'Template'];
-        const html = _.result(cell, 'html', template ? template(group == 'head' ? col : row.item) : (cell.name || cell));
+        const defaultHTML = _.isObject(cell) ? cell.name : cell;
+        const html = _.result(cell, 'html', template ? template(group == 'head' ? col : row.item) : defaultHTML);
         
         return { classes, html };
       }),
