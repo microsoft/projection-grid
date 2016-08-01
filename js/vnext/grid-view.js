@@ -130,6 +130,11 @@ export class GridView extends Backbone.View {
     return _.result(this._chainData.state, 'items', []).length;
   }
 
+  columnWithName(name) {
+    const columnGroup = _.result(this._chainContent.state, 'columnGroup');
+    return columnGroup ? columnGroup.columnWithName(name) : null;
+  }
+
   set(state = {}) {
     this.model.set(state);
     return this;

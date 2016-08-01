@@ -4,9 +4,12 @@ class ColumnGroup {
   constructor(columns) {
     this.headerRows = [];
     this.leafColumns = [];
+    this.columnIndex = {};
 
     const buildColumn = col => {
-      const { parent, columns, height } = col;
+      const { parent, columns, height, name } = col;
+
+      this.columnIndex[name] = col;
       
       col.height  = _.isNumber(height) ? height : 1;
       col.rowIndex = parent ? parent.rowIndex + parent.height : 0;
@@ -59,6 +62,10 @@ class ColumnGroup {
     });
 
     buildColumnHeader(this.root);
+  }
+
+  columnWithName(name) {
+    return this.columnIndex[name];
   }
 
   get height() {
