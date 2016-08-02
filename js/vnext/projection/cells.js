@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-function translateRow(columnGroup, row) {
+function translateRow(columnGroup, row, index) {
   if (_.has(row, 'html')) {
     return {
       classes: row.classes,
@@ -33,7 +33,7 @@ function translateRow(columnGroup, row) {
       cells: _.map(columnGroup.leafColumns, col => {
         const cell = { classes: col.classes, attributes: {} };
         if (col.template) {
-          cell.html = col.template(row.item);
+          cell.html = col.template({ index, item: row.item });
         } else if (col.value) {
           cell.value = col.value(row.item);
         } else if (col.field) {
@@ -65,12 +65,12 @@ export function cells(state) {
     if (row === 'column-header-rows') {
       return memo.concat(columnGroup.headerRows);
     }
-    memo.push(translateRow(columnGroup, row, 'head'));
+    memo.push(translateRow(columnGroup, row));
     return memo;
   }, []);
 
-  bodyRows = _.map(bodyRows, row => translateRow(columnGroup, row, 'body'));
-  footRows = _.map(footRows, row => translateRow(columnGroup, row, 'foot'));
+  bodyRows = _.map(bodyRows, (row, index) => translateRow(columnGroup, row, index));
+  footRows = _.map(footRows, (row, index) => translateRow(columnGroup, row, index));
 
   return _.defaults({
     headRows,
