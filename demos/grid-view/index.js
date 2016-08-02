@@ -5,6 +5,7 @@ import Backbone from 'backbone';
 import pgrid from '../../js';
 import bodyTemplate from './body-template.jade';
 import store from './js-data-resource.js';
+import emailsTemplate from './emails.jade';
 import people from 'json!./people.json';
 
 import './index.less';
@@ -40,18 +41,24 @@ window.gridViewEl = pgrid.factory({ vnext: true }).create({
     columns: [{
       name: 'CustomerID',
       template: bodyTemplate,
+      sortable: true,
     },{
       name: 'OrderID',
+      sortable: true,
     }, {
       name: 'ShipAddressLength',
       field: 'ShipAddress/length',
       title: 'Ship Address Length',
+      width: 150,
+      sortable: true,
     }, {
       name: 'Destination',
-      value: item => `${item.Country}/${item.City}`,
+      value: item => `${item.ShipCountry} / ${item.ShipCity}`,
+      sortable: true,
     }],
   },{
     name: 'ShipCity',
+    sortable: true,
   }],
   events: {
     'click th.column-header': (e) => console.log(e.target),
@@ -80,5 +87,40 @@ window.gridViewWin = pgrid.factory({ vnext: true }).create({
     'column-header-rows',
     ],
   },
+  columns: [{
+    name: 'UserName',
+    width: 120,
+  }, {
+    name: 'Name',
+    value: item => `${item.FirstName}, ${item.LastName}`,
+    width: 150,
+  }, {
+    name: 'Emails',
+    template: emailsTemplate,
+    width: 220,
+  }, {
+    name: 'AddressInfo',
+    columns: [{
+      name: 'Address',
+      field: 'AddressInfo/0/Address',
+    }, {
+      name: 'City',
+      columns: [{
+        name: 'CityName',
+        field: 'AddressInfo/0/City/Name',
+      }, {
+        name: 'CityCountry',
+        field: 'AddressInfo/0/City/CountryRegion',
+      }, {
+        name: 'CityRegion',
+        field: 'AddressInfo/0/City/Region',
+      }],
+    }],
+  }, {
+    name: 'Gender',
+  }, {
+    name: 'Concurrency',
+    width: 200,
+  }]
 }).gridView.render();
 
