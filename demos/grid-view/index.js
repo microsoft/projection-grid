@@ -4,10 +4,13 @@ import Backbone from 'backbone';
 
 import pgrid from '../../js';
 import bodyTemplate from './body-template.jade';
+import store from './js-data-resource.js';
+import people from 'json!./people.json';
 
 import './index.less';
 import 'bootstrap-webpack';
 
+console.log(people.value);
 class CustomView extends Backbone.View {
   events() {
     return {
@@ -21,7 +24,6 @@ class CustomView extends Backbone.View {
 }
 
 window.customView = new CustomView().render();
-
 
 window.gridViewEl = pgrid.factory({ vnext: true }).create({
   el: '.container-element-viewport',
@@ -38,10 +40,17 @@ window.gridViewEl = pgrid.factory({ vnext: true }).create({
     html: '<i>Group 0</i>',
     columns: [{
       name: 'CustomerID',
-      bodyTemplate: bodyTemplate,
+      template: bodyTemplate,
     },{
       name: 'OrderID',
-    }], 
+    }, {
+      name: 'ShipAddressLength',
+      field: 'ShipAddress/length',
+      title: 'Ship Address Length',
+    }, {
+      name: 'Destination',
+      value: item => `${item.Country}/${item.City}`,
+    }],
   },{
     name: 'ShipCity',
   }],
@@ -59,8 +68,10 @@ window.gridViewWin = pgrid.factory({ vnext: true }).create({
   },
   virtualized: true,
   dataSource: {
-    type: 'odata',
-    url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
+    //type: 'jsdata',
+    //entity: store,
+    type: 'memory',
+    data: people.value,
   },
   selection: { single: true },
   rows: {

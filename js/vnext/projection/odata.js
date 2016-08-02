@@ -36,10 +36,10 @@ export function odata ({
 
   return new Promise((resolve, reject) => {
     $.getJSON(_.result(op, 'url'), _.omit(op, 'url'))
-    .success(resolve)
-    .fail((jqXHR, textStatus, errorThrown) => {
-      reject(new Error(errorThrown));
-    });
+      .success(resolve)
+      .fail((jqXHR, textStatus, errorThrown) => {
+        reject(new Error(errorThrown));
+      });
   }).then(data => ({ items: data.value || [] }));
 }
 
