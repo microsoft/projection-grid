@@ -37,7 +37,7 @@ function translateRow(columnGroup, row) {
         } else if (col.value) {
           cell.value = col.value(row.item);
         } else if (col.field) {
-          cell.value = _.chain(col.field.split('/')).reduce((memo, key) => (memo || {})[key], row.item).value();
+          cell.value = _.chain(col.field.split(/[\.\/]/)).reduce((memo, key) => (memo || {})[key], row.item).value();
         } else {
           cell.value = _.isNull(row.item[col.name]) ? '' : row.item[col.name];
         }
