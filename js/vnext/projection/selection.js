@@ -72,18 +72,10 @@ export function selection (state, selection) {
     sortable: false,
   }].concat(state.columns);
 
-  const bodyRows = state.bodyRows.map((row, index) => _.defaults({
-    item: _.defaults({
-      selection: {
-        index,
-      },
-    }, row.item),
-  }, row));
-
   const events = _.defaults({
     'change th input.select-all': changeSelectAll,
     'change td input.select-row': changeSelectRow,
   }, state.events);
 
-  return _.defaults({ columns, bodyRows, events }, state);
+  return _.defaults({ columns, events }, state);
 }
