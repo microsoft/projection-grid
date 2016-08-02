@@ -10,7 +10,6 @@ import people from 'json!./people.json';
 import './index.less';
 import 'bootstrap-webpack';
 
-console.log(people.value);
 class CustomView extends Backbone.View {
   events() {
     return {
