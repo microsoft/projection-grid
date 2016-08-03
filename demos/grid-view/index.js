@@ -11,8 +11,6 @@ import people from 'json!./people.json';
 import './index.less';
 import 'bootstrap-webpack';
 
-import editable from '../../js/layout/template/editable.jade';
-
 class CustomView extends Backbone.View {
   events() {
     return {
@@ -44,9 +42,11 @@ window.gridViewEl = pgrid.factory({ vnext: true }).create({
       name: 'CustomerID',
       template: bodyTemplate,
       sortable: true,
+      editable: true,
     },{
       name: 'OrderID',
       sortable: true,
+      editable: true,
     }, {
       name: 'ShipAddressLength',
       field: 'ShipAddress/length',
