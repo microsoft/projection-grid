@@ -4,6 +4,8 @@ import Promise from 'bluebird';
 import {
   dataSource,
   selection,
+  setSelectAll,
+  setSelectRow,
   columns,
   rows,
   columnGroup,
@@ -128,15 +130,6 @@ export class GridView extends Backbone.View {
     return this;
   }
 
-  get countRows() {
-    return _.result(this._chainData.state, 'items', []).length;
-  }
-
-  columnWithName(name) {
-    const columnGroup = _.result(this._chainContent.state, 'columnGroup');
-    return columnGroup ? columnGroup.columnWithName(name) : null;
-  }
-
   set(state = {}) {
     this.model.set(state);
     return this;
@@ -144,10 +137,6 @@ export class GridView extends Backbone.View {
 
   get(attribute) {
     return this.model.get(attribute);
-  }
-
-  indexOfElement(el) {
-    return this._tableView.indexOfElement(el);
   }
 
   render(callback) {
@@ -158,6 +147,51 @@ export class GridView extends Backbone.View {
   remove() {
     this._tableView.remove();
     super.remove();
+  }
+
+  /* Helper functions */
+  get countRows() {
+    return _.result(this._chainData.state, 'items', []).length;
+  }
+
+  itemAt(index) {
+    return _.result(this._chainData.state, 'items', []).slice(index, index + 1)[0];
+  }
+
+  selectedIndexes () {
+    return _.result(this.get('selection'), 'selected', []);
+  }
+
+  selectedItems() {
+    return _.chain(this.get('selection'))
+      .result('selected', [])
+      .map(i => this.itemAt(i))
+      .value();
+  }
+
+  selectRow(index) {
+    setSelectRow(this, index, true);
+  }
+
+  deselectRow(index) {
+    setSelectRow(this, index, false);
+  }
+
+  selectAll(index) {
+    setSelectAll(this, true);
+  }
+
+  deselectAll(index) {
+    setSelectAll(this, false);
+  }
+
+  indexOfElement(el) {
+    return this._tableView.indexOfElement(el);
+  }
+
+  columnWithName(name) {
+    const columnGroup = _.result(this._chainContent.state, 'columnGroup');
+    return columnGroup ? columnGroup.columnWithName(name) : null;
   }
 };
 

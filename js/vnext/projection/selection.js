@@ -9,13 +9,12 @@ function normalize(selection) {
   });
 }
 
-function changeSelectAll(e) {
-  let selection = normalize(this.get('selection'));
-  let checked = e.target.checked;
+export function setSelectAll(gridView, checked) {
+  let selection = normalize(gridView.get('selection'));
 
   if (checked) {
     selection = _.defaults({
-      selected: _.range(this.countRows),
+      selected: _.range(gridView.countRows),
     }, selection);
   } else {
     selection = _.defaults({
@@ -23,13 +22,15 @@ function changeSelectAll(e) {
     }, selection);
   }
 
-  this.set({ selection });
+  gridView.set({ selection });
 }
 
-function changeSelectRow(e) {
-  let selection = normalize(this.get('selection'));
-  let index = this.indexOfElement(e.target);
-  let checked = e.target.checked;
+function changeSelectAll(e) {
+  setSelectAll(this, e.target.checked);
+}
+
+export function setSelectRow(gridView, index, checked) {
+  let selection = normalize(gridView.get('selection'));
 
   if (selection.single) {
     selection = _.defaults({ selected: [index] }, selection);
@@ -44,7 +45,11 @@ function changeSelectRow(e) {
     selection = _.defaults({ selected }, selection);
   }
 
-  this.set({ selection });
+  gridView.set({ selection });
+}
+
+function changeSelectRow(e) {
+  setSelectRow(this, this.indexOfElement(e.target), e.target.checked);
 }
 
 export function selection (state, selection) {
