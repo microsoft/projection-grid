@@ -45,18 +45,17 @@ window.gridViewEl = pgrid.factory({ vnext: true }).create({
       editable: true,
     },{
       name: 'OrderID',
-      sortable: true,
+      sortable: -1,
       editable: true,
     }, {
       name: 'ShipAddressLength',
       field: 'ShipAddress/length',
       title: 'Ship Address Length',
       width: 150,
-      sortable: true,
+      sortable: 'length(ShipAddress)',
     }, {
       name: 'Destination',
       value: item => `${item.ShipCountry} / ${item.ShipCity}`,
-      sortable: true,
     }],
   },{
     name: 'ShipCity',
@@ -92,37 +91,46 @@ window.gridViewWin = pgrid.factory({ vnext: true }).create({
   columns: [{
     name: 'UserName',
     width: 120,
+    sortable: true,
   }, {
     name: 'Name',
     value: item => `${item.FirstName}, ${item.LastName}`,
     width: 150,
+    sortable: true,
   }, {
     name: 'Emails',
     template: emailsTemplate,
     width: 220,
+    sortable: item => item.Emails.length,
   }, {
     name: 'AddressInfo',
     columns: [{
       name: 'Address',
       field: 'AddressInfo/0/Address',
+      sortable: true,
     }, {
       name: 'City',
       columns: [{
         name: 'CityName',
         field: 'AddressInfo/0/City/Name',
+        sortable: true,
       }, {
         name: 'CityCountry',
         field: 'AddressInfo/0/City/CountryRegion',
+        sortable: true,
       }, {
         name: 'CityRegion',
         field: 'AddressInfo/0/City/Region',
+        sortable: true,
       }],
     }],
   }, {
     name: 'Gender',
+    sortable: true,
   }, {
     name: 'Concurrency',
     width: 200,
+    sortable: true,
   }]
 }).gridView.render();
 

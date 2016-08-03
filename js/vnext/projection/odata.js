@@ -27,11 +27,8 @@ export function odata ({
   }
 
   if (_.size(orderby)) {
-    const col = _.first(orderby);
-    const key = _.keys(col)[0];
-    const dir = col[key];
-
-    op.$orderby = key + ' ' + (dir > 0 ? 'asc' : 'desc');
+    const { key, direction } = _.first(orderby) || {};
+    op.$orderby = key + ' ' + (direction > 0 ? 'asc' : 'desc');
   }
 
   return new Promise((resolve, reject) => {

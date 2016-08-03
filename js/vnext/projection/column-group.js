@@ -32,6 +32,7 @@ class ColumnGroup {
       if (col.parent) {
         const colspan = col.treeWidth;
         const rowspan = _.isEmpty(col.columns) ? this.root.treeHeight - col.rowIndex : col.height;
+        const name = col.name;
         const html = col.html || col.title || col.name;
 
         while (this.headerRows.length <= col.rowIndex) {
