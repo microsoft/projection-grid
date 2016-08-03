@@ -14,8 +14,21 @@ const MODEL_OPTIONS = ['cols', 'headRows', 'footRows'];
 const ITEMS_OPTIONS = ['bodyRows'];
 const HEADER_OPTIONS = ['cols', 'headRows', 'events'];
 
-function getListTemplate(stickyHeader) {
+function getListTemplate(isStickyHeader) {
+  const style = {
+    'border-collapse': 'collapse',
+    'margin': 0,
+  };
+
+  const stickyHeader = isStickyHeader ? {} : null;
+
+  if (stickyHeader) {
+    style['table-layout'] = 'fixed';
+    stickyHeader.style = _.extend({ position: 'relative' }, style);
+  }
+
   return model => tableTemplate({
+    style,
     stickyHeader,
     header: { rows: model.headRows },
     footer: { rows: model.footRows },
@@ -56,7 +69,7 @@ export class TableView extends Backbone.View {
       virtualized,
       viewport,
     }).set({
-      listTemplate: getListTemplate(stickyHeader),
+      listTemplate: getListTemplate(Boolean(stickyHeader)),
       itemTemplate: rowTemplate,
     });
 

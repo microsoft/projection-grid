@@ -29,10 +29,7 @@ export function jsdata ({
   }
 
   if (orderby && orderby.length) {
-    op.orderby = _.reduce(orderby, (memo, obj) => {
-      _.each(obj, (key, value) => {memo.push([key, value > 0 ? 'ASC' : 'DESC']);});
-      return memo;
-    }, []);
+    op.orderby = _.map(orderby, ({ key, direction }) => [key, direction > 0 ? 'ASC' : 'DESC']);
   }
 
   return entity.findAll(op, _.defaults(options, { all: true }))

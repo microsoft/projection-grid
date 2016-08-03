@@ -4,10 +4,15 @@ import editTemplate from '../layout/editable.jade';
 import prompt from '../../popup-editor/index.js';
 
 function edit(e) {
-  if($(e.target).closest('td').hasClass('grid-editable-cell')) {
-    const editor = window.prompt;
-    console.log('dbclick');
+  const $td = $(e.target).closest('td');
+
+  if($td.hasClass('grid-editable-cell')) {
+    const editor = prompt;
     editor({
+      model: { value: $td.text(), },
+      position: { left: $td.offset().left, top: $td.offset().top + $td.outerHeight(true) },
+      property: 'value',
+      onSubmit: save,
     });
   }
 }
@@ -46,7 +51,7 @@ export function editable(state) {
   });
 
   const events = _.defaults({
-    'dbclick td.grid-editable-cell': edit,
+    'dblclick td.grid-editable-cell': edit,
   }, state.events);
 
   return _.defaults({ events }, state);
