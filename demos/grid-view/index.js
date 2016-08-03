@@ -49,13 +49,13 @@ window.gridViewEl = pgrid.factory({ vnext: true }).create({
       editable: true,
     }, {
       name: 'ShipAddressLength',
-      field: 'ShipAddress/length',
+      property: 'ShipAddress/length',
       title: 'Ship Address Length',
       width: 150,
       sortable: 'length(ShipAddress)',
     }, {
       name: 'Destination',
-      value: item => `${item.ShipCountry} / ${item.ShipCity}`,
+      property: item => `${item.ShipCountry} / ${item.ShipCity}`,
     }],
   },{
     name: 'ShipCity',
@@ -94,7 +94,7 @@ window.gridViewWin = pgrid.factory({ vnext: true }).create({
     sortable: true,
   }, {
     name: 'Name',
-    value: item => `${item.FirstName}, ${item.LastName}`,
+    property: item => `${item.FirstName}, ${item.LastName}`,
     width: 150,
     sortable: true,
   }, {
@@ -106,21 +106,21 @@ window.gridViewWin = pgrid.factory({ vnext: true }).create({
     name: 'AddressInfo',
     columns: [{
       name: 'Address',
-      field: 'AddressInfo/0/Address',
+      property: 'AddressInfo/0/Address',
       sortable: true,
     }, {
       name: 'City',
       columns: [{
         name: 'CityName',
-        field: 'AddressInfo/0/City/Name',
+        property: 'AddressInfo/0/City/Name',
         sortable: true,
       }, {
         name: 'CityCountry',
-        field: 'AddressInfo/0/City/CountryRegion',
+        property: 'AddressInfo/0/City/CountryRegion',
         sortable: true,
       }, {
         name: 'CityRegion',
-        field: 'AddressInfo/0/City/Region',
+        property: 'AddressInfo/0/City/Region',
         sortable: true,
       }],
     }],
