@@ -61,14 +61,9 @@ function translateRow(columnGroup, row, index) {
 }
 
 export function cells(state) {
-  let {
-    headRows,
-    bodyRows,
-    footRows,
-    columnGroup,
-  } = state;
-  
-  headRows = _.reduce(headRows, (memo, row) => {
+  const columnGroup = state.columnGroup;
+
+  const headRows = _.reduce(state.headRows, (memo, row) => {
     if (row === 'column-header-rows') {
       return memo.concat(columnGroup.headerRows);
     }
@@ -76,8 +71,13 @@ export function cells(state) {
     return memo;
   }, []);
 
-  bodyRows = _.map(bodyRows, (row, index) => translateRow(columnGroup, row, index));
-  footRows = _.map(footRows, (row, index) => translateRow(columnGroup, row, index));
+  const bodyRows = {
+    length: state.bodyRows.length,
+    slice: (begin, end) => state.bodyRows.slice(begin, end)
+      .map((row, index) => translateRow(columnGroup, row, index + begin)),
+  };
+
+  const footRows = _.map(footRows, (row, index) => translateRow(columnGroup, row, index));
 
   return _.defaults({
     headRows,
