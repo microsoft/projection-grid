@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import defaultCellTemplate from './default-cell.jade';
 
 class ColumnGroup {
   constructor(columns) {
@@ -11,6 +12,41 @@ class ColumnGroup {
 
       this.columnIndex[name] = col;
       
+      if (!col.property) {
+        col.property = name;
+      }
+      if (_.isString(col.property)) {
+        const propName = col.property;
+        col.property = { 
+          get({ index, item }) {
+            return _.chain(propName.split('/')).reduce(_.result, item).value();
+          },
+          set({ item, value }) {
+            const segs = propName.split('/');
+            return _.chain(segs).reduce((memo, seg, index) => {
+              if (index < segs.length - 1) {
+                if (!_.has(memo, seg)) {
+                  memo[seg] = {};
+                } else if (!_.isObject(memo[seg])) {
+                  memo[seg] = Object(memo[seg]);
+                } 
+              } else {
+                memo[seg] = value;
+              }
+            }, item).value();
+          },
+        }
+      } else if (_.isFunction(col.property)) {
+        const propFunction = col.property;
+        col.property = {
+          get: propFunction,
+          set: propFunction,
+        };
+      }
+
+      if (!_.isFunction(col.template)) {
+        col.template = defaultCellTemplate;
+      }
       col.height  = _.isNumber(height) ? height : 1;
       col.rowIndex = parent ? parent.rowIndex + parent.height : 0;
       col.columns = _.map(columns, c => buildColumn(_.extend({ parent: col }, c)));

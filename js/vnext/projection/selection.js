@@ -65,7 +65,8 @@ export function selection (state, selection) {
       single: model.single,
       checked: this.countRows > 0 && model.selected.length === this.countRows,
     }),
-    template: ({ index }) => selectionBodyTemplate({
+    template: selectionBodyTemplate,
+    property: ({ index }) => ({ 
       single: model.single,
       checked: selectedIndex[index],
     }),

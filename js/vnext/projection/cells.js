@@ -32,22 +32,8 @@ function translateRow(columnGroup, row, index) {
       classes: row.classes,
       cells: _.map(columnGroup.leafColumns, col => {
         const cell = { classes: col.classes, attributes: {} };
-        if (col.property) {
-          const property = col.property;
-          if (_.isFunction(property)) {
-            cell.value = property(row.item);
-          } else {
-            cell.value = _.chain(property.split(/[\.\/]/)).reduce((memo, key) => (memo || {})[key], row.item).value();
-          }
-        } else {
-          cell.value = _.isNull(row.item[col.name]) ? '' : row.item[col.name];
-        }
-
-        if (col.template) {
-          cell.html = col.template({ index, item: cell });
-        } else {
-          cell.html = cell.value;
-        }
+        cell.value = col.property.get({ index, item: row.item });
+        cell.html = col.template(_.pick(cell, 'value'));
 
         return cell;
       }),

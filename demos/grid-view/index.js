@@ -55,7 +55,7 @@ window.gridViewEl = pgrid.factory({ vnext: true }).create({
       sortable: 'length(ShipAddress)',
     }, {
       name: 'Destination',
-      property: item => `${item.ShipCountry} / ${item.ShipCity}`,
+      property: ({ item }) => `${item.ShipCountry} / ${item.ShipCity}`,
     }],
   },{
     name: 'ShipCity',
@@ -94,14 +94,14 @@ window.gridViewWin = pgrid.factory({ vnext: true }).create({
     sortable: true,
   }, {
     name: 'Name',
-    property: item => `${item.FirstName}, ${item.LastName}`,
+    property: ({ item }) => `${item.FirstName}, ${item.LastName}`,
     width: 150,
     sortable: true,
   }, {
     name: 'Emails',
     template: emailsTemplate,
     width: 220,
-    sortable: item => item.Emails.length,
+    sortable: ({ item }) => item.Emails.length,
   }, {
     name: 'AddressInfo',
     columns: [{
