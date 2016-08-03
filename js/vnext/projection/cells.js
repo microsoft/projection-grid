@@ -32,16 +32,9 @@ function translateRow(columnGroup, row, index) {
       classes: row.classes,
       cells: _.map(columnGroup.leafColumns, col => {
         const cell = { classes: col.classes, attributes: {} };
-        if (col.template) {
-          cell.html = col.template({ index, item: row.item });
-        } else if (col.value) {
-          cell.value = col.value(row.item);
-        } else if (col.field) {
-          cell.value = _.chain(col.field.split(/[\.\/]/)).reduce((memo, key) => (memo || {})[key], row.item).value();
-        } else {
-          cell.value = _.isNull(row.item[col.name]) ? '' : row.item[col.name];
-        }
-        
+        cell.value = col.property.get({ index, item: row.item });
+        cell.html = col.template(_.pick(cell, 'value'));
+
         return cell;
       }),
       attributes: row.attributes || {},
