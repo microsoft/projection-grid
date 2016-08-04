@@ -13,6 +13,7 @@ var resolve = require('resolve');
 // coveralls
 var coveralls = require('gulp-coveralls');
 // coveralls-end
+var jsdoc = require('gulp-jsdoc3');
 
 var childProcess = require('child_process');
 var spawn = childProcess.spawn;
@@ -108,6 +109,11 @@ gulp.task('static', function () {
     .pipe(eslint())
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
+});
+
+gulp.task('jsdoc', function (cb) {
+  gulp.src(['README.md', './js/vnext/**/*.js'], { read: false })
+    .pipe(jsdoc(require('./jsdoc.json'), cb));
 });
 
 gulp.task('webpack', webpackBuild('./webpack.config'));
