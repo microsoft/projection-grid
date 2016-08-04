@@ -14,7 +14,7 @@ export function setSelectAll(gridView, checked) {
 
   if (checked) {
     selection = _.defaults({
-      selected: _.range(gridView.countRows),
+      selected: _.keys(gridView._chainData.state.itemIndex),
     }, selection);
   } else {
     selection = _.defaults({
@@ -29,18 +29,18 @@ function changeSelectAll(e) {
   setSelectAll(this, e.target.checked);
 }
 
-export function setSelectRow(gridView, index, checked) {
+export function setSelectRow(gridView, key, checked) {
   let selection = normalize(gridView.get('selection'));
 
   if (selection.single) {
-    selection = _.defaults({ selected: [index] }, selection);
+    selection = _.defaults({ selected: [key] }, selection);
   } else {
     let selected = null;
 
     if (checked) {
-      selected = _.union(selection.selected, [index]);
+      selected = _.union(selection.selected, [key]);
     } else {
-      selected = _.without(selection.selected, index);
+      selected = _.without(selection.selected, key);
     }
     selection = _.defaults({ selected }, selection);
   }
@@ -49,7 +49,10 @@ export function setSelectRow(gridView, index, checked) {
 }
 
 function changeSelectRow(e) {
-  setSelectRow(this, this.indexOfElement(e.target), e.target.checked);
+  const index = this.indexOfElement(e.target);
+  const key = _.result(this.itemAt(index), this.primaryKey);
+
+  setSelectRow(this, key, e.target.checked);
 }
 
 export function selection (state, selection) {
@@ -58,10 +61,11 @@ export function selection (state, selection) {
   }
 
   const model = normalize(selection);
-  const selectedIndex = _.reduce(model.selected, (memo, index) => {
-    memo[index] = true;
+  const selectedIndex = _.reduce(model.selected, (memo, key) => {
+    memo[key] = true;
     return memo;
   }, {});
+  const primaryKey = state.primaryKey;
 
   const columns = [{
     name: 'selection',
@@ -71,9 +75,9 @@ export function selection (state, selection) {
       checked: this.countRows > 0 && model.selected.length === this.countRows,
     }),
     template: selectionBodyTemplate,
-    property: ({ index }) => ({ 
+    property: ({ item }) => ({ 
       single: model.single,
-      checked: selectedIndex[index],
+      checked: selectedIndex[item[primaryKey]],
     }),
     sortable: false,
   }].concat(state.columns);

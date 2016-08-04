@@ -59,8 +59,10 @@ export function cells(state) {
 
   const bodyRows = {
     length: state.bodyRows.length,
-    slice: (begin, end) => state.bodyRows.slice(begin, end)
-      .map((row, index) => translateRow(columnGroup, row, index + begin)),
+    slice: (begin = 0, end = state.bodyRows.length) => {
+      return state.bodyRows.slice(begin, end)
+        .map((row, index) => translateRow(columnGroup, row, index + begin));
+    },
   };
 
   const footRows = _.map(footRows, (row, index) => translateRow(columnGroup, row, index));

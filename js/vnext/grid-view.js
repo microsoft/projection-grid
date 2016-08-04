@@ -3,6 +3,7 @@ import Backbone from 'backbone';
 import Promise from 'bluebird';
 import {
   dataSource,
+  buffer,
   selection,
   setSelectAll,
   setSelectRow,
@@ -59,7 +60,10 @@ class ProjectionChain {
   pipe(...projs) {
     _.chain(projs)
       .flatten()
-      .each(proj => this.projections.push(proj))
+      .each(proj => {
+        this.projections.push(proj);
+        this.model.set(proj.name, proj.defaults);
+      })
       .value();
     return this;
   }
@@ -77,18 +81,19 @@ export class GridView extends Backbone.View {
       virtualized,
       stickyHeader,
     });
-    this.model = new Backbone.Model;
+    this.model = new Backbone.Model();
 
     this._wrapProjection = proj => ({
       name: proj.name,
       handler: (_.isFunction(proj) ? proj : proj.handler).bind(this),
+      defaults: proj.defaults || {},
     });
 
     this._chainData = new ProjectionChain(this.model);
     this._chainStructure = new ProjectionChain(this.model);
     this._chainContent = new ProjectionChain(this.model);
 
-    this.pipeDataProjections(dataSource);
+    this.pipeDataProjections(dataSource, buffer);
     this.pipeStructureProjections(columns, rows, selection);
     this.pipeContentProjections([
       columnGroup,
@@ -152,6 +157,10 @@ export class GridView extends Backbone.View {
   /* Helper functions */
   get countRows() {
     return _.result(this._chainData.state, 'items', []).length;
+  }
+
+  get primaryKey() {
+    return _.result(this._chainData.state, 'primaryKey');
   }
 
   itemAt(index) {

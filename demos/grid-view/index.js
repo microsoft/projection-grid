@@ -33,6 +33,7 @@ window.gridViewEl = pgrid.factory({ vnext: true }).create({
   dataSource: {
     type: 'odata',
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
+    primaryKey: 'OrderID',
   },
   selection: true,
   columns: [{
