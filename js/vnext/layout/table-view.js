@@ -24,7 +24,10 @@ function getListTemplate(isStickyHeader) {
 
   if (stickyHeader) {
     style['table-layout'] = 'fixed';
-    stickyHeader.style = _.extend({ position: 'relative' }, style);
+    stickyHeader.style = _.extend({
+      'position': 'relative',
+      'z-index': 100,
+    }, style);
   }
 
   return model => tableTemplate({
