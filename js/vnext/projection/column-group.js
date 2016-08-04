@@ -19,7 +19,7 @@ class ColumnGroup {
         const propName = col.property;
         col.property = { 
           get({ index, item }) {
-            return _.chain(propName.split('/')).reduce(_.result, item).value();
+            return _.chain(propName.split('/')).reduce( (memo, key) => { return (memo || {} )[key]}, item).value();
           },
           set({ item, value }) {
             const segs = propName.split('/');
