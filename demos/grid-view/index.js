@@ -45,7 +45,7 @@ window.gridViewEl = pgrid.factory({ vnext: true }).create({
       name: 'CustomerID',
       template: bodyTemplate,
       sortable: true,
-      editable: true,
+      //editable: true,
     },{
       name: 'OrderID',
       sortable: -1,

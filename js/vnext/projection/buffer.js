@@ -6,6 +6,22 @@ import { odata } from './odata.js';
 import { memory } from './memory.js';
 import { jsdata } from './jsdata.js';
 
+function updateItemState(gridView, item, state) {
+  const buffer = gridView.get('buffer');
+  const changed = {};
+  const key = _.result(item, gridView.primaryKey);
+
+  changed[key] = {
+    item,
+    state,
+  };
+  _.defaults(changed, buffer.changed);
+
+  gridView.set({
+    buffer: _.defaults({ changed }, buffer),
+  });
+}
+
 export const buffer = {
   name: 'buffer',
   handler(state, buffer) {
@@ -30,29 +46,15 @@ export const buffer = {
       },
     }
 
-    const updateItemState = (item, state) => {
-      const changed = {};
-
-      changed[item[primaryKey]] = {
-        item,
-        state,
-      };
-      _.defaults(changed, buffer.changed);
-
-      this.set({
-        buffer: { uniqueId, changed },
-      });
-    }
-
     const onCommit = item => {
       if (item) {
-        updateItemState(item, 'committed');
+        updateItemState(this, item, 'committed');
       }
     }
 
     const onEdit = item => {
       if (item) {
-        updateItemState(item, 'changed');
+        updateItemState(this, item, 'changed');
         if (_.isFunction(update)) {
           update(item).then(onCommit);
         }

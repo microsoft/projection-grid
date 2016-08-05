@@ -25,10 +25,10 @@ function editInColumn(column) {
         position: { left: $td.offset().left, top: $td.offset().top },
         property: column.name,
         onSubmit: model => {
-          this.trigger('didEdit', model);
+          this.trigger('didEdit', _.isEqual(model, item) ? null : model);
         },
         onCancel: model => {
-          this.trigger('didEdit');
+          this.trigger('didEdit', null);
         },
       });
     }
