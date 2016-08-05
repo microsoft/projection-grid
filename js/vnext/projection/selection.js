@@ -52,6 +52,13 @@ function changeSelectRow(e) {
   setSelectRow(this, this.indexOfElement(e.target), e.target.checked);
 }
 
+/**
+* Add selection box to rows.
+*
+* @param {Object} state
+* @param {Array} [state.item] Data from data source.
+* @param {Object} selection 
+*/
 export function selection (state, selection) {
   if (!selection) {
     return _.clone(state);

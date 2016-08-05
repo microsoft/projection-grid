@@ -17,6 +17,10 @@ import {
 
 import { TableView } from './layout';
 
+/**
+* The projection chain class.
+*/
+
 class ProjectionChain {
   constructor(model) {
     this.model = model;
@@ -25,6 +29,9 @@ class ProjectionChain {
     this.input = null;
   }
 
+  /**
+  * When updating, execute each function in projections successively
+  */
   update(input) {
     const updated = input !== this.input;
 
@@ -56,6 +63,9 @@ class ProjectionChain {
     });
   }
 
+  /**
+  * Add projection functions to model.projections 
+  */
   pipe(...projs) {
     _.chain(projs)
       .flatten()
@@ -65,6 +75,25 @@ class ProjectionChain {
   }
 }
 
+/**
+* The grid view class.
+*
+* In addition to ordinary Backbone View options, the constructor also takes
+*
+* __virtualized: whether or not the virtualization is enabled.
+*
+* __viewport__: the CSS selector to locate the scrollable viewport.
+*
+* * If it's omitted, the 'window' will be used as the viewport.
+*
+* __stickyHeader__: whether or not sticky header is enabled.
+*
+* @param {Object} options The constructor options.
+* @param {boolean} [options.virtualized=false]
+* @param {boolean | Object} [options.stickyHeader=false]
+* @param {string} [options.viewport]
+*
+*/
 export class GridView extends Backbone.View {
   initialize({
     viewport,
