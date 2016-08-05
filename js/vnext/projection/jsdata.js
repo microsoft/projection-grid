@@ -1,5 +1,9 @@
 import _ from 'underscore';
 
+/**
+* jsdata data source.
+*
+*/
 export const jsdata = {
   findAll({
     query,

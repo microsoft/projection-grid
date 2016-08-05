@@ -46,6 +46,16 @@ function translateRow(columnGroup, row, index) {
   return row;
 }
 
+/**
+* Render cells in grid.
+*
+* @param {Object} state All data, configurations and events needed in grid cells.
+* @param {Array} [state.headRows] Grid header cells.
+* @param {Array} [state.bodyRows] Duck typed array. Grid body cells.
+* @Param {Array} [state.footRows] Grid footer cells.
+* @param {Object} [state.columns] Column configurations.
+*
+*/
 export function cells(state) {
   const columnGroup = state.columnGroup;
 
