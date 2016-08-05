@@ -19,11 +19,9 @@ define([
       'click form': function (e) {
         e.stopPropagation();
       },
-      'keypress .editor': function (e) {
-        if (e.key === 'Enter') {
-          this.setValue(e.target.value);
-          this.trigger('save', this.model);
-        }
+      'submit form': function () {
+        this.trigger('save', this.model);
+        return false;
       },
     },
 
