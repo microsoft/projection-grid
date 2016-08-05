@@ -42,5 +42,3 @@ export function odata ({
       });
   }).then(data => ({ items: data.value || [] }));
 }
-
-

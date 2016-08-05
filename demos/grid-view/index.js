@@ -81,7 +81,7 @@ window.gridViewWin = pgrid.factory({ vnext: true }).create({
   dataSource: {
     type: 'memory',
     data: people.value,
-    //filter: ,
+    //filter: (item = {}) => !_.isEmpty(item.AddressInfo),
   },
   selection: { single: true },
   rows: {
