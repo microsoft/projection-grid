@@ -7,7 +7,7 @@ import { memory } from './memory.js';
 import { jsdata } from './jsdata.js';
 
 export function buffer(state, buffer = {}) {
-  const { primaryKey, uniqueId } = state;
+  const { primaryKey, uniqueId, update } = state;
 
   if (buffer.uniqueId !== uniqueId) {
     buffer.uniqueId = uniqueId;
@@ -28,7 +28,38 @@ export function buffer(state, buffer = {}) {
     },
   }
 
-  return _.defaults({ items }, state);
+  const updateItemState = (item, state) => {
+    const changed = {};
+
+    changed[item[primaryKey]] = {
+      item,
+      state,
+    };
+    _.defaults(changed, buffer.changed);
+
+    this.set({
+      buffer: { uniqueId, changed },
+    });
+  }
+
+  const onCommit = item => {
+    if (item) {
+      updateItemState(item, 'committed');
+    }
+  }
+
+  const onEdit = item => {
+    if (item) {
+      updateItemState(item, 'changed');
+      if (_.isFunction(update)) {
+        update(item).then(onCommit);
+      }
+    }
+  }
+
+  const events = _.defaults({ didEdit: onEdit }, state.events);
+
+  return _.defaults({ items, events }, state);
 }
 
 

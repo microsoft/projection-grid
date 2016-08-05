@@ -118,6 +118,16 @@ export class GridView extends Backbone.View {
         .then(state => this._tableView.set(state))
         .finally(() => this.trigger('didUpdate'));
     });
+
+    this.on('all', (event, ...args) => {
+      const events = _.chain(this._chainContent)
+        .result('state').result('events').value();
+      const handler = events && events[event];
+
+      if (_.isFunction(handler)) {
+        handler(...args);
+      }
+    });
   }
 
   pipeDataProjections(...projs) {
