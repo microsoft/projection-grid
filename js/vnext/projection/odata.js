@@ -2,6 +2,9 @@ import _ from 'underscore';
 import $ from 'jquery';
 import Promise from 'bluebird';
 
+/**
+* odata data source
+*/
 export function odata ({
   verb = 'get',
   url,

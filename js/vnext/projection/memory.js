@@ -1,5 +1,8 @@
 import _ from 'underscore';
 
+/**
+* memory data source
+*/
 export function memory ({
   data,
   skip = 0,
