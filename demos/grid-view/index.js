@@ -23,13 +23,12 @@ class CustomView extends Backbone.View {
   }
 }
 
-const showTemplate = _.template('<i style="color: red;"><%= value %></i>')
 window.customView = new CustomView().render();
 
 
 window.gridViewEl = pgrid.factory({ vnext: true }).create({
-  el: '.container-jsdata',
-  viewport: '.container-jsdata',
+  el: '.container-element-viewport',
+  viewport: '.container-element-viewport',
   stickyHeader: true,
   virtualized: true,
   dataSource: {
@@ -45,18 +44,16 @@ window.gridViewEl = pgrid.factory({ vnext: true }).create({
       name: 'CustomerID',
       template: bodyTemplate,
       sortable: true,
-      //editable: true,
+      editable: true,
     },{
       name: 'OrderID',
       sortable: -1,
-      //template: showTemplate,
     }, {
       name: 'ShipAddress',
-      //property: 'ShipAddress/length',
-      //title: 'Ship Address Length',
+      property: 'ShipAddress/length',
+      title: 'Ship Address Length',
       width: 150,
-      sortable: true,
-      //sortable: 'length(ShipAddress)',
+      sortable: 'length(ShipAddress)',
     }, {
       name: 'Destination',
       property: ({ item }) => `${item.ShipCountry} / ${item.ShipCity}`,
@@ -81,7 +78,7 @@ window.gridViewWin = pgrid.factory({ vnext: true }).create({
   dataSource: {
     type: 'memory',
     data: people.value,
-    //filter: (item = {}) => !_.isEmpty(item.AddressInfo),
+    filter: (item = {}) => !_.isEmpty(item.AddressInfo),
   },
   selection: { single: true },
   rows: {
@@ -138,8 +135,8 @@ window.gridViewWin = pgrid.factory({ vnext: true }).create({
 }).gridView.render();
 
 window.gridViewEl_1 = pgrid.factory({ vnext: true }).create({
-  el: '.container-element-viewport',
-  viewport: '.container-element-viewport',
+  el: '.container-jsdata',
+  viewport: '.container-jsdata',
   stickyHeader: true,
   virtualized: true,
   dataSource: {

@@ -56,11 +56,12 @@ function changeSelectRow(e) {
 }
 
 /**
-* Add selection box to rows.
+* Add selection box to rows
 *
 * @param {Object} state
-* @param {Array} [state.item] Data from data source.
-* @param {Object} selection 
+* @param {Object} [state.items] Original data from data source
+* @param {Boolean | Object} selection 'true': add a multiple selection column. Object with property 'single: true': add a radio selection column.
+*
 */
 export function selection (state, selection) {
   if (!selection) {

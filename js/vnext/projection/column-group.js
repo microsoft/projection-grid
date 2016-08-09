@@ -1,12 +1,19 @@
 import _ from 'underscore';
 import defaultCellTemplate from './default-cell.jade';
 
+/**
+* The column group class.
+* It takes columns configuration as input and generates headerRows, leafColumns, columnIndex and root(a tree-like column structure).
+*/
 class ColumnGroup {
   constructor(columns) {
     this.headerRows = [];
     this.leafColumns = [];
     this.columnIndex = {};
 
+/**
+* Build tree-like columns structure using DFS
+*/
     const buildColumn = col => {
       const { parent, columns, height, name } = col;
 
@@ -64,6 +71,9 @@ class ColumnGroup {
       return col;
     };
 
+/**
+* Build column header with BFS
+*/
     const buildColumnHeader = col => {
       if (col.parent) {
         const colspan = col.treeWidth;
@@ -119,6 +129,13 @@ function translateColumnGroup(columnGroup) {
   }));
 }
 
+/**
+* Resolve grid structure from columns configuration
+*
+* @param {Object} state
+* @param {Object[]} [state.columns] columns configuration
+*
+*/
 export function columnGroup(state) {
   const columnGroup = new ColumnGroup(state.columns || []);
   return _.defaults({

@@ -7,6 +7,14 @@ function sequence(...args) {
   };
 }
 
+/**
+* Binding both 'state.events' and 'eventsOptions' to grid element
+*
+* @param {Object} state
+* @param {Object} [state.events]
+* @param {Object} eventsOptions 
+*
+*/
 export function events(state, eventsOptions) {
   const pairs = _.pairs(state.events).concat(_.pairs(eventsOptions));
   const events = _.reduce(pairs, (memo, [key, handler]) => {

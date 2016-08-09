@@ -5,6 +5,14 @@ const bufferStateClasses = {
   'committed': ['row-buffer-committed'],
 };
 
+/**
+* Handling bodyRows and adding headRows, bodyRows, footRows to state
+* 
+* @param {Object} state
+* @param {Object} [state.items] Original data from data source
+* @param {Object[]} headRows User defined configuration. 'headRows' takes a default string 'column-header-rows'
+* @param {Object[]} footRows User defined configuration
+*/
 export function rows(state, {
   headRows = ['column-header-rows'],
   footRows = [],

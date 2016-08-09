@@ -47,12 +47,14 @@ function translateRow(columnGroup, row, index) {
 }
 
 /**
-* Render cells in grid.
+* Handle cells content.
 *
 * @param {Object} state All data, configurations and events needed in grid cells.
-* @param {Array} [state.headRows] Grid header cells.
-* @param {Array} [state.bodyRows] Duck typed array. Grid body cells.
-* @Param {Array} [state.footRows] Grid footer cells.
+* @param {Object[]} [state.headRows] Grid header cells.
+* @param {Object} [state.bodyRows] 
+* @param {Number} [state.bodyRows.length] bodyRows' length
+* @param {Function} [state.bodyRows.slice] Get bodyRows element
+* @Param {Object[]} [state.footRows] Grid footer cells.
 * @param {Object} [state.columns] Column configurations.
 *
 */
