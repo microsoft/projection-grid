@@ -3,6 +3,10 @@ import sortableHeaderTemplate from './sortable-header.jade';
 
 const regexKey = /\s*(-)?\s*(\w+)/;
 
+/*
+* Reorder column data referring to 'column.sortable'.
+* 'column.sortable' takes four types of values: boolean, number, string and function.
+*/
 function reorder(e) {
   const name = this.$(e.target).attr('data-name');
   const column = this.columnWithName(name);
@@ -45,6 +49,16 @@ function reorder(e) {
   }
 }
 
+/**
+* Add click event to sortable column and wrap sortable column's head with a template
+*
+* @param {Object} state
+* @param {Object[]} [state.headRows]
+* @param {Object} [state.events]
+* @param {String} name sortable column name
+* @param {Number} direction sortable direction: ascending or decending
+*
+*/
 export function sortableHeader(state, {
   name,
   direction,

@@ -93,9 +93,9 @@ class ProjectionChain {
 * __stickyHeader__: whether or not sticky header is enabled.
 *
 * @param {Object} options The constructor options.
-* @param {boolean} [options.virtualized=false]
-* @param {boolean | Object} [options.stickyHeader=false]
-* @param {string} [options.viewport]
+* @param {Boolean} [options.virtualized=false]
+* @param {Boolean | Object} [options.stickyHeader=false]
+* @param {String} [options.viewport]
 *
 */
 export class GridView extends Backbone.View {
