@@ -16,6 +16,7 @@ module.exports = {
   Page: require('./page'),
   PropertyTemplate: require('./property-template'),
   RowCheckbox: require('./row-checkbox'),
+  Row: require('./row'),
   RowTriStateCheckboxProjection: require('./row-tri-state-checkbox'),
   RowIndex: require('./row-index'),
   Sink: require('./sink'),
