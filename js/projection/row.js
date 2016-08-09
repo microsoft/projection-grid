@@ -11,7 +11,6 @@ define([
     update: function (options) {
       if (Model.__super__.update.call(this, options)) {
         var model = this.src.data;
-
         var values = model.get('value');
         var classRules = this.get('row.classes');
         var classArr = null;
