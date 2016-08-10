@@ -11,20 +11,23 @@ define([
     update: function (options) {
       if (Model.__super__.update.call(this, options)) {
         var model = this.src.data;
-        var values = model.get('value');
-        var classRules = this.get('row.classes');
-        var classArr = null;
-        var originClass = null;
+        var rows = model.get('value');
 
-        _.chain(values).filter(value => {
-          return _.chain(value)
-            .result('$metadata')
-            .result('type')
-            .value() !== 'aggregate';
-        }).each(item => {
-          classArr = [];
-          _.each(classRules, (func, key) => {
-            originClass = _.chain(item)
+        _.each(rows, row => {
+          var type = _.chain(row).result('$metadata').result('type').value();
+
+          if (_.isUndefined(type)) {
+            row.$metadata = _.extend({}, row.$metadata, {
+              type: 'row',
+            });
+          }
+        });
+
+        _.each(rows, row => {
+          var classArr = [];
+          var classesRule = this.get('row.classes');
+          _.each(classesRule, (func, key) => {
+            var originClass = _.chain(row)
               .result('$metadate')
               .result('attr')
               .result('class')
@@ -34,23 +37,22 @@ define([
               classArr.push(originClass);
             }
 
-            if (_.isFunction(func) && func(item)) {
+            var type = _.chain(row).result('$metadata').result('type').value();
+
+            if (_.isFunction(func) && func(row, type)) {
               classArr.push(key);
             }
-            _.extend(item, {
+            _.extend(row, {
               $metadata: {
                 attr: {
-                  class: classArr.join(' '),
+                  class: _.flatten(classArr).join(' '),
                 },
               },
             });
           });
         });
 
-        this.patch({ value: values });
-      } else {
-        // todo [akamel] unset our properties only
-        // this.unset();
+        this.patch({ value: rows });
       }
     },
   });

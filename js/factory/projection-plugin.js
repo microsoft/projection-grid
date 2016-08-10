@@ -197,7 +197,7 @@ const projectionConfigs = {
 
   Row(config) {
     return {
-      'row.classes': config.rows.class,
+      'row.classes': _.result(config.rows, 'classes'),
     };
   },
 
