@@ -99,16 +99,10 @@ class ProjectionChain {
 *
 */
 export class GridView extends Backbone.View {
-  initialize({
-    viewport,
-    virtualized = false,
-    stickyHeader = false,
-  }) {
+  initialize({ scrolling }) {
     this._tableView = new TableView({
       el: this.$el,
-      viewport,
-      virtualized,
-      stickyHeader,
+      scrolling,
     });
     this.model = new Backbone.Model();
 
