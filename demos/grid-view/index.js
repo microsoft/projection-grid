@@ -3,6 +3,7 @@ import $ from 'jquery';
 import Backbone from 'backbone';
 
 import pgrid from '../../js';
+import { PaginationView } from 'pagination-control';
 import bodyTemplate from './body-template.jade';
 import store from './js-data-resource.js';
 import emailsTemplate from './emails.jade';
@@ -24,7 +25,6 @@ class CustomView extends Backbone.View {
 }
 
 window.customView = new CustomView().render();
-
 
 window.gridViewEl = pgrid.factory({ vnext: true }).create({
   el: '.container-element-viewport',
@@ -78,7 +78,7 @@ window.gridViewWin = pgrid.factory({ vnext: true }).create({
   dataSource: {
     type: 'memory',
     data: people.value,
-    filter: (item = {}) => !_.isEmpty(item.AddressInfo),
+    //filter: (item = {}) => !_.isEmpty(item.AddressInfo),
   },
   selection: { single: true },
   rows: {
@@ -131,8 +131,28 @@ window.gridViewWin = pgrid.factory({ vnext: true }).create({
     name: 'Concurrency',
     width: 200,
     sortable: true,
-  }]
+  }],
+  pagerView: {
+    el: '.container-window-pagination',
+    availablePageSizes: [5,10],
+    pageSize: 5,
+  }
 }).gridView.render();
+
+const page = new PaginationView(gridViewWin.get('pagerView')).render();
+const initPageSize = gridViewWin.initPageSize;
+gridViewWin.set({ dataSource: _.defaults({ skip: initPageSize * gridViewWin.initPageNumber, take: initPageSize }, gridViewWin.get('dataSource'))});
+gridViewWin.on('didUpdate', () => {
+  page.itemCount = gridViewWin.getItemCount();
+});
+page.on('change:page-number', pageNumber => { 
+  page.pageNumber = pageNumber;
+  gridViewWin.set({ dataSource: _.defaults({ skip: page.pageSize * pageNumber, take: page.pageSize }, gridViewWin.get('dataSource')) });
+});
+page.on('change:page-size', pageSize => { 
+  page.pageSize = pageSize;
+  gridViewWin.set({ dataSource: _.defaults({ take: pageSize }, gridViewWin.get('dataSource')) });
+});
 
 window.gridViewEl_1 = pgrid.factory({ vnext: true }).create({
   el: '.container-jsdata',

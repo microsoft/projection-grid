@@ -39,7 +39,7 @@ export const jsdata = {
 
     return entity.findAll(op, _.defaults(options, { all: true }))
       .then(function(data) {
-        return { items: data };
+        return { items: data, itemCount: data.totalCount || 0, };
       });
   },
 };

@@ -40,7 +40,7 @@ export function dataSource(state, options) {
     _.result(options.schema, 'primaryKey') ||
     defaultPrimaryKey;
 
-  return Promise.resolve(findAll(options)).then(({ items }) => {
+  return Promise.resolve(findAll(options)).then(({ itemCount, items }) => {
     const itemIndex = {};
 
     _.each(items, item => {
@@ -56,6 +56,7 @@ export function dataSource(state, options) {
       itemIndex,
       primaryKey,
       update: item => update(item, options),
+      itemCount: itemCount,
     };
   });
 }

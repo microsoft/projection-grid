@@ -194,12 +194,26 @@ export class GridView extends Backbone.View {
   }
 
   /* Helper functions */
+
   get countRows() {
     return _.result(this._chainData.state, 'items', []).length;
   }
 
   get primaryKey() {
     return _.result(this._chainData.state, 'primaryKey');
+  }
+
+  get initPageSize() {
+    const pagerView = this.get('pagerView') || {};
+    return pagerView.pageSize || pagerView.availablePageSizes[0];
+  }
+
+  get initPageNumber() {
+    return (this.get('pagerView') || {} )['pageNumber'] || 0; 
+  }
+
+  getItemCount() {
+    return _.result(this._chainData.state, 'itemCount', 0);
   }
 
   itemAt(index) {
