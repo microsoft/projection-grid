@@ -195,6 +195,12 @@ const projectionConfigs = {
 
   RowIndex() { },
 
+  Row(config) {
+    return {
+      'row.classes': _.result(config.rows, 'classes'),
+    };
+  },
+
   RowCheckbox(config) {
     return {
       'row.check.id': _.chain(config)
@@ -297,6 +303,10 @@ export default definePlugin => definePlugin('projection', [
   if (config.selectable) {
     pipeProjection('RowIndex');
     pipeProjection('RowCheckbox');
+  }
+
+  if (config.rows) {
+    pipeProjection('Row');
   }
 
   if (_.has(config.pageable, 'pageSize')) {
