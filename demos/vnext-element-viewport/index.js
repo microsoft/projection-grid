@@ -28,7 +28,6 @@ window.customView = new CustomView().render();
 window.gridViewEl = pgrid.factory({ vnext: true }).create({
   el: '.container-element-viewport',
   scrolling: {
-    // viewport: '.container-element-viewport',
     virtualized: true,
     header: 'fixed',
   },
@@ -67,4 +66,3 @@ window.gridViewEl = pgrid.factory({ vnext: true }).create({
     'click th.column-header': (e) => console.log(e.target),
   },
 }).gridView.render();
-

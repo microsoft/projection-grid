@@ -25,11 +25,9 @@ class CustomView extends Backbone.View {
 
 window.customView = new CustomView().render();
 
-
 window.gridViewEl = pgrid.factory({ vnext: true }).create({
   el: '.container-element-viewport',
   scrolling: {
-    viewport: '.container-element-viewport',
     virtualized: true,
     header: 'sticky',
   },
@@ -47,7 +45,7 @@ window.gridViewEl = pgrid.factory({ vnext: true }).create({
       template: bodyTemplate,
       sortable: true,
       editable: true,
-    },{
+    }, {
       name: 'OrderID',
       sortable: -1,
     }, {
@@ -60,12 +58,12 @@ window.gridViewEl = pgrid.factory({ vnext: true }).create({
       name: 'Destination',
       property: ({ item }) => `${item.ShipCountry} / ${item.ShipCity}`,
     }],
-  },{
+  }, {
     name: 'ShipCity',
     sortable: true,
   }],
   events: {
-    'click th.column-header': (e) => console.log(e.target),
+    'click th.column-header': e => console.log(e.target),
   },
 }).gridView.render();
 
@@ -136,16 +134,15 @@ window.gridViewWin = pgrid.factory({ vnext: true }).create({
     name: 'Concurrency',
     width: 200,
     sortable: true,
-  }]
+  }],
 }).gridView.render();
 
-window.gridViewEl_1 = pgrid.factory({ vnext: true }).create({
+window.gridViewJSData = pgrid.factory({ vnext: true }).create({
   el: '.container-jsdata',
-  viewport: '.container-jsdata',
   stickyHeader: true,
   virtualized: true,
   dataSource: {
     type: 'jsdata',
     entity: store,
-  }
+  },
 }).gridView.render();

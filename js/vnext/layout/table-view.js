@@ -1,26 +1,18 @@
 import _ from 'underscore';
-import $ from 'jquery';
 import Backbone from 'backbone';
 import ListView from 'backbone-virtualized-listview';
-import Promise from 'bluebird';
 
 import { HeaderView, FooterView } from './header-footer-view.js';
 
 import rowTemplate from './row.jade';
-import tableFixedOuterTemplate from './table-fixed-outer.jade';
-import tableFixedInnerTemplate from './table-fixed-inner.jade';
+import tableFixedTemplate from './table-fixed.jade';
 import tableStaticTemplate from './table-static.jade';
 import tableStickyTemplate from './table-sticky.jade';
 
 import columnGroupTemplate from './column-group.jade';
 
 const STATE_OPTIONS = ['cols', 'headRows', 'bodyRows', 'footRows', 'events'];
-const MODEL_OPTIONS = ['cols', 'headRows', 'footRows'];
-const ITEMS_OPTIONS = ['bodyRows'];
-const HEADER_OPTIONS = ['cols', 'headRows', 'events'];
-
 const HEADER_TYPES = ['static', 'fixed', 'sticky'];
-
 
 export class TableView extends Backbone.View {
   initialize({ scrolling = {} }) {
@@ -36,16 +28,10 @@ export class TableView extends Backbone.View {
       events: {},
     };
 
-    this.p$listView = new Promise((resolve, reject) => {
-      this._resolveViewport = viewport => {
-        const scrolling = this._props.scrolling;
-        const virtualized = scrolling.virtualized;
-
-        resolve(new ListView({ virtualized, viewport }));
-      };
-      this._rejectListView = () => {
-        reject(new Error('List view is not initailized'));
-      };
+    this._listView = new ListView({
+      el: this.$el,
+      virtualized: this._props.scrolling.virtualized,
+      viewport: this._props.scrolling.viewport,
     });
 
     this._headerView = new HeaderView({ tableView: this });
@@ -80,17 +66,20 @@ export class TableView extends Backbone.View {
     virtualized = false,
     header = 'static',
   }) {
-    const scrolling = { virtualized };
+    const scrolling = { viewport, virtualized };
 
     scrolling.header = this._normalizeHeaderConfig(header);
 
     if (scrolling.header.type === 'fixed') {
-      scrolling.viewport = () => this.$('tbody.list-container');
+      scrolling.viewport = '.viewport';
     }
 
     return scrolling;
   }
 
+  get headerType() {
+    return this._props.scrolling.header.type;
+  }
 
   set(state = {}, callback = _.noop) {
     const isSet = key => !_.isUndefined(state[key]);
@@ -110,7 +99,7 @@ export class TableView extends Backbone.View {
     }
 
     if (isSet('events')) {
-      listState.events = this._state.events;
+      listState.events = state.events;
     }
 
     this._renderColumnGroup();
@@ -123,7 +112,7 @@ export class TableView extends Backbone.View {
       this._footerView.redraw();
     }
 
-    this.p$listView.then(listView => listView.set(listState, callback));
+    this._listView.set(listState, callback);
 
     return this;
   }
@@ -154,58 +143,53 @@ export class TableView extends Backbone.View {
   }
 
   _renderStatic(callback) {
-    this._resolveViewport(this._props.scrolling.viewport);
-    this.p$listView.then(listView => {
-      this.$el.html(listView.set({
-        listTemplate: tableStaticTemplate,
-        itemTemplate: rowTemplate,
-      }).render(() => {
-        this._renderColumnGroup();
-        this._renderHeader();
-      }).el);
+    this._listView.set({
+      listTemplate: tableStaticTemplate,
+      itemTemplate: rowTemplate,
+    }).render(() => {
+      this._renderColumnGroup();
+      this._renderHeader();
+      callback();
     });
   }
 
   _renderFixed(callback) {
-    this.$el.html(tableFixedOuterTemplate());
+    this._listView.set({
+      listTemplate: tableFixedTemplate,
+      itemTemplate: rowTemplate,
+    }).render(() => {
+      this._renderColumnGroup();
+      this._renderHeader();
+      callback();
+    });
 
-    const $viewport = this.$('.viewport');
+    this._listView.on('didRedraw', () => {
+      const widthViewport = this.$('.viewport').get(0).clientWidth;
+      const widthContainer = this.el.clientWidth;
+      const widthScrollbar = widthContainer - widthViewport;
+      const widthTable = this.$('.viewport > table').get(0).offsetWidth;
 
-    this._resolveViewport($viewport);
-
-    this.p$listView.then(listView => {
-      $viewport.html(listView.set({
-        listTemplate: tableFixedInnerTemplate,
-        itemTemplate: rowTemplate,
-      }).render(() => {
-        this._renderColumnGroup();
-        this._renderHeader();
-      }).el);
+      this.$el.width(widthTable + widthScrollbar);
+      this.$('.fixed-header').width(widthTable);
     });
   }
 
   _renderSticky(callback) {
-    this._resolveViewport(this._props.scrolling.viewport);
-    this.p$listView.then(listView => {
-      this.$el.html(listView.set({
-        listTemplate: tableStickyTemplate,
-        itemTemplate: rowTemplate,
-      }).render(() => {
-        this._renderColumnGroup();
-        this._renderHeader();
-        this._hookUpStickyHeader(listView);
-      }).el);
+    this._listView.set({
+      listTemplate: tableStickyTemplate,
+      itemTemplate: rowTemplate,
+    }).render(() => {
+      this._renderColumnGroup();
+      this._renderHeader();
+      this._hookUpStickyHeader(this._listView);
+      callback();
     });
   }
 
   render(callback = _.noop) {
-    if (!this.p$listView.isPending()) {
-      throw new Error('Should not access listView before render');
-    }
-
     const header = this._props.scrolling.header;
 
-    switch(header.type) {
+    switch (header.type) {
       default:
       case 'static':
         this._renderStatic(callback);
@@ -226,10 +210,8 @@ export class TableView extends Backbone.View {
       this._headerView.remove();
     }
 
-    if (this.p$listView.isFulfilled()) {
-      this.p$listView.value().remove();
-    } else {
-      this._rejectListView();
+    if (this._listView) {
+      this._listView.remove();
     }
 
     if (this._footerView) {
@@ -240,19 +222,15 @@ export class TableView extends Backbone.View {
   }
 
   scrollToItem(...args) {
-    this.p$listView.then(listView => listView.scrollToItem(...args));
+    this._listView.scrollToItem(...args);
   }
 
   indexOfElement(el) {
-    if (this.p$listView.isFulfilled()) {
-      const listView = this.p$listView.value();
-      const $elTr = listView.$(el).closest('tr', listView.$container);
-      if ($elTr.length > 0) {
-        return $elTr.index() + listView.indexFirst;
-      }
+    const $elTr = this._listView.$(el).closest('tr', this._listView.$container);
+    if ($elTr.length > 0) {
+      return $elTr.index() + this._listView.indexFirst - 1;
     }
     return null;
   }
 
 }
-
