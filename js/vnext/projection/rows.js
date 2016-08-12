@@ -13,6 +13,24 @@ const bufferStateClasses = {
 * @param {Object[]} headRows User defined configuration. 'headRows' takes a default string 'column-header-rows'
 * @param {Object[]} footRows User defined configuration
 */
+function normalize (classes, row) {
+  let normalizedClass = [];
+  if(_.isArray(classes)) {
+    normalizedClass = classes;
+  } else if (_.isString(classes)) {
+    _.each(classes.split(/\s+/), c => normalizedClass.push(c));
+  } else if (_.isFunction(classes)) {
+    normalizedClass = classes(row);
+  } else if (_.isObject(classes)) {
+    _.mapObject(classes, (value, key) => {
+      if((_.isFunction(value) && value(row)) || (!_.isFunction(value) && value)) {
+        normalizedClass.push(key);
+      } 
+    });
+  }
+  return normalizedClass;
+}
+
 export function rows(state, {
   headRows = ['column-header-rows'],
   footRows = [],
@@ -34,8 +52,7 @@ export function rows(state, {
     slice: (...args) => body.slice(...args).map(item => {
       const key = item[primaryKey];
       const state = _.chain(changed).result(key).result('state').value();
-      const attr = _.isFunction(item.attribute) ? item.attribute.call(null, item) : [];
-      const classes = _.union(attr, item.classes, _.result(bufferStateClasses, state, []));
+      const classes = _.union(normalize(item.classes, item), _.result(bufferStateClasses, state, []));
       return item.html ? { classes, html: item.html } : { classes, item };
     }),
   };
