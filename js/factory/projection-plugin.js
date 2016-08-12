@@ -2,6 +2,7 @@ import _ from 'underscore';
 import Backbone from 'backbone';
 import projections from '../projection/index';
 import { delegateEvents } from './utility';
+import prompt from '../popup-editor/index';
 
 const projectionConfigs = {
   AggregateRow(config) {
@@ -145,18 +146,25 @@ const projectionConfigs = {
   },
 
   Editable(config) {
-    var editableConf = {};
-    // the popupEditorBuilder is used to set the customized popup editor
-    var defaultBuilder = config.popupEditorBuilder;
+    const editableOptions = {};
 
     _.each(config.columns, column => {
       if (column.editable) {
-        editableConf[column.name] = column.popupEditorBuilder || defaultBuilder;
+        const options = editableOptions[column.name] = {
+          condition: () => true,
+          editor: prompt,
+        };
+
+        if (_.isFunction(column.editable)) {
+          options.condition = column.editable;
+        } else if (_.isObject(column.editable)) {
+          _.extends(options, column.editable);
+        }
       }
     });
 
     return {
-      'column.editable': editableConf,
+      'column.editable': editableOptions,
     };
   },
 
@@ -194,6 +202,12 @@ const projectionConfigs = {
   },
 
   RowIndex() { },
+
+  Row(config) {
+    return {
+      'row.classes': _.result(config.rows, 'classes'),
+    };
+  },
 
   RowCheckbox(config) {
     return {
@@ -297,6 +311,10 @@ export default definePlugin => definePlugin('projection', [
   if (config.selectable) {
     pipeProjection('RowIndex');
     pipeProjection('RowCheckbox');
+  }
+
+  if (config.rows) {
+    pipeProjection('Row');
   }
 
   if (_.has(config.pageable, 'pageSize')) {
