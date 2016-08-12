@@ -3,7 +3,6 @@ import $ from 'jquery';
 import Backbone from 'backbone';
 
 import pgrid from '../../js';
-import { PaginationView } from 'pagination-control';
 import bodyTemplate from './body-template.jade';
 import store from './js-data-resource.js';
 import emailsTemplate from './emails.jade';
@@ -87,6 +86,15 @@ window.gridViewWin = pgrid.factory({ vnext: true }).create({
     },
     'column-header-rows',
     ],
+    bodyRows: [{
+      html: "<span>hehe</span>",
+    },{
+      name: 'data-rows',
+      classes: ['try'],
+      attribute: row => {
+        return row.Gender == 'Male' ? ['male'] : ['female'];
+      },
+    }],
   },
   columns: [{
     name: 'UserName',
@@ -139,20 +147,6 @@ window.gridViewWin = pgrid.factory({ vnext: true }).create({
   }
 }).gridView.render();
 
-const page = new PaginationView(gridViewWin.get('pagerView')).render();
-const initPageSize = gridViewWin.initPageSize;
-gridViewWin.set({ dataSource: _.defaults({ skip: initPageSize * gridViewWin.initPageNumber, take: initPageSize }, gridViewWin.get('dataSource'))});
-gridViewWin.on('didUpdate', () => {
-  page.itemCount = gridViewWin.getItemCount();
-});
-page.on('change:page-number', pageNumber => { 
-  page.pageNumber = pageNumber;
-  gridViewWin.set({ dataSource: _.defaults({ skip: page.pageSize * pageNumber, take: page.pageSize }, gridViewWin.get('dataSource')) });
-});
-page.on('change:page-size', pageSize => { 
-  page.pageSize = pageSize;
-  gridViewWin.set({ dataSource: _.defaults({ take: pageSize }, gridViewWin.get('dataSource')) });
-});
 
 window.gridViewEl_1 = pgrid.factory({ vnext: true }).create({
   el: '.container-jsdata',

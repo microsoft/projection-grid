@@ -16,19 +16,29 @@ const bufferStateClasses = {
 export function rows(state, {
   headRows = ['column-header-rows'],
   footRows = [],
+  bodyRows = [{ name: 'data-rows' }],
 } = {}) {
   const primaryKey = state.primaryKey;
   const changed = this.get('buffer').changed || {};
-  const bodyRows = {
-    length: state.items.length,
-    slice: (...args) => state.items.slice(...args).map(item => {
+  const stateItems = state.items.slice(0, state.items.length);
+  const body = _.reduce(bodyRows, (memo, bodyRow) => {
+    if(bodyRow.name == 'data-rows'){
+      _.each(stateItems, stateItem => memo.push(_.extend({}, bodyRow, stateItem)));
+    } else {
+      memo.push(bodyRow);
+    }
+    return memo;
+  }, []);
+  const bodyItems = {
+    length: body.length, 
+    slice: (...args) => body.slice(...args).map(item => {
       const key = item[primaryKey];
       const state = _.chain(changed).result(key).result('state').value();
-      const classes = _.result(bufferStateClasses, state, []);
-
-      return { classes, item };
+      const attr = _.isFunction(item.attribute) ? item.attribute.call(null, item) : [];
+      const classes = _.union(attr, item.classes, _.result(bufferStateClasses, state, []));
+      return item.html ? { classes, html: item.html } : { classes, item };
     }),
   };
-  return _.defaults({ headRows, bodyRows, footRows }, state);
+  return _.defaults({ headRows, bodyRows: bodyItems, footRows }, state);
 }
 
