@@ -1,49 +1,37 @@
 import _ from 'underscore';
 
 function translateRow(columnGroup, row, index) {
+  const patch = {};
+
   if (_.has(row, 'html')) {
-    return {
-      classes: row.classes,
-      cells: [{
-        attributes: {
-          rowspan: 1,
-          colspan: columnGroup.width,
-        },
-        html: row.html,
-      }],
-      attributes: row.attributes || {},
-    };
+    patch.cells = [{
+      attributes: {
+        rowspan: 1,
+        colspan: columnGroup.width,
+      },
+      html: row.html,
+    }];
   }
   if (_.has(row, 'view')) {
-    return {
-      classes: row.classes,
-      cells: [{
-        attributes: {
-          rowspan: 1,
-          colspan: columnGroup.width,
-        },
-        view: row.view,
-      }],
-      attributes: row.attributes || {},
-    };
+    patch.cells = [{
+      attributes: {
+        rowspan: 1,
+        colspan: columnGroup.width,
+      },
+      view: row.view,
+    }];
   }
   if (_.has(row, 'item')) {
-    const obj =  {
-      classes: row.classes,
-      cells: _.map(columnGroup.leafColumns, col => {
-        const cell = { classes: col.classes, attributes: {} };
-        cell.value = col.property.get({ index, item: row.item });
-        cell.html = col.template(_.pick(cell, 'value'));
+    patch.cells = _.map(columnGroup.leafColumns, col => {
+      const cell = { classes: col.classes, attributes: {} };
+      cell.value = col.property.get({ index, item: row.item });
+      cell.html = col.template(_.pick(cell, 'value'));
 
-        return cell;
-      }),
-      attributes: row.attributes || {},
-    };
-
-    return obj;
+      return cell;
+    });
   }
 
-  return row;
+  return _.defaults(patch, row, { attributes: {} });
 }
 
 /**
