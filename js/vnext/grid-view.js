@@ -65,7 +65,7 @@ class ProjectionChain {
   }
 
   /**
-  * Add projection functions to model.projections 
+  * Add projection functions to model.projections
   */
   pipe(...projs) {
     _.chain(projs)
@@ -99,16 +99,10 @@ class ProjectionChain {
 *
 */
 export class GridView extends Backbone.View {
-  initialize({
-    viewport,
-    virtualized = false,
-    stickyHeader = false,
-  }) {
+  initialize({ scrolling }) {
     this._tableView = new TableView({
       el: this.$el,
-      viewport,
-      virtualized,
-      stickyHeader,
+      scrolling,
     });
     this.model = new Backbone.Model();
 
@@ -206,7 +200,7 @@ export class GridView extends Backbone.View {
     return _.result(this._chainData.state, 'items', []).slice(index, index + 1)[0];
   }
 
-  selectedIndexes () {
+  selectedIndexes() {
     return _.result(this.get('selection'), 'selected', []);
   }
 
@@ -225,11 +219,11 @@ export class GridView extends Backbone.View {
     setSelectRow(this, index, false);
   }
 
-  selectAll(index) {
+  selectAll() {
     setSelectAll(this, true);
   }
 
-  deselectAll(index) {
+  deselectAll() {
     setSelectAll(this, false);
   }
 
@@ -241,5 +235,4 @@ export class GridView extends Backbone.View {
     const columnGroup = _.result(this._chainContent.state, 'columnGroup');
     return columnGroup ? columnGroup.columnWithName(name) : null;
   }
-};
-
+}
