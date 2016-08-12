@@ -48,6 +48,9 @@ define([
             if (_.isFunction(options)) {
               conditions[columnName] = editable;
               viewConfig[columnName] = options;
+            } else if (_.isObject(options)) {
+              conditions[columnName] = options.condition;
+              viewConfig[columnName] = options.editor;
             }
           });
         }
