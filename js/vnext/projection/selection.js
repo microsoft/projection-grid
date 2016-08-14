@@ -30,17 +30,18 @@ function changeSelectAll(e) {
 }
 
 export function setSelectRow(gridView, key, checked) {
+  const keyStr = key.toString();
   let selection = normalize(gridView.get('selection'));
 
   if (selection.single) {
-    selection = _.defaults({ selected: [key] }, selection);
+    selection = _.defaults({ selected: [keyStr] }, selection);
   } else {
     let selected = null;
 
     if (checked) {
-      selected = _.union(selection.selected, [key]);
+      selected = _.union(selection.selected, [keyStr]);
     } else {
-      selected = _.without(selection.selected, key);
+      selected = _.without(selection.selected, keyStr);
     }
     selection = _.defaults({ selected }, selection);
   }
