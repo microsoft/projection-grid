@@ -205,9 +205,12 @@ export class GridView extends Backbone.View {
   }
 
   selectedItems() {
+    const itemIndex = _.result(this._chainData.state, 'itemIndex', {});
+
     return _.chain(this.get('selection'))
       .result('selected', [])
-      .map(i => this.itemAt(i))
+      .map(key => _.result(itemIndex, key))
+      .compact()
       .value();
   }
 
