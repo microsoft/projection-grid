@@ -59,7 +59,7 @@ window.gridView = pgrid.factory({ vnext: true }).use(pagerViewPlugin).create({
   }, 
   pagerView: {
     el: '.container-window-pagination', 
-    availablePageSizes: [5,10],
-    pageSize: 5,
+    availablePageSizes: [5,10,20],
+    pageSize: 20,
   },
 }).gridView.render();

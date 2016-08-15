@@ -41,7 +41,7 @@ export const odata = {
         .fail((jqXHR, textStatus, errorThrown) => {
           reject(new Error(errorThrown));
         });
-    }).then(data => ({ items: data.value || [] , itemCount: 200/*data['@odata.count'] || 0*/, }));
+    }).then(data => ({ items: data.value || [] , itemCount: data['@odata.count'] || 0, }));
   },
 
   update(item, { url }) {

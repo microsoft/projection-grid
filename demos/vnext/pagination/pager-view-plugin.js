@@ -4,9 +4,11 @@ import { PaginationView } from 'pagination-control';
 export default definePlugin => definePlugin('pagerView', [
   'gridView',
 ], function (gridView) {
-    const page = new PaginationView(gridView.get('pagerView')).render();
-    const initPageSize = gridView.initPageSize;
-    gridView.set({ dataSource: _.defaults({ skip: initPageSize * gridView.initPageNumber, take: initPageSize }, gridView.get('dataSource')) });
+    const pagerViewConfig = gridView.get('pagerView');
+    const page = new PaginationView(pagerViewConfig).render();
+    const initPageSize = pagerViewConfig.pageSize || pagerViewConfig.availablePageSizes[0];
+    const initPageNumber = pagerViewConfig.pageNumber || 0;
+    gridView.set({ dataSource: _.defaults({ skip: initPageSize * initPageNumber, take: initPageSize }, gridView.get('dataSource')) });
     gridView.on('didUpdate', () => {
       page.itemCount = gridView.getItemCount();
     });
