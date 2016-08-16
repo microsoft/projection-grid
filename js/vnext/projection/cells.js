@@ -42,7 +42,7 @@ function translateRow(columnGroup, row, index) {
 * @param {Object} [state.bodyRows] 
 * @param {Number} [state.bodyRows.length] bodyRows' length
 * @param {Function} [state.bodyRows.slice] Get bodyRows element
-* @Param {Object[]} [state.footRows] Grid footer cells.
+* @param {Object[]} [state.footRows] Grid footer cells.
 * @param {Object} [state.columns] Column configurations.
 *
 */

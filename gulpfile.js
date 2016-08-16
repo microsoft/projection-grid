@@ -166,4 +166,4 @@ gulp.task('clean:build', function () {
 
 gulp.task('clean', ['clean:build', 'clean:test']);
 
-gulp.task('default', ['static', 'webpack', 'coveralls']);
+gulp.task('default', ['webpack', 'coveralls']);

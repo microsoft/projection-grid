@@ -31,7 +31,8 @@ export const memory = {
     }
 
     return {
-      items: _.chain(data).slice(skip, take + skip).filter(filter).value()
+      itemCount: data.length || 0,
+      items: _.chain(data).slice(skip, take + skip).filter(filter).value(),
     };
   },
 };
