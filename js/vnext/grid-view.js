@@ -2,8 +2,7 @@ import _ from 'underscore';
 import Backbone from 'backbone';
 import Promise from 'bluebird';
 import {
-  dataSource,
-  buffer,
+  query,
   selection,
   setSelectAll,
   setSelectRow,
@@ -17,6 +16,7 @@ import {
 } from './projection';
 
 import { TableView } from './layout';
+import { Editor } from './model';
 
 /**
 * The projection chain class.
@@ -99,7 +99,7 @@ class ProjectionChain {
 *
 */
 export class GridView extends Backbone.View {
-  initialize({ scrolling }) {
+  initialize({ scrolling, dataSource }) {
     this._tableView = new TableView({
       el: this.$el,
       scrolling,
@@ -112,11 +112,13 @@ export class GridView extends Backbone.View {
       defaults: proj.defaults,
     });
 
+    this.editor = new Editor(dataSource);
+
     this._chainData = new ProjectionChain(this.model);
     this._chainStructure = new ProjectionChain(this.model);
     this._chainContent = new ProjectionChain(this.model);
 
-    this.pipeDataProjections(dataSource, buffer);
+    this.pipeDataProjections(query);
     this.pipeStructureProjections(columns, rows, selection);
     this.pipeContentProjections([
       columnGroup,
@@ -126,21 +128,7 @@ export class GridView extends Backbone.View {
       events,
     ]);
 
-    const patchEvents = state => _.extend(state, {
-      events: _.mapObject(state.events, handler => handler.bind(this)),
-    });
-
-    this.model.on('change', () => {
-      this.trigger('willUpdate', this.model.changedAttributes());
-      _.reduce([
-        this._chainData,
-        this._chainStructure,
-        this._chainContent,
-      ], (memo, chain) => chain.update(memo), null)
-        .then(patchEvents)
-        .then(state => this._tableView.set(state))
-        .finally(() => this.trigger('didUpdate'));
-    });
+    this.model.on('change', this.update.bind(this));
 
     this.on('all', (event, ...args) => {
       const events = _.chain(this._chainContent)
@@ -151,6 +139,22 @@ export class GridView extends Backbone.View {
         handler(...args);
       }
     });
+  }
+
+  update() {
+    const patchEvents = state => _.extend(state, {
+      events: _.mapObject(state.events, handler => handler.bind(this)),
+    });
+
+    this.trigger('willUpdate', this.model.changedAttributes());
+    _.reduce([
+      this._chainData,
+      this._chainStructure,
+      this._chainContent,
+    ], (memo, chain) => chain.update(memo), null)
+      .then(patchEvents)
+      .then(state => this._tableView.set(state))
+      .finally(() => this.trigger('didUpdate'));
   }
 
   pipeDataProjections(...projs) {
@@ -177,8 +181,11 @@ export class GridView extends Backbone.View {
     return this.model.get(attribute);
   }
 
-  render(callback) {
-    this._tableView.render(callback);
+  render(callback = _.noop) {
+    this._tableView.render(() => {
+      this.update();
+      callback();
+    });
     return this;
   }
 
@@ -194,7 +201,7 @@ export class GridView extends Backbone.View {
   }
 
   get primaryKey() {
-    return _.result(this._chainData.state, 'primaryKey');
+    return this.editor.primaryKey;
   }
 
   getItemCount() {

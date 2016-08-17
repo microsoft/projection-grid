@@ -1,5 +1,4 @@
-export { dataSource } from './data-source.js';
-export { buffer } from './buffer.js';
+export { query } from './query.js';
 export { selection, setSelectAll, setSelectRow } from './selection.js';
 export { columns } from './columns.js';
 export { rows } from './rows.js';

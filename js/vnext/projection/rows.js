@@ -1,8 +1,8 @@
 import _ from 'underscore';
 
-const bufferStateClasses = {
-  'changed': ['row-buffer-changed'],
-  'committed': ['row-buffer-committed'],
+const editStateClasses = {
+  'CHANGED': ['row-buffer-changed'],
+  'COMMITTED': ['row-buffer-committed'],
 };
 
 /**
@@ -37,7 +37,6 @@ export function rows(state, {
   bodyRows = [{ name: 'data-rows' }],
 } = {}) {
   const primaryKey = state.primaryKey;
-  const changed = this.get('buffer').changed || {};
   const stateItems = state.items.slice(0, state.items.length);
   const body = _.reduce(bodyRows, (memo, bodyRow) => {
     if(bodyRow.name == 'data-rows'){
@@ -51,8 +50,8 @@ export function rows(state, {
     length: body.length, 
     slice: (...args) => body.slice(...args).map(item => {
       const key = item[primaryKey];
-      const state = _.chain(changed).result(key).result('state').value();
-      const classes = _.union(normalize(item.classes, item), _.result(bufferStateClasses, state, []));
+      const editState = this.editor.getItemEditState(key);
+      const classes = _.union(normalize(item.classes, item), _.result(editStateClasses, editState, []));
       return item.html ? { classes, html: item.html } : { classes, item };
     }),
   };
