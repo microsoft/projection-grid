@@ -10,7 +10,7 @@ export class MemoryStorage extends Storage {
         item[this.primaryKey] = _.uniqueId('grid-item-');
       }
 
-      return _.extends(memo, {
+      return _.extend(memo, {
         [item[this.primaryKey]]: item,
       });
     }, {});
@@ -41,9 +41,12 @@ export class MemoryStorage extends Storage {
       }
     }
 
+    const start = _.isUndefined(skip) ? 0 : skip;
+    const stop = _.isUndefined(take) ? data.length : start + take;
+
     return Promise.resolve({
       itemCount: data.length || 0,
-      items: data.slice(skip, skip + take),
+      items: data.slice(start, stop),
     });
   }
 }

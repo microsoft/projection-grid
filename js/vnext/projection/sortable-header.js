@@ -38,14 +38,14 @@ function reorder(e) {
 
     const sortableHeader = { name, direction };
 
-    const dataSource = _.defaults({
-      orderby: [{
+    const query = _.defaults({
+      orderBy: [{
         key: sortable.key,
         direction,
       }],
-    }, this.get('dataSource'));
+    }, this.get('query'));
 
-    this.set({ dataSource, sortableHeader });
+    this.set({ query, sortableHeader });
   }
 }
 
