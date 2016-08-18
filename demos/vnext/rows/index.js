@@ -4,6 +4,19 @@ import pgrid from '../../../js';
 import './index.less';
 import 'bootstrap-webpack';
 
+class TitleView extends Backbone.View {
+  initialize({ title }) {
+    this.title = title;
+  }
+
+  render() {
+    this.$el.html(`<h2>${this.title}<h2>`);
+    return this;
+  }
+}
+
+const titleHeader = new TitleView({ title: 'Customized View in Header' }).render();
+const titleFooter = new TitleView({ title: 'Customized View in Footer' }).render();
 
 window.gridView = pgrid.factory({ vnext: true }).create({
   el: '.grid-container',
@@ -17,6 +30,10 @@ window.gridView = pgrid.factory({ vnext: true }).create({
   },
   selection: true,
   rows: {
+    headRows: [
+      { view: titleHeader },
+      'column-header-rows',
+    ],
     bodyRows: [
       {
         name: 'data-rows',
@@ -26,6 +43,7 @@ window.gridView = pgrid.factory({ vnext: true }).create({
         }
       }
     ],
+    footRows: [{ view: titleFooter }],
   },
   columns: [{
     name: 'Group 0',

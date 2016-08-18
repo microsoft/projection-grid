@@ -18,6 +18,18 @@ import {
 
 import { TableView } from './layout';
 
+function defaultsDeep(dest, src) {
+  if (_.isObject(dest) && !_.isArray(dest)) {
+    _.defaults(dest, src);
+    _.each(src, (value, key) => {
+      if (dest[key] !== value) {
+        defaultsDeep(dest[key], value);
+      }
+    });
+  }
+  return dest;
+}
+
 /**
 * The projection chain class.
 */
@@ -177,6 +189,16 @@ export class GridView extends Backbone.View {
     return this.model.get(attribute);
   }
 
+  patch(state = {}) {
+    this.set(_.reduce(_.keys(state), (memo, key) => {
+      const value = state[key];
+      const valueCur = this.model.get(key);
+      
+      memo[key] = defaultsDeep(value, valueCur);
+      return memo;
+    }, {}));
+  }
+
   render(callback) {
     this._tableView.render(callback);
     return this;
@@ -243,4 +265,56 @@ export class GridView extends Backbone.View {
     const columnGroup = _.result(this._chainContent.state, 'columnGroup');
     return columnGroup ? columnGroup.columnWithName(name) : null;
   }
+
+  getHeadRows() {
+    return _.result(this.get('rows'), 'headRows', ['column-header-rows']);
+  }
+
+  setHeadRows(value) {
+    const headRows = _.isFunction(value) ? value(this.getHeadRows()) : value;
+    this.patch({ rows: { headRows } });
+  }
+
+  prependHeadRows(rows) {
+    this.setHeadRows(headRows => rows.concat(headRows));
+  }
+
+  appendHeadRows(rows) {
+    this.setHeadRows(headRows => headRows.concat(rows));
+  }
+
+  getBodyRows() {
+    return _.result(this.get('rows'), 'bodyRows', ['data-rows']);
+  }
+
+  setBodyRows(value) {
+    const bodyRows = _.isFunction(value) ? value(this.getBodyRows()) : value;
+    this.patch({ rows: { bodyRows } });
+  }
+
+  prependBodyRows(rows) {
+    this.setBodyRows(bodyRows => rows.concat(bodyRows));
+  }
+
+  appendBodyRows(rows) {
+    this.setBodyRows(bodyRows => bodyRows.concat(rows));
+  }
+
+  getFootRows() {
+    return _.result(this.get('rows'), 'footRows', []);
+  }
+
+  setFootRows(value) {
+    const footRows = _.isFunction(value) ? value(this.getFootRows()) : value;
+    this.patch({ rows: { footRows } });
+  }
+
+  prependFootRows(rows) {
+    this.setFootRows(footRows => rows.concat(footRows));
+  }
+
+  appendFootRows(rows) {
+    this.setFootRows(footRows => footRows.concat(rows));
+  }
+
 }

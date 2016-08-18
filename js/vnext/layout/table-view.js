@@ -127,6 +127,11 @@ export class TableView extends Backbone.View {
     this._headerView.render();
   }
 
+  _renderFooter() {
+    this._footerView.setElement(this.$('tfoot.footer'));
+    this._footerView.render();
+  }
+
   _hookUpStickyHeader(listView) {
     const $tableContainer = this.$('.table-container');
     const $stickyHeader = this.$('.sticky-header');
@@ -149,6 +154,7 @@ export class TableView extends Backbone.View {
     }).render(() => {
       this._renderColumnGroup();
       this._renderHeader();
+      this._renderFooter();
       callback();
     });
   }
@@ -160,6 +166,7 @@ export class TableView extends Backbone.View {
     }).render(() => {
       this._renderColumnGroup();
       this._renderHeader();
+      this._renderFooter();
       callback();
     });
 
@@ -182,6 +189,7 @@ export class TableView extends Backbone.View {
       this._renderColumnGroup();
       this._renderHeader();
       this._hookUpStickyHeader(this._listView);
+      this._renderFooter();
       callback();
     });
   }

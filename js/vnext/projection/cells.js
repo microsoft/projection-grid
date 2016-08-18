@@ -65,7 +65,7 @@ export function cells(state) {
     },
   };
 
-  const footRows = _.map(footRows, (row, index) => translateRow(columnGroup, row, index));
+  const footRows = _.map(state.footRows, (row, index) => translateRow(columnGroup, row, index));
 
   return _.defaults({
     headRows,

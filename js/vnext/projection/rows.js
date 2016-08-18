@@ -39,11 +39,11 @@ export function rows(state, {
   const primaryKey = state.primaryKey;
   const changed = this.get('buffer').changed || {};
   const stateItems = state.items.slice(0, state.items.length);
-  const body = _.reduce(bodyRows, (memo, bodyRow) => {
-    if(bodyRow.name == 'data-rows'){
-      _.each(stateItems, stateItem => memo.push(_.extend({}, bodyRow, stateItem)));
+  const body = _.reduce(bodyRows, (memo, row) => {
+    if (row === 'data-rows' || row.name === 'data-rows'){
+      _.each(stateItems, stateItem => memo.push(_.extend({}, row, stateItem)));
     } else {
-      memo.push(bodyRow);
+      memo.push(row);
     }
     return memo;
   }, []);
