@@ -128,7 +128,7 @@ define([
           position: arg.grid.layout.container.offset(e.target),
           property: property,
           onSubmit: model => {
-            this.trigger('edit', model);
+            this.trigger('edit', model, property);
           },
         });
       }
