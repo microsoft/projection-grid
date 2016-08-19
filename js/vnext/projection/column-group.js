@@ -136,11 +136,15 @@ function translateColumnGroup(columnGroup) {
 * @param {Object[]} [state.columns] columns configuration
 *
 */
-export function columnGroup(state) {
-  const columnGroup = new ColumnGroup(state.columns || []);
-  return _.defaults({
-    columnGroup,
-    cols: translateColumnGroup(columnGroup),
-  }, state);
-}
+export const columnGroup = {
+  name: 'columnGroup',
+  handler(state) {
+    const columnGroup = new ColumnGroup(state.columns || []);
+    return _.defaults({
+      columnGroup,
+      cols: translateColumnGroup(columnGroup),
+    }, state);
+  },
+  defaults: {},
+};
 

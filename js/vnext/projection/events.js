@@ -15,13 +15,18 @@ function sequence(...args) {
 * @param {Object} eventsOptions 
 *
 */
-export function events(state, eventsOptions) {
-  const pairs = _.pairs(state.events).concat(_.pairs(eventsOptions));
-  const events = _.reduce(pairs, (memo, [key, handler]) => {
-    return _.extend(memo, {
-      [key]: sequence(memo[key], handler)
-    });
-  }, {});
+export const events = {
+  name: 'events',
+  handler(state, eventsOptions) {
+    const pairs = _.pairs(state.events).concat(_.pairs(eventsOptions));
+    const events = _.reduce(pairs, (memo, [key, handler]) => {
+      return _.extend(memo, {
+        [key]: sequence(memo[key], handler)
+      });
+    }, {});
 
-  return _.defaults({ events }, state);
-}
+    return _.defaults({ events }, state);
+  },
+  defaults: {},
+};
+

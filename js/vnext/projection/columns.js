@@ -9,12 +9,16 @@ import _ from 'underscore';
 * @param {Object} columns Columns configuration defined by user. If omitted, all columns in original data will be shown.
 *
 */
-export function columns(state, columns) {
-  return _.defaults({
-    columns: columns || _.chain(state.items.slice(0, 1)).first().keys().map(name => ({
-      name,
-      sortable: true,
-    })).value(),
-  }, state);
-}
+export const columns = {
+  name: 'columns',
+  handler(state, columns) {
+    return _.defaults({
+      columns: columns || _.chain(state.items.slice(0, 1)).first().keys().map(name => ({
+        name,
+          sortable: true,
+      })).value(),
+    }, state);
+  },
+  defaults: null,
+};
 

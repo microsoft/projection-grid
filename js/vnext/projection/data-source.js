@@ -28,36 +28,40 @@ const defaultPrimaryKey = '__primary_key__';
 * 
 */
 
-export function dataSource(state, options) {
-  const type = options.type;
-  const { findAll, update } = _.isString(type) ? ({
-    odata,
-    memory,
-    jsdata,
-  })[type] : type;
+export const dataSource = {
+  name: 'dataSource',
+  handler(state, options) {
+    const type = options.type;
+    const { findAll, update } = _.isString(type) ? ({
+      odata,
+      memory,
+      jsdata,
+    })[type] : type;
 
-  const primaryKey = _.result(options, 'primaryKey') ||
-    _.result(options.schema, 'primaryKey') ||
-    defaultPrimaryKey;
+    const primaryKey = _.result(options, 'primaryKey') ||
+      _.result(options.schema, 'primaryKey') ||
+      defaultPrimaryKey;
 
-  return Promise.resolve(findAll(options)).then(({ itemCount, items }) => {
-    const itemIndex = {};
+    return Promise.resolve(findAll(options)).then(({ itemCount, items }) => {
+      const itemIndex = {};
 
-    _.each(items, item => {
-      if (!_.has(item, primaryKey)) {
-        item[primaryKey] = _.uniqueId('grid-item-');
-      }
-      itemIndex[item[primaryKey]] = item;
+      _.each(items, item => {
+        if (!_.has(item, primaryKey)) {
+          item[primaryKey] = _.uniqueId('grid-item-');
+        }
+        itemIndex[item[primaryKey]] = item;
+      });
+
+      return {
+        uniqueId: _.uniqueId('grid-data-'),
+        items,
+        itemIndex,
+        primaryKey,
+        update: item => update(item, options),
+        itemCount: itemCount,
+      };
     });
-
-    return {
-      uniqueId: _.uniqueId('grid-data-'),
-      items,
-      itemIndex,
-      primaryKey,
-      update: item => update(item, options),
-      itemCount: itemCount,
-    };
-  });
-}
+  },
+  defaults: {},
+};
 

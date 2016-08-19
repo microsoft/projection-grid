@@ -64,37 +64,42 @@ function changeSelectRow(e) {
 * @param {Boolean | Object} selection 'true': add a multiple selection column. Object with property 'single: true': add a radio selection column.
 *
 */
-export function selection (state, selection) {
-  if (!selection) {
-    return _.clone(state);
-  }
+export const selection = {
+  name: 'selection',
+  handler(state, selection) {
+    if (!selection) {
+      return _.clone(state);
+    }
 
-  const model = normalize(selection);
-  const selectedIndex = _.reduce(model.selected, (memo, key) => {
-    memo[key] = true;
-    return memo;
-  }, {});
-  const primaryKey = state.primaryKey;
+    const model = normalize(selection);
+    const selectedIndex = _.reduce(model.selected, (memo, key) => {
+      memo[key] = true;
+      return memo;
+    }, {});
+    const primaryKey = state.primaryKey;
 
-  const columns = [{
-    name: 'selection',
-    width: '30px',
-    html: selectionHeadTemplate({
-      single: model.single,
-      checked: this.countRows > 0 && model.selected.length === this.countRows,
-    }),
-    template: selectionBodyTemplate,
-    property: ({ item }) => ({ 
-      single: model.single,
-      checked: selectedIndex[item[primaryKey]],
-    }),
-    sortable: false,
-  }].concat(state.columns);
+    const columns = [{
+      name: 'selection',
+      width: '30px',
+      html: selectionHeadTemplate({
+        single: model.single,
+        checked: this.countRows > 0 && model.selected.length === this.countRows,
+      }),
+      template: selectionBodyTemplate,
+      property: ({ item }) => ({ 
+        single: model.single,
+          checked: selectedIndex[item[primaryKey]],
+      }),
+      sortable: false,
+    }].concat(state.columns);
 
-  const events = _.defaults({
-    'change th input.select-all': changeSelectAll,
-    'change td input.select-row': changeSelectRow,
-  }, state.events);
+    const events = _.defaults({
+      'change th input.select-all': changeSelectAll,
+      'change td input.select-row': changeSelectRow,
+    }, state.events);
 
-  return _.defaults({ columns, events }, state);
-}
+    return _.defaults({ columns, events }, state);
+  },
+  defaults: {},
+};
+
