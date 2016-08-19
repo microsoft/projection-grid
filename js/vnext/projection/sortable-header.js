@@ -8,7 +8,7 @@ const regexKey = /\s*(-)?\s*(\w+)/;
 * 'column.sortable' takes four types of values: boolean, number, string and function.
 */
 function reorder(e) {
-  const name = this.$(e.target).attr('data-name');
+  const name = this.$(e.target).closest('th').attr('data-name');
   const column = this.columnWithName(name);
   let sortable = column.sortable;
 
