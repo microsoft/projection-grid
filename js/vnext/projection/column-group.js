@@ -24,13 +24,13 @@ class ColumnGroup {
       }
       if (_.isString(col.property)) {
         const propName = col.property;
+        const segs = propName.split('/');
         col.property = { 
-          get({ index, item }) {
-            return _.chain(propName.split('/')).reduce( (memo, key) => (memo || {} )[key], item).value();
+          get(item) {
+            return _.reduce(segs, (memo, key) => (memo || {})[key], item);
           },
-          set({ item, value }) {
-            const segs = propName.split('/');
-            return _.chain(segs).reduce((memo, seg, index) => {
+          set(item, value) {
+            return _.reduce(segs, (memo, seg, index) => {
               if (index < segs.length - 1) {
                 if (!_.has(memo, seg)) {
                   memo[seg] = {};
@@ -40,7 +40,7 @@ class ColumnGroup {
               } else {
                 memo[seg] = value;
               }
-            }, item).value();
+            }, item);
           },
         }
       } else if (_.isFunction(col.property)) {

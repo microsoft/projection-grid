@@ -48,7 +48,7 @@ window.gridView = pgrid.factory({ vnext: true }).use(pagerViewPlugin).create({
       sortable: 'length(ShipAddress)',
     }, {
       name: 'Destination',
-      property: ({ item }) => `${item.ShipCountry} / ${item.ShipCity}`,
+      property: item => `${item.ShipCountry} / ${item.ShipCity}`,
     }],
   },{
     name: 'ShipCity',

@@ -24,7 +24,7 @@ function translateRow(columnGroup, row, index) {
   if (_.has(row, 'item')) {
     patch.cells = _.map(columnGroup.leafColumns, col => {
       const cell = { classes: col.classes, attributes: {} };
-      cell.value = col.property.get({ index, item: row.item });
+      cell.value = col.property.get(row.item);
       cell.html = col.template(_.pick(cell, 'value'));
 
       return cell;

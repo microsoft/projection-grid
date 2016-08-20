@@ -6,7 +6,7 @@ export default [{
   sortable: true,
 }, {
   name: 'Name',
-  property: ({ item }) => `${item.FirstName}, ${item.LastName}`,
+  property: item => `${item.FirstName}, ${item.LastName}`,
   width: 150,
   sortable: true,
 }, {

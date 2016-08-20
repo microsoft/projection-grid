@@ -86,7 +86,7 @@ export const selection = {
         checked: this.countRows > 0 && model.selected.length === this.countRows,
       }),
       template: selectionBodyTemplate,
-      property: ({ item }) => ({ 
+      property: item => ({ 
         single: model.single,
           checked: selectedIndex[item[primaryKey]],
       }),
