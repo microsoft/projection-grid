@@ -132,15 +132,75 @@ export class TableView extends Backbone.View {
     this._footerView.render();
   }
 
+  /**
+   * This is simulating `{ position: sticky }`, but it's still far from perfect.
+   *
+   * 1. For window viewport
+   *    * Use `{ postion: fixed }`
+   *    * Adjust the width and the horizontal location on the fly
+   *    * Put an dummy filler into the content flow to take the place of header
+   *
+   * The issues are
+   *    * If the subviews in header changes, they have to notify the grid
+   *    manually to update the filler's size
+   *    * The header doesn't follow the table tightly on horizontal scroll, as
+   *    the `scroll` event is triggered after repaint for most browsers
+   *
+   * 2. For element viewport
+   *    * Use `{ position: relative }`
+   *    * Adjust the vertical location on the fly
+   *
+   * The issues are
+   *    * The header doesn't follow the table tightly on vertical scroll, as
+   *    the `scroll` event is triggered after repaint for most browsers. The
+   *    sticky header could be very jumpy on IE and Edge.
+   *
+   * We wish all browsers support `{ position: sticky }` in a not too far
+   * future. So that we can have a perfect solution with native support.
+   *
+   */
   _hookUpStickyHeader(listView) {
+    const viewport = listView.viewport;
+    const isWindow = viewport.$el.get(0) === window;
     const $tableContainer = this.$('.table-container');
     const $stickyHeader = this.$('.sticky-header');
+    const $stickyHeaderFiller = this.$('.sticky-header-filler');
+    const $table = this.$('.sticky-header-filler + table');
     const adjustStickyHeader = () => {
-      let topVP = listView.viewport.getMetrics().outer.top;
-      let offset = _.result(this._props.scrolling.header, 'offset', 0);
-      let topCur = $tableContainer.get(0).getBoundingClientRect().top;
+      const topVP = listView.viewport.getMetrics().outer.top;
+      const offset = _.result(this._props.scrolling.header, 'offset', 0);
+      const rectContainer =  $tableContainer.get(0).getBoundingClientRect();
+      const topCur = rectContainer.top;
 
-      $stickyHeader.css({ top: Math.max(topVP + offset - topCur, 0) });
+      if (isWindow) {
+        if (topCur < topVP + offset) {
+          $stickyHeader.css({
+            position: 'fixed',
+            top: topVP + offset,
+            width: $tableContainer.width(),
+            left: rectContainer.left,
+          });
+          $stickyHeaderFiller.css({
+            display: 'block',
+            height: $stickyHeader.height(),
+          });
+        } else {
+          $stickyHeader.css({
+            position: 'static',
+          });
+          $stickyHeaderFiller.css({
+            display: 'none',
+          });
+        }
+      } else {
+        $stickyHeaderFiller.css({
+          display: 'none',
+        });
+        $stickyHeader.css({
+          position: 'relative',
+          top: Math.min(Math.max(topVP + offset - topCur, 0), $table.height()),
+        });
+      }
     };
 
     listView.viewport.on('change', adjustStickyHeader);

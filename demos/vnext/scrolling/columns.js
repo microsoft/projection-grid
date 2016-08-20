@@ -13,7 +13,7 @@ export default [{
   name: 'Emails',
   template: emailsTemplate,
   width: 220,
-  sortable: ({ item }) => item.Emails.length,
+  sortable: item => item.Emails.length,
 }, {
   name: 'AddressInfo',
   columns: [{
