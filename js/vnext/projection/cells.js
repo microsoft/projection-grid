@@ -24,7 +24,7 @@ function translateRow(columnGroup, row, index) {
   if (_.has(row, 'item')) {
     patch.cells = _.map(columnGroup.leafColumns, col => {
       const cell = { classes: col.classes, attributes: {} };
-      cell.value = col.property.get({ index, item: row.item });
+      cell.value = col.property.get(row.item);
       cell.html = col.template(_.pick(cell, 'value'));
 
       return cell;
@@ -46,30 +46,35 @@ function translateRow(columnGroup, row, index) {
 * @param {Object} [state.columns] Column configurations.
 *
 */
-export function cells(state) {
-  const columnGroup = state.columnGroup;
+export const cells = {
+  name: 'cells',
+  handler(state) {
+    const columnGroup = state.columnGroup;
 
-  const headRows = _.reduce(state.headRows, (memo, row) => {
-    if (row === 'column-header-rows') {
-      return memo.concat(columnGroup.headerRows);
-    }
-    memo.push(translateRow(columnGroup, row));
-    return memo;
-  }, []);
+    const headRows = _.reduce(state.headRows, (memo, row) => {
+      if (row === 'column-header-rows') {
+        return memo.concat(columnGroup.headerRows);
+      }
+      memo.push(translateRow(columnGroup, row));
+      return memo;
+    }, []);
 
-  const bodyRows = {
-    length: state.bodyRows.length,
-    slice: (begin = 0, end = state.bodyRows.length) => {
-      return state.bodyRows.slice(begin, end)
-        .map((row, index) => translateRow(columnGroup, row, index + begin));
-    },
-  };
+    const bodyRows = {
+      length: state.bodyRows.length,
+      slice: (begin = 0, end = state.bodyRows.length) => {
+        return state.bodyRows.slice(begin, end)
+          .map((row, index) => translateRow(columnGroup, row, index + begin));
+      },
+    };
 
-  const footRows = _.map(footRows, (row, index) => translateRow(columnGroup, row, index));
+    const footRows = _.map(state.footRows, (row, index) => translateRow(columnGroup, row, index));
 
-  return _.defaults({
-    headRows,
-    bodyRows,
-    footRows,
-  }, state);
-}
+    return _.defaults({
+      headRows,
+      bodyRows,
+      footRows,
+    }, state);
+  },
+  defaults: {},
+};
+

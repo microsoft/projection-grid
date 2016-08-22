@@ -8,7 +8,7 @@ const regexKey = /\s*(-)?\s*(\w+)/;
 * 'column.sortable' takes four types of values: boolean, number, string and function.
 */
 function reorder(e) {
-  const name = this.$(e.target).attr('data-name');
+  const name = this.$(e.target).closest('th').attr('data-name');
   const column = this.columnWithName(name);
   let sortable = column.sortable;
 
@@ -59,43 +59,47 @@ function reorder(e) {
 * @param {Number} direction sortable direction: ascending or decending
 *
 */
-export function sortableHeader(state, {
-  name,
-  direction,
-} = {}) {
-  const patch = {};
-  const leafColumns = state.columnGroup.leafColumns;
-  const leafColumnIndex = _.reduce(leafColumns, (memo, col) => {
-    memo[col.name] = col;
-    return memo;
-  }, {});
+export const sortableHeader = {
+  name: 'sortableHeader',
+  handler(state, {
+    name,
+    direction,
+  } = {}) {
+    const patch = {};
+    const leafColumns = state.columnGroup.leafColumns;
+    const leafColumnIndex = _.reduce(leafColumns, (memo, col) => {
+      memo[col.name] = col;
+      return memo;
+    }, {});
 
-  patch.headRows = _.map(state.headRows, row => {
-    const cells = _.map(row.cells, cell => {
-      const patchCell = {};
-      const column = leafColumnIndex[cell.name];
+    patch.headRows = _.map(state.headRows, row => {
+      const cells = _.map(row.cells, cell => {
+        const patchCell = {};
+        const column = leafColumnIndex[cell.name];
 
-      if (column && column.sortable) {
-        patchCell.classes = cell.classes.concat('column-header-sortable');
+        if (column && column.sortable) {
+          patchCell.classes = cell.classes.concat('column-header-sortable');
 
-        if (column.name === name) {
-          patchCell.html = sortableHeaderTemplate({
-            html: cell.html,
-            direction,
-          });
+          if (column.name === name) {
+            patchCell.html = sortableHeaderTemplate({
+              html: cell.html,
+              direction,
+            });
+          }
         }
-      }
 
-      return _.defaults(patchCell, cell);
-    }); 
+        return _.defaults(patchCell, cell);
+      }); 
 
-    return _.defaults({ cells }, row);
-  });
+      return _.defaults({ cells }, row);
+    });
 
-  patch.events = _.defaults({
-    'click th.column-header-sortable': reorder,
-  }, state.events);
+    patch.events = _.defaults({
+      'click th.column-header-sortable': reorder,
+    }, state.events);
 
-  return _.defaults(patch, state);
-}
+    return _.defaults(patch, state);
+  },
+  defaults: {},
+};
 

@@ -45,32 +45,35 @@ function editInColumn(column) {
 * @param {Object} [state.events] Backbone view events handler
 * 
 */
-export function editable(state) {
-  const leafColumns = state.columnGroup.leafColumns;
-  const iconClasses = ['glyphicon', 'glyphicon-pencil'];
-  const events = _.reduce(leafColumns, (memo, col) => {
-    memo[`click td.grid-editable-cell.grid-column-${col.name}`] = editInColumn(col);
-    return memo;
-  }, {});
-  const bodyRows = {
-    length: state.bodyRows.length,
-    slice: (...args) => state.bodyRows.slice(...args).map(row => {
-      const cells = _.map(row.cells, (cell, index) => {
-        const col = leafColumns[index];
+export const editable = {
+  name: 'editable',
+  handler(state) {
+    const leafColumns = state.columnGroup.leafColumns;
+    const iconClasses = ['glyphicon', 'glyphicon-pencil'];
+    const events = _.reduce(leafColumns, (memo, col) => {
+      memo[`click td.grid-editable-cell.grid-column-${col.name}`] = editInColumn(col);
+      return memo;
+    }, {});
+    const bodyRows = {
+      length: state.bodyRows.length,
+      slice: (...args) => state.bodyRows.slice(...args).map(row => {
+        const cells = _.map(row.cells, (cell, index) => {
+          const col = leafColumns[index];
 
-        if (col.editable) {
-          const classes = _.union(cell.classes, ['grid-editable-cell', `grid-column-${col.name}`]);
-          const html = editTemplate({ $html: cell.html, classes: iconClasses });
-          return _.defaults({ classes, html }, cell);
-        }
-        return cell;
-      });
-      return _.defaults({ cells }, row);
-    }),
-  };
+          if (col.editable) {
+            const classes = _.union(cell.classes, ['grid-editable-cell', `grid-column-${col.name}`]);
+            const html = editTemplate({ $html: cell.html, classes: iconClasses });
+            return _.defaults({ classes, html }, cell);
+          }
+          return cell;
+        });
+        return _.defaults({ cells }, row);
+      }),
+    };
 
-  _.defaults(events, state.events);
+    _.defaults(events, state.events);
 
-  return _.defaults({ events, bodyRows }, state);
-}
-
+    return _.defaults({ events, bodyRows }, state);
+  },
+  defaults: {},
+};

@@ -1,15 +1,36 @@
+import $ from 'jquery';
 import Backbone from 'backbone';
 import pgrid from '../../../js';
 
 import './index.less';
 import 'bootstrap-webpack';
 
+class TitleView extends Backbone.View {
+  initialize({ title }) {
+    this.title = title;
+  }
+
+  render() {
+    this.$el.html(`<h2>${this.title}<h2>`);
+    return this;
+  }
+}
+
+const titleHeader = new TitleView({ title: 'Customized View in Header' }).render();
+const titleFooter = new TitleView({ title: 'Customized View in Footer' }).render();
 
 window.gridView = pgrid.factory({ vnext: true }).create({
   el: '.grid-container',
-  viewport: '.grid-container',
-  stickyHeader: true,
-  virtualized: true,
+  tableClasses: ['table', 'table-bordered'],
+  scrolling: {
+    virtualized: true,
+    header: {
+      type: 'sticky',
+      offset() {
+        return $('.navbar-container').height();
+      },
+    },
+  },
   dataSource: {
     type: 'odata',
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
@@ -17,6 +38,17 @@ window.gridView = pgrid.factory({ vnext: true }).create({
   },
   selection: true,
   rows: {
+    headRows: [
+      {
+        view: titleHeader,
+        classes: ['noborder'],
+      },
+      {
+        html: '',
+        classes: ['separator'],
+      },
+      'column-header-rows',
+    ],
     bodyRows: [
       {
         name: 'data-rows',
@@ -26,6 +58,10 @@ window.gridView = pgrid.factory({ vnext: true }).create({
         }
       }
     ],
+    footRows: [{
+      classes: ['noborder'],
+      view: titleFooter,
+    }],
   },
   columns: [{
     name: 'Group 0',
@@ -45,7 +81,7 @@ window.gridView = pgrid.factory({ vnext: true }).create({
       sortable: 'length(ShipAddress)',
     }, {
       name: 'Destination',
-      property: ({ item }) => `${item.ShipCountry} / ${item.ShipCity}`,
+      property: item => `${item.ShipCountry} / ${item.ShipCity}`,
     }],
   },{
     name: 'ShipCity',

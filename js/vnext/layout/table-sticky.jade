@@ -5,22 +5,15 @@
     'table-layout': 'fixed',
   };
 
--
-  var headerStyle = {
-    'border-collapse': 'collapse',
-    'margin': 0,
-    'table-layout': 'fixed',
-    'position': 'relative',
-    'z-index': 100,
-  };
-
 .table-container
-  table.table.table-bordered.sticky-header(style=headerStyle)
+  table.sticky-header(style=tableStyle, class=classes)
     colgroup.column-group
     thead.header
-  table.table.table-bordered(style=tableStyle)
+  .sticky-header-filler
+  table(style=tableStyle, class=classes)
     colgroup.column-group
     tbody
       tr.top-filler
       tr.bottom-filler
     tfoot.footer
+

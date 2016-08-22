@@ -27,10 +27,12 @@ define([
 
       this.subviews = [];
 
-      // TODO [akamel] make this conditional if these renderes are enabled
       this.onViewPortChange = this.onViewPortChange.bind(this);
-      this.listenTo(this.container, 'scroll:container', this.onViewPortChange);
-      this.listenTo(this.container, 'resize:container', this.onViewPortChange);
+      
+      if (!_.isEmpty(this.renderers)) {
+      	this.listenTo(this.container, 'scroll:container', this.onViewPortChange);
+      	this.listenTo(this.container, 'resize:container', this.onViewPortChange);
+      }
     },
 
     onViewPortChange: function () {
