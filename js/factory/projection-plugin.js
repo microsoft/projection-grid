@@ -158,7 +158,7 @@ const projectionConfigs = {
         if (_.isFunction(column.editable)) {
           options.condition = column.editable;
         } else if (_.isObject(column.editable)) {
-          _.extends(options, column.editable);
+          _.extend(options, column.editable);
         }
       }
     });
