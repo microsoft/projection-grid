@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import Backbone from 'backbone';
 import pgrid from '../../../js';
 
@@ -20,9 +21,16 @@ const titleFooter = new TitleView({ title: 'Customized View in Footer' }).render
 
 window.gridView = pgrid.factory({ vnext: true }).create({
   el: '.grid-container',
-  viewport: '.grid-container',
-  stickyHeader: true,
-  virtualized: true,
+  tableClasses: ['table', 'table-bordered'],
+  scrolling: {
+    virtualized: true,
+    header: {
+      type: 'sticky',
+      offset() {
+        return $('.navbar-container').height();
+      },
+    },
+  },
   dataSource: {
     type: 'odata',
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
@@ -31,7 +39,10 @@ window.gridView = pgrid.factory({ vnext: true }).create({
   selection: true,
   rows: {
     headRows: [
-      { view: titleHeader },
+      {
+        view: titleHeader,
+        classes: ['noborder'],
+      },
       'column-header-rows',
     ],
     bodyRows: [
@@ -43,7 +54,10 @@ window.gridView = pgrid.factory({ vnext: true }).create({
         }
       }
     ],
-    footRows: [{ view: titleFooter }],
+    footRows: [{
+      classes: ['noborder'],
+      view: titleFooter,
+    }],
   },
   columns: [{
     name: 'Group 0',

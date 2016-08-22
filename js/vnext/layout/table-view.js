@@ -15,9 +15,10 @@ const STATE_OPTIONS = ['cols', 'headRows', 'bodyRows', 'footRows', 'events'];
 const HEADER_TYPES = ['static', 'fixed', 'sticky'];
 
 export class TableView extends Backbone.View {
-  initialize({ scrolling = {} }) {
+  initialize({ scrolling = {}, classes = [] }) {
     this._props = {
       scrolling: this._normalizeScrollingConfig(scrolling),
+      classes,
     };
 
     this._state = {
@@ -174,15 +175,15 @@ export class TableView extends Backbone.View {
 
       if (isWindow) {
         const sticky = topCur < topVP + offset;
+        $stickyHeaderFiller.css({
+          display: sticky ? 'block' : 'none',
+          height: sticky ? $stickyHeader.height() : '',
+        });
         $stickyHeader.css({
           position: sticky ? 'fixed' : 'static',
           top: sticky ? topVP + offset : '',
           width: sticky ? $tableContainer.width() : '',
           left: sticky ? rectContainer.left : '',
-        });
-        $stickyHeaderFiller.css({
-          display: sticky ? 'block' : 'none',
-          height: sticky ? $stickyHeader.height() : '',
         });
       } else {
         $stickyHeaderFiller.css({
@@ -201,6 +202,9 @@ export class TableView extends Backbone.View {
 
   _renderStatic(callback) {
     this._listView.set({
+      model: {
+        classes: this._props.classes,
+      },
       listTemplate: tableStaticTemplate,
       itemTemplate: rowTemplate,
     }).render(() => {
@@ -213,6 +217,9 @@ export class TableView extends Backbone.View {
 
   _renderFixed(callback) {
     this._listView.set({
+      model: {
+        classes: this._props.classes,
+      },
       listTemplate: tableFixedTemplate,
       itemTemplate: rowTemplate,
     }).render(() => {
@@ -235,6 +242,9 @@ export class TableView extends Backbone.View {
 
   _renderSticky(callback) {
     this._listView.set({
+      model: {
+        classes: this._props.classes,
+      },
       listTemplate: tableStickyTemplate,
       itemTemplate: rowTemplate,
     }).render(() => {

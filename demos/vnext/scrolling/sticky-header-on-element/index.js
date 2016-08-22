@@ -9,6 +9,7 @@ import 'bootstrap-webpack';
 
 window.gridView = pgrid.factory({ vnext: true }).create({
   el: '.grid-container',
+  tableClasses: ['table', 'table-bordered'],
   scrolling: {
     virtualized: true,
     viewport: $('.grid-viewport'),
