@@ -173,25 +173,17 @@ export class TableView extends Backbone.View {
       const topCur = rectContainer.top;
 
       if (isWindow) {
-        if (topCur < topVP + offset) {
-          $stickyHeader.css({
-            position: 'fixed',
-            top: topVP + offset,
-            width: $tableContainer.width(),
-            left: rectContainer.left,
-          });
-          $stickyHeaderFiller.css({
-            display: 'block',
-            height: $stickyHeader.height(),
-          });
-        } else {
-          $stickyHeader.css({
-            position: 'static',
-          });
-          $stickyHeaderFiller.css({
-            display: 'none',
-          });
-        }
+        const sticky = topCur < topVP + offset;
+        $stickyHeader.css({
+          position: sticky ? 'fixed' : 'static',
+          top: sticky ? topVP + offset : '',
+          width: sticky ? $tableContainer.width() : '',
+          left: sticky ? rectContainer.left : '',
+        });
+        $stickyHeaderFiller.css({
+          display: sticky ? 'block' : 'none',
+          height: sticky ? $stickyHeader.height() : '',
+        });
       } else {
         $stickyHeaderFiller.css({
           display: 'none',
