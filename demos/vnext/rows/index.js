@@ -43,6 +43,10 @@ window.gridView = pgrid.factory({ vnext: true }).create({
         view: titleHeader,
         classes: ['noborder'],
       },
+      {
+        html: '',
+        classes: ['separator'],
+      },
       'column-header-rows',
     ],
     bodyRows: [
