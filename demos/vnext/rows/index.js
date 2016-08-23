@@ -66,10 +66,15 @@ window.gridView = pgrid.factory({ vnext: true }).create({
   columns: [{
     name: 'Group 0',
     html: '<i>Group 0</i>',
+    headClasses: 'Iamgrouphead',
     columns: [{
       name: 'CustomerID',
       sortable: true,
       editable: true,
+      headClasses: 'Iamhead',
+      bodyClasses: 'Iambody',
+      footClasses: 'Iamfoot',
+      colClasses: 'Iamcol',
     },{
       name: 'OrderID',
       sortable: -1,
