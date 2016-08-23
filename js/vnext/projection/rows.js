@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { normalizeClass } from './common.js';
+import { normalizeClasses } from './common.js';
 
 const bufferStateClasses = {
   'changed': ['row-buffer-changed'],
@@ -38,7 +38,7 @@ export const rows = {
       slice: (...args) => body.slice(...args).map(item => {
         const key = item[primaryKey];
         const state = _.chain(changed).result(key).result('state').value();
-        const classes = _.union(normalizeClass(item.classes, item), _.result(bufferStateClasses, state, []));
+        const classes = _.union(normalizeClasses(item.classes, item), _.result(bufferStateClasses, state, []));
         return item.html ? { classes, html: item.html } : { classes, item };
       }),
     };

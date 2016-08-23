@@ -1,7 +1,7 @@
 import _ from 'underscore';
-import { normalizeClass } from './common.js';
+import { normalizeClasses } from './common.js';
 
-function translateRow(columnGroup, row, rowType, index) {
+function translateRow(columnGroup, row, rowType) {
   const patch = {};
 
   if (_.has(row, 'html')) {
@@ -26,9 +26,11 @@ function translateRow(columnGroup, row, rowType, index) {
     patch.cells = _.map(columnGroup.leafColumns, col => {
       let cellClasses;
       if (rowType === 'foot') {
-        cellClasses = normalizeClass(col.footClasses, row);
+        cellClasses = normalizeClasses(col.footClasses, row);
       } else if (rowType === 'body') {
-        cellClasses = normalizeClass(col.bodyClasses, row);
+        cellClasses = normalizeClasses(col.bodyClasses, row);
+      } else if (rowType === 'head') {
+        cellClasses = normalizeClasses(col.headClasses, row);
       }
       const cell = { classes: cellClasses, attributes: {} };
       cell.value = col.property.get(row.item);
@@ -70,11 +72,11 @@ export const cells = {
       length: state.bodyRows.length,
       slice: (begin = 0, end = state.bodyRows.length) => {
         return state.bodyRows.slice(begin, end)
-          .map((row, index) => translateRow(columnGroup, row, 'body', index + begin));
+          .map(row => translateRow(columnGroup, row, 'body'));
       },
     };
 
-    const footRows = _.map(state.footRows, (row, index) => translateRow(columnGroup, row, 'foot', index));
+    const footRows = _.map(state.footRows, row => translateRow(columnGroup, row, 'foot'));
 
     return _.defaults({
       headRows,

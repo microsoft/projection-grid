@@ -1,19 +1,19 @@
 import _ from 'underscore';
 
-export function normalizeClass (classes, row) {
+export function normalizeClasses (classes, row) {
   let normalizedClass = [];
   if(_.isArray(classes)) {
-    normalizedClass = classes;
+    return classes;
   } else if (_.isString(classes)) {
-    _.each(classes.split(/\s+/), c => normalizedClass.push(c));
+    return classes.split(/\s+/);
   } else if (_.isFunction(classes)) {
-    normalizedClass = classes(row);
+    return classes(row);
   } else if (_.isObject(classes)) {
-    _.mapObject(classes, (value, key) => {
-      if((_.isFunction(value) && value(row)) || (!_.isFunction(value) && value)) {
-        normalizedClass.push(key);
-      } 
-    });
+    return _.chain(classes)
+      .pairs()
+      .filter(([key, value]) => ((_.isFunction(value) && value(row)) || (!_.isFunction(value) && value)))
+      .map(([key, value]) => key)
+      .value();
   }
   return normalizedClass;
 }
