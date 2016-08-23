@@ -3,6 +3,7 @@ import Backbone from 'backbone';
 import Promise from 'bluebird';
 import {
   query,
+  patchChange,
   selection,
   setSelectAll,
   setSelectRow,
@@ -111,7 +112,7 @@ class ProjectionChain {
 *
 */
 export class GridView extends Backbone.View {
-  initialize({ scrolling, tableClasses }) {
+  initialize({ scrolling, tableClasses, dataSource }) {
     this._tableView = new TableView({
       el: this.$el,
       scrolling,
@@ -131,7 +132,7 @@ export class GridView extends Backbone.View {
     this._chainStructure = new ProjectionChain(this.model);
     this._chainContent = new ProjectionChain(this.model);
 
-    this.pipeDataProjections(query);
+    this.pipeDataProjections(query, patchChange);
     this.pipeStructureProjections(columns, rows, selection);
     this.pipeContentProjections([
       columnGroup,
@@ -164,7 +165,7 @@ export class GridView extends Backbone.View {
       this._chainData,
       this._chainStructure,
       this._chainContent,
-    ], (memo, chain) => chain.update(memo), null)
+    ], (memo, chain) => chain.update(memo), this.editor.clientEditID)
       .then(patchEvents)
       .then(state => this._tableView.set(state))
       .finally(() => this.trigger('didUpdate'));
@@ -204,8 +205,11 @@ export class GridView extends Backbone.View {
     }, {}));
   }
 
-  render(callback) {
-    this._tableView.render(callback);
+  render(callback = _.noop) {
+    this._tableView.render( () => { 
+      this.update();
+      callback();
+    });
     return this;
   }
 

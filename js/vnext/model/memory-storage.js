@@ -2,6 +2,18 @@ import _ from 'underscore';
 import Promise from 'bluebird';
 import { Storage } from './storage.js';
 
+function defaultsDeep(dest, src) {
+  if (_.isObject(dest) && !_.isArray(dest)) {
+    _.defaults(dest, src);
+    _.each(src, (value, key) => {
+      if (dest[key] !== value) {
+        defaultsDeep(dest[key], value);
+      }
+    });
+  }
+  return dest;
+}
+
 export class MemoryStorage extends Storage {
   constructor(options) {
     super(options);
@@ -49,5 +61,24 @@ export class MemoryStorage extends Storage {
       items: data.slice(start, stop),
     });
   }
+
+  create(attrs) {
+    const serverKey = _.uniqueId('grid-item-');
+    this.data[serverKey] = attrs;
+    return serverKey;
+  }
+
+  update(key, attrs) {
+    if (!_.has(this.data, key)) {
+      return new Error("Data doesn't exist !");
+    }
+    this.data[key] = defaultsDeep(attrs, this.data[key]);
+  }
+
+  destroy(key) {
+    return delete this.data[key];
+  }
+
+
 }
 
