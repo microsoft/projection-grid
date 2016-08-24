@@ -1,7 +1,6 @@
 import _ from 'underscore';
 
 export function normalizeClasses (classes, row) {
-  let normalizedClass = [];
   if(_.isArray(classes)) {
     return classes;
   } else if (_.isString(classes)) {
@@ -15,5 +14,5 @@ export function normalizeClasses (classes, row) {
       .map(([key, value]) => key)
       .value();
   }
-  return normalizedClass;
+  return [];
 }
