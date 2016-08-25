@@ -65,6 +65,7 @@ export class MemoryStorage extends Storage {
   create(attrs) {
     const serverKey = _.uniqueId('grid-item-');
     this.data[serverKey] = attrs;
+    this.data[serverKey][this.primaryKey] = serverKey
     return serverKey;
   }
 
@@ -78,7 +79,6 @@ export class MemoryStorage extends Storage {
   destroy(key) {
     return delete this.data[key];
   }
-
 
 }
 

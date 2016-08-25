@@ -41,10 +41,12 @@ class Change {
     primaryKey,
     changedItem = {},
     previousItem = {},
+    previousEditState = 'UNCHANGED',
   } = {}){
     this.primaryKey = primaryKey;
     this.changedItem = changedItem;
     this.previousItem = previousItem;
+    this.previousEditState = previousEditState;
     this.optionName = optionName;
     this.timeStamp = Date.now();
   }
@@ -58,42 +60,47 @@ class Command {
 }
 
 export class Editor {
-  constructor(storage) {
+  constructor(storage, model) {
     _.extend(this, Backbone.Events);
     this._storage = normalizeStorage(storage);
     this._data = {};
+    this._orignal = {};
     this._changedData = {}; /* primaryKey: {item, editState, onCommit} */
     this._commandChain = [];
-    this._head = 0;
-    this._clientEditID = _.uniqueId('clientEditID');
+    this._head = -1;
+    this._serverEditID = _.uniqueId('serverEditID');
+    this.model = model;
   }
 
   get primaryKey() {
     return this._storage.primaryKey;
   }
 
-  get clientEditID() {
-    return this._clientEditID;
-  }
-
   read(options = {}) {
+    if(options.serverEditID == this._serverEditID) {
+      return Promise.resolve(this._orignal);
+    }
     const p$state = this._storage.read(options);
     const self = this;
     p$state.then((data, editor = self) => {
       const primaryKey = this.primaryKey;
-      editor._data.orignal = data;
+      editor._orignal = data;
       _.each(data.items, item => {
         editor._data[item[primaryKey]] = item;
       });
     });
+    this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });// TODO: it should be returned by server
+    this._serverEditID = this.model.get('query').serverEditID;
     return p$state;
   }
 
   getItemEditState(key) {
     if (_.has(this._changedData, key)) {
-      return this._changedData[key].eidtState;
+      return this._changedData[key].editState;
+    } else if (_.has(this._data, key)) {
+      return 'UNCHANGED';
     }
-    return 'UNCHANGED';
+    return 'NOTEXISTED';
   }
 
   setItemEditState() {
@@ -116,47 +123,62 @@ export class Editor {
       const { item, editState, onCommit } = this._changedData[key];
       switch (editState) {
         case 'CREATED':
-        if (stateString == 'REMOVED') {
-          delete this._changedData[key];
-        } else if (stateString == 'UPDATED') {
-          this._changedData[key].item = defaultsDeep(newItem, item);
-        }
-        break;
+          if (stateString === 'REMOVED') {
+            delete this._changedData[key];
+          } else if (stateString === 'UPDATED') {
+            this._changedData[key].item = defaultsDeep(newItem, item);
+          } else if (stateString === 'CREATED') {
+            this._changedData[key].item = newItem;
+          } else if (stateString === 'NOTEXISTED') {
+            delete this._changedData[key];
+          }
+          break;
         case 'UPDATED':
-        if (stateString == 'REMOVED') {
-          this._changedData[key].item = this._data[key];
-          this._changedData[key].editState = 'REMOVED';
-        } else if (stateString == 'UPDATED') {
-          this._changedData[key].item = defaultsDeep(newItem, item);
-        }
-        break;
+          if (stateString === 'REMOVED') {
+            this._changedData[key].item = this._data[key];
+            this._changedData[key].editState = 'REMOVED';
+          } else if (stateString === 'UPDATED') {
+            this._changedData[key].item = defaultsDeep(newItem, item);
+          } else if (stateString === 'UNCHANGED') {
+            delete this._changedData[key];
+          }
+          break;
         case 'REMOVED':
-        if (stateString == 'UPDATED') {
-          this._changedData[key].item = defaultsDeep(newItem, this._data[key])
-          this._changedData[key].editState = 'UPDATED';
-        }
-        break;
+          if (stateString === 'UPDATED') {
+            this._changedData[key].item = defaultsDeep(newItem, this._data[key])
+            this._changedData[key].editState = 'UPDATED';
+          } else if (stateString === 'UNCHANGED') {
+            delete this._changedData[key];
+          }
+          break;
         default:
-        break;
+          delete this._changedData[key];
+          break;
       }
     } else if (_.has(this._data, key)) {
       const original = this._data[key];
       switch (stateString) {
         case 'UPDATED':
-        this._changedData[key] = { item: defaultsDeep(newItem, original), editState: stateString, onCommit: onCommitFlag };
-        break;
+          this._changedData[key] = { item: defaultsDeep(newItem, original), editState: stateString, onCommit: onCommitFlag };
+          break;
         case 'REMOVED':
-        this._changedData[key] = { item: original, editState: stateString, onCommit: onCommitFlag };
+          this._changedData[key] = { item: original, editState: stateString, onCommit: onCommitFlag };
+          break;
         default:
-        break;
+          break;
       }
     } else {
       // TODO handle error
     }
   }
 
-  addItem(){
-
+  addCommond(command){
+    const commandChainEnd = this._commandChain.length - 1;
+    if (this._head < commandChainEnd) {
+      this._commandChain.splice(this._head + 1);
+    }
+    this._commandChain.push(command);
+    this._head += 1;
   }
 
   getPreviousItem(key) {
@@ -175,11 +197,12 @@ export class Editor {
       primaryKey: key,
       changedItem: item,
       previousItem: this.getPreviousItem(key),
+      previousEditState: this.getItemEditState(key),
       optionName: 'create',
     });
-    this._commandChain.push(new Command([change]));
+    this.addCommond(new Command([change]));
     this._changedData[key] = { item: _.defaults({ itemKey: key }, item), editState: 'CREATED', onCommit: false };
-    this._clientEditID = _.uniqueId('clientEditID');
+    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
   }
 
   createCollection(...items) {
@@ -195,15 +218,15 @@ export class Editor {
         primaryKey: key,
         changedItem: item,
         previousItem: this.getPreviousItem(key),
+        previousEditState: this.getItemEditState(key),
         optionName: 'create',
       });
 
       command.changes.push(change);
       this._changedData[key] = { item: _.defaults({ itemKey: key }, item), editState: 'CREATED', onCommit: false };
     });
-
-    this._commandChain.push(command);
-    this._clientEditID = _.uniqueId('clientEditID');
+    this.addCommond(command);
+    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
   }
 
   updatePrimaryKey(clientKey, serverKey) {
@@ -224,27 +247,34 @@ export class Editor {
   }
 
   destroy(key) {
+    const original = this.getPreviousItem(key);
     const change = new Change({
       primaryKey: key,
+      changedItem: original,
+      previousItem: original,
+      previousEditState: this.getItemEditState(key),
       optionName: 'destroy',
     });
-    this._commandChain.push(new Command([change]));
-
     this.setItem(key, 'REMOVED', false);
-    this._clientEditID = _.uniqueId('clientEditID');
+    this.addCommond(new Command([change]));
+    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
   }
 
   destroyAll(...keys) {
     const changes = _.map(keys, key => {
       this.setItem(key, 'REMOVED', false); 
+      const original = this.getPreviousItem(key);
       return new Change({
         primaryKey: key,
+        changedItem: original,
+        changedItem: original,
+        previousEditState: this.getItemEditState(key),
         optionName: 'destroy',
       });
     });
 
-    this._commandChain.push(new Command(changes));
-    this._clientEditID = _.uniqueId('clientEditID');
+    this.addCommond(new Command([change]));
+    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
   }
 
   update(key, attrs) {
@@ -252,14 +282,15 @@ export class Editor {
       primaryKey: key,
       changedItem: attrs,
       previousItem: this.getPreviousItem(key),
+      previousEditState: this.getItemEditState(key),
       optionName: 'update',
     });
-    this._commandChain.push(new Command([change]));
     this.setItem(key, 'UPDATED', false, attrs);
-    this._clientEditID = _.uniqueId('clientEditID');
+    this.addCommond(new Command([change]));
+    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
   }
 
-  updateAll(...params) {
+  updateAll(...params) { /* param { key: key, attrs: {} } */
     const command = new Command();
     let change;
     _.each(params, param => {
@@ -267,39 +298,51 @@ export class Editor {
         primaryKey: param.key,
         changedItem: param.attrs,
         previousItem: this.getPreviousItem(param.key),
+        previousEditState: this.getItemEditState(key),
         optionName: 'update',
       });
 
       command.changes.push(change);
 
-      this.setItem(key, 'UPDATED', false, param.attrs);
+      this.setItem(param.key, 'UPDATED', false, param.attrs);
     });
 
-    this._commandChain.push(command);
-    this._clientEditID = _.uniqueId('clientEditID');
+    this.addCommond(command);
+    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
+  }
+
+  undo() {
+    if (this._head == -1) {
+      return;
+    }
+
+    const command = this._commandChain[this._head];
+    _.each(command.changes, change => {
+      this.setItem(change.primaryKey, change.previousEditState, false, change.previousItem);
+    });
+    this._head -= 1;
+    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
+  }
+
+  redo() {
+    if (this._head == this._commandChain.length - 1) {
+      return;
+    }
+    this._head += 1;
+    const command = this._commandChain[this._head];
+    _.each(command.changes, change => {
+      if (change.optionName === 'create') {
+        this._changedData[change.primaryKey] = { item: change.changedItem, editState: 'CREATED', onCommit: false };
+      } else if (change.optionName === 'destroy') {
+        this.setItem(change.primaryKey, 'REMOVED', false);
+      } else if (change.optionName === 'update') {
+        this.setItem(change.primaryKey, 'UPDATED', false, change.changedItem);
+      }
+    });
+    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
   }
 
   commit(){
-    /*
-    const commandChain = this._commandChain.slice(this._head);
-    const self = this._storage;
-    if(commandChain) {
-      Promise.reduce(commandChain, command => {
-        Promise.reduce(command.changes, (change, storage = self) => {
-          const optionName = change.optionName;
-          if(optionName == 'create') {
-            const serverKey = storage.create(change.changedItem);
-            updatePrimaryKey(change.changedItem.primaryKey, serverKey)
-          } else if (optionName == 'update') {
-            storage.update(change.primaryKey, change.changedItem);
-          } else if (optionName == 'destroy') {
-            storage.destroy(change.primaryKey);
-          }
-        }, []);
-      }, []);
-    }
-    */
-    
     const allChanges = this._changedData;
     const self = this;
     for(let key in allChanges) {
@@ -316,7 +359,6 @@ export class Editor {
           // TODO handle error
         }
         resolve(serverKey);
-        reject();
       }).then((serverKey, clientKey = key, editor = self) => {
         delete editor._changedData[clientKey];
         if (serverKey) {
@@ -329,9 +371,9 @@ export class Editor {
           });
         }
         
-      }, () => {});
+      });
     }
-
+    this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });
   }
 
 }

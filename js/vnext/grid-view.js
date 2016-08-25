@@ -126,7 +126,7 @@ export class GridView extends Backbone.View {
       defaults: proj.defaults,
     });
 
-    this.editor = new Editor(dataSource);
+    this.editor = new Editor(dataSource, this.model);
 
     this._chainData = new ProjectionChain(this.model);
     this._chainStructure = new ProjectionChain(this.model);
