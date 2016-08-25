@@ -35,7 +35,7 @@ export const dataSource = {
     const { findAll, update } = _.isString(type) ? ({
       odata,
       memory,
-      jsdata,
+      'js-data': jsdata,
     })[type] : type;
 
     const primaryKey = _.result(options, 'primaryKey') ||
