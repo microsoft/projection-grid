@@ -1,8 +1,14 @@
 import _ from 'underscore';
 
 const editStateClasses = {
+  'CREATED': ['row-buffer-created'],
+  'UPDATED': ['row-buffer-updated'],
+  'REMOVED': ['row-buffer-removed'],
+  'COMMITTED': ['row-buffer-committed'],
+  /*
   'CHANGED': ['row-buffer-changed'],
   'COMMITTED': ['row-buffer-committed'],
+  */
 };
 
 /**

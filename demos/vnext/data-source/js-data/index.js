@@ -14,4 +14,25 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     type: 'js-data',
     entity: store,
   },
+  columns: [{
+    name: 'UserName',
+  },{
+    name: 'FirstName',
+  },{
+    name: 'LastName',
+  },{
+    name: 'Emails',
+  },{
+    name: 'AddressInfo',
+  },{
+    name: 'Gender',
+  },{
+    name: 'Concurrency',
+  }],
+  /*
+  query: {
+    skip: 2,
+    take: 5,
+  },
+  */
 }).gridView.render();

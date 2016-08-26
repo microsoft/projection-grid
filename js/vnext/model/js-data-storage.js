@@ -47,5 +47,18 @@ export class JSDataStorage extends Storage {
         itemCount: data.totalCount || 0,
       }));
   }
+  
+  create(attrs) {
+    return this.entity.create(attrs);
+  }
+
+  update(key, attrs) {
+    throw new Error('Not implemented');
+  }
+
+  destroy(key) {
+    throw new Error('Not implemented');
+  }
+  
 }
 

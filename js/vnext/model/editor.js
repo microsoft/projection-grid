@@ -191,8 +191,9 @@ export class Editor {
   }
 
   create(item) {
-    const itemKey = this.primaryKey;
     const key = _.uniqueId();
+    const newItem = item;
+    newItem[this.primaryKey] = key;
     const change = new Change({
       primaryKey: key,
       changedItem: item,
@@ -201,12 +202,11 @@ export class Editor {
       optionName: 'create',
     });
     this.addCommond(new Command([change]));
-    this._changedData[key] = { item: _.defaults({ itemKey: key }, item), editState: 'CREATED', onCommit: false };
+    this._changedData[key] = { item: newItem, editState: 'CREATED', onCommit: false };
     this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
   }
 
   createCollection(...items) {
-    const itemKey = this.primaryKey;
     const command = new Command();
     let key;
     let change;
@@ -223,7 +223,9 @@ export class Editor {
       });
 
       command.changes.push(change);
-      this._changedData[key] = { item: _.defaults({ itemKey: key }, item), editState: 'CREATED', onCommit: false };
+      const newItem = item;
+      newItem[this.primaryKey] = key;
+      this._changedData[key] = { item: newItem, editState: 'CREATED', onCommit: false };
     });
     this.addCommond(command);
     this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
@@ -261,7 +263,7 @@ export class Editor {
   }
 
   destroyAll(...keys) {
-    const changes = _.map(keys, key => {
+    const change = _.map(keys, key => {
       this.setItem(key, 'REMOVED', false); 
       const original = this.getPreviousItem(key);
       return new Change({
@@ -298,7 +300,7 @@ export class Editor {
         primaryKey: param.key,
         changedItem: param.attrs,
         previousItem: this.getPreviousItem(param.key),
-        previousEditState: this.getItemEditState(key),
+        previousEditState: this.getItemEditState(param.key),
         optionName: 'update',
       });
 
@@ -345,6 +347,7 @@ export class Editor {
   commit(){
     const allChanges = this._changedData;
     const self = this;
+    
     for(let key in allChanges) {
       const {item, editState} = allChanges[key];
       new Promise((resolve, reject, editor = self) => {
@@ -373,6 +376,22 @@ export class Editor {
         
       });
     }
+    
+    /*
+    new Promise((editor = self) => {
+      const allChanges = editor._changedData;
+      for (let key in allChanges) {
+        const {item, editState} = allChanges[key];
+        if (editState === 'UPDATED') {
+          editor._storage.update(key, item);
+        } else if (editState === 'CREATED') {
+          editor._storage.create(_.omit(item, editor.primaryKey)).then();
+        }
+      }
+    }).then((editor = self) => {
+      editor.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });
+    });
+    */
     this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });
   }
 
