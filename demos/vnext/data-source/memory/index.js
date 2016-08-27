@@ -13,6 +13,24 @@ window.gridView = pgrid.factory({ vnext: true }).create({
   dataSource: {
     type: 'memory',
     data: people.value,
-    primaryKey: 'UserName',
+    //primaryKey: 'UserName',
   },
+   columns: [{
+    name: '__primary_key__',
+   },{
+    name: 'UserName',
+  },{
+    name: 'FirstName',
+    editable: true,
+  },{
+    name: 'LastName',
+  },{
+    name: 'Emails',
+  },{
+    name: 'AddressInfo',
+  },{
+    name: 'Gender',
+  },{
+    name: 'Concurrency',
+  }],
 }).gridView.render();
