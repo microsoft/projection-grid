@@ -13,6 +13,6 @@ window.gridView = pgrid.factory({ vnext: true }).create({
   dataSource: {
     type: 'memory',
     data: people.value,
-    primaryKey: 'UserName',
+    //primaryKey: 'UserName',
   },
 }).gridView.render();
