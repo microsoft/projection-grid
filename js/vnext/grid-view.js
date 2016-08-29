@@ -12,6 +12,7 @@ import {
   columnGroup,
   cells,
   editable,
+  editableOption,
   sortableHeader,
   events,
 } from './projection';
@@ -133,7 +134,7 @@ export class GridView extends Backbone.View {
     this._chainContent = new ProjectionChain(this.model);
 
     this.pipeDataProjections(query, patchChange);
-    this.pipeStructureProjections(columns, rows, selection);
+    this.pipeStructureProjections(columns, rows, selection, editableOption);
     this.pipeContentProjections([
       columnGroup,
       cells,
