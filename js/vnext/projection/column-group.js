@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { normalizeClasses } from './common.js';
 import defaultCellTemplate from './default-cell.jade';
 
 /**
@@ -85,7 +86,7 @@ class ColumnGroup {
           this.headerRows.push({ cells: [], attributes: {} });
         }
 
-        const classes = ['column-header'];
+        const classes = _.union(normalizeClasses(col.headClasses, col), ['column-header']);
         if (_.isEmpty(col.columns)) {
           classes.push('column-header-leaf');
         }
@@ -123,10 +124,13 @@ class ColumnGroup {
 }
 
 function translateColumnGroup(columnGroup) {
-  return _.map(columnGroup.leafColumns, col => ({
-    classes: [`col-${col.name}`],
-    width: _.isNumber(col.width) ? `${col.width}px` : col.width,
-  }));
+  return _.map(columnGroup.leafColumns, col => {
+    const colClasses = _.union(normalizeClasses(col.colClasses, col), [`col-${col.name}`]);
+    return {
+      classes: colClasses,
+      width: _.isNumber(col.width) ? `${col.width}px` : col.width,
+    }
+  });
 }
 
 /**

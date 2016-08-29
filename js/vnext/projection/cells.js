@@ -1,6 +1,7 @@
 import _ from 'underscore';
+import { normalizeClasses } from './common.js';
 
-function translateRow(columnGroup, row, index) {
+function translateRow(columnGroup, row, rowType) {
   const patch = {};
 
   if (_.has(row, 'html')) {
@@ -23,7 +24,15 @@ function translateRow(columnGroup, row, index) {
   }
   if (_.has(row, 'item')) {
     patch.cells = _.map(columnGroup.leafColumns, col => {
-      const cell = { classes: col.classes, attributes: {} };
+      let cellClasses;
+      if (rowType === 'foot') {
+        cellClasses = normalizeClasses(col.footClasses, row);
+      } else if (rowType === 'body') {
+        cellClasses = normalizeClasses(col.bodyClasses, row);
+      } else if (rowType === 'head') {
+        cellClasses = normalizeClasses(col.headClasses, row);
+      }
+      const cell = { classes: cellClasses, attributes: {} };
       cell.value = col.property.get(row.item);
       cell.html = col.template(_.pick(cell, 'value'));
 
@@ -55,7 +64,7 @@ export const cells = {
       if (row === 'column-header-rows') {
         return memo.concat(columnGroup.headerRows);
       }
-      memo.push(translateRow(columnGroup, row));
+      memo.push(translateRow(columnGroup, row, 'head'));
       return memo;
     }, []);
 
@@ -63,11 +72,11 @@ export const cells = {
       length: state.bodyRows.length,
       slice: (begin = 0, end = state.bodyRows.length) => {
         return state.bodyRows.slice(begin, end)
-          .map((row, index) => translateRow(columnGroup, row, index + begin));
+          .map(row => translateRow(columnGroup, row, 'body'));
       },
     };
 
-    const footRows = _.map(state.footRows, (row, index) => translateRow(columnGroup, row, index));
+    const footRows = _.map(state.footRows, row => translateRow(columnGroup, row, 'foot'));
 
     return _.defaults({
       headRows,
