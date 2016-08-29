@@ -24,9 +24,13 @@ const PopupCreate = Backbone.View.extend({
 
 function deleteRow(editor) {
   return function (e) {
+    /*
     const $tr = $(e.target).closest('tr');
     this.trigger('willDelet', null);
     const primaryKey = $tr.find("td.primaryKey").text();
+    */
+    const index = this.indexOfElement(e.target);
+    const primaryKey = _.result(this.itemAt(index), this.primaryKey);
     editor.destroy(primaryKey);
   };
 }
@@ -53,16 +57,13 @@ export const editableOption = {
     const editor = this.editor;
     const events = _.defaults({
       'click button.delete': deleteRow(editor),
-      'click button.undo': editor.undo.bind(editor),
+      /*'click button.undo': editor.undo.bind(editor),
       'click button.redo': editor.redo.bind(editor),
       'click button.commit': editor.commit.bind(editor),
-      'click button.create': createRow(editor),
+      'click button.create': createRow(editor),*/
     }, state.events);
 
-    const footRows = state.footRows || [];
-    footRows.push({ html: optionFooter() });
-
-    return _.defaults({ columns, events, footRows }, state);
+    return _.defaults({ columns, events }, state);
   },
   defaults: {},
 }

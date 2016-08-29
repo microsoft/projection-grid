@@ -24,7 +24,7 @@ export function patchChange (state,  options) {
   }, []);
   _.each(changedData, change => {
     if(change.editState == 'CREATED') {
-      data.push(change.item);
+      data.unshift(change.item);
     }
   });
   return _.defaults({ items: data }, state);

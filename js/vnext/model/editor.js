@@ -289,8 +289,10 @@ export class Editor {
   undo() {
     let clientState;
     if (this._head <= 0) {
+      if (this._commandChain.length <= 0) {
+        return;
+      }
       clientState = new Command({}, this._commandChain[0]._version);
-      //clientState = this._commandChain[0];
       this._head = -1;
     } else {
       this._head -= 1;
