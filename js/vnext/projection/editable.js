@@ -26,6 +26,7 @@ function editInColumn(column) {
         property: column.name,
         onSubmit: model => {
           this.trigger('didEdit', _.isEqual(model, item) ? null : model);
+          gridView.editor.update(model[gridView.editor.primaryKey], model);/*TODO: the global value gridView may not be used*/
         },
         onCancel: model => {
           this.trigger('didEdit', null);
@@ -34,6 +35,7 @@ function editInColumn(column) {
     }
   }
 }
+
 /**
 * Enable editing and wrap each editable cell with a template
 *

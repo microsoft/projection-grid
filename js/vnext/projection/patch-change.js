@@ -10,10 +10,10 @@ export function patchChange (state,  options) {
       memo.push(changedData[key].item);
       return memo;
       /*
-      if(changedData[key].editState == 'UPDATED') {
-        memo.push(changedData[key].item);
+      if(changedData[key].editState == 'REMOVED') {
         return memo;
-      } else if(changedData[key].editState == 'REMOVED') {
+      } else {
+        memo.push(changedData[key].item);
         return memo;
       }
       */

@@ -15,21 +15,25 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     data: people.value,
     //primaryKey: 'UserName',
   },
-   columns: [{
+  editableOption: true,
+  columns: [{
     name: '__primary_key__',
+    bodyClasses: 'primaryKey',
    },{
     name: 'UserName',
+    editable: true,
   },{
     name: 'FirstName',
     editable: true,
   },{
     name: 'LastName',
+    editable: true,
   },{
     name: 'Emails',
-  },{
-    name: 'AddressInfo',
+    editable: true,
   },{
     name: 'Gender',
+    editable: true,
   },{
     name: 'Concurrency',
   }],

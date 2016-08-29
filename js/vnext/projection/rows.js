@@ -43,7 +43,7 @@ export const rows = {
       slice: (...args) => body.slice(...args).map(item => {
         const key = item[primaryKey];
         const editState = this.editor.getItemEditState(key);
-        const classes = _.union(normalize(item.classes, item), _.result(editStateClasses, editState, []));
+        const classes = _.union(normalizeClasses(item.classes, item), _.result(editStateClasses, editState, []));
         return item.html ? { classes, html: item.html } : { classes, item };
       }),
     };
