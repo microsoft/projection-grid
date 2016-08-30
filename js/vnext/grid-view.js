@@ -228,26 +228,29 @@ export class GridView extends Backbone.View {
     return _.result(this._chainData.state, 'items', []).slice(index, index + 1)[0];
   }
 
-  selectedIndexes() {
+  indexOfElement(el) {
+    return this._tableView.indexOfElement(el);
+  }
+
+  selectedKeys() {
     return _.result(this.get('selection'), 'selected', []);
   }
 
   selectedItems() {
     const itemIndex = _.result(this._chainData.state, 'itemIndex', {});
 
-    return _.chain(this.get('selection'))
-      .result('selected', [])
+    return _.chain(this.selectedKeys())
       .map(key => _.result(itemIndex, key))
       .compact()
       .value();
   }
 
-  selectRow(index) {
-    setSelectRow(this, index, true);
+  selectRow(key) {
+    setSelectRow(this, key, true);
   }
 
-  deselectRow(index) {
-    setSelectRow(this, index, false);
+  deselectRow(key) {
+    setSelectRow(this, key, false);
   }
 
   selectAll() {
@@ -256,10 +259,6 @@ export class GridView extends Backbone.View {
 
   deselectAll() {
     setSelectAll(this, false);
-  }
-
-  indexOfElement(el) {
-    return this._tableView.indexOfElement(el);
   }
 
   columnWithName(name) {

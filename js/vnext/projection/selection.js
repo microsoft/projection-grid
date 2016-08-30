@@ -43,6 +43,7 @@ export function setSelectRow(gridView, key, checked) {
     } else {
       selected = _.without(selection.selected, keyStr);
     }
+
     selection = _.defaults({ selected }, selection);
   }
 
@@ -68,11 +69,11 @@ export const selection = {
   name: 'selection',
   handler(state, selection) {
     if (!selection) {
-      return _.clone(state);
+      return state;
     }
 
-    const model = normalize(selection);
-    const selectedIndex = _.reduce(model.selected, (memo, key) => {
+    const { selected, single } = normalize(selection);
+    const selectedIndex = _.reduce(selected, (memo, key) => {
       memo[key] = true;
       return memo;
     }, {});
@@ -82,13 +83,13 @@ export const selection = {
       name: 'selection',
       width: '30px',
       html: selectionHeadTemplate({
-        single: model.single,
-        checked: this.countRows > 0 && model.selected.length === this.countRows,
+        single,
+        checked: this.countRows > 0 && selected.length === this.countRows,
       }),
       template: selectionBodyTemplate,
       property: item => ({ 
-        single: model.single,
-          checked: selectedIndex[item[primaryKey]],
+        single,
+        checked: selectedIndex[item[primaryKey]],
       }),
       sortable: false,
     }].concat(state.columns);
