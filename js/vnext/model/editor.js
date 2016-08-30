@@ -69,6 +69,21 @@ class Command {
     return {};
   }
 }
+function oneLineDiff(cLine, sLine) {
+  const cKeys = _.keys(cLine);
+  const sKeys = _.keys(sLine);
+  if (cKeys.length != sKeys.length) {
+    return { item: cLine, editState: 'UPDATED', onCommit: false };
+  } else {
+    const allKeys = _.union(cKeys, sKeys);
+    for(let i in allKeys) {
+      const key = allKeys[i];
+      if (!_.isEqual(cLine, sLine)) {
+        return { item: cLine, editState: 'UPDATED', onCommit: false };
+      }
+    }
+  }
+}
 
 function diff(clientState, serverState) {
   const cids = _.chain(_.union(_.keys(clientState._changeLog), _.keys(clientState._version)))
@@ -78,39 +93,22 @@ function diff(clientState, serverState) {
                 .filter(serverState.exists, serverState)
                 .value();
   const ids = _.union(cids, sids);
+  
   const changeLog = {};
-  const changes =  _.each(ids, id => {
-                      const cFlag = clientState.exists(id);
-                      const sFlag = serverState.exists(id);
-                      if (cFlag && sFlag) {
-                        const cKeys = _.keys(clientState.getItem(id));
-                        const sKeys = _.keys(serverState.getItem(id));
-                        if (cKeys.length != sKeys.length) {
-                          changeLog[id] = { item: clientState.getItem(id), editState: 'UPDATED', onCommit: false };
-                        } else {
-                          const allKeys = _.union(cKeys, sKeys);
-                          for (let i = 0, len = allKeys.length; i < len; i++) {
-                            const cData = clientState.attributes(id, allKeys[i]);
-                            const sData = serverState.attributes(id, allKeys[i]);
-                            if (_.isObject(cData)) {
-                              if (!_.isEqual(cData, sData)) {
-                                changeLog[id] = { item: clientState.getItem(id), editState: 'UPDATED', onCommit: false };
-                              break;
-                              }
-                            } else{
-                              if (cData !== sData) {
-                              changeLog[id] = { item: clientState.getItem(id), editState: 'UPDATED', onCommit: false };
-                              break;
-                            }
-                            }
-                          }
-                        }
-                      } else if (cFlag && !sFlag) {
-                        changeLog[id] = { item: clientState.getItem(id), editState: 'CREATED', onCommit: false };
-                      } else if (!cFlag && sFlag) {
-                        changeLog[id] = { item: serverState.getItem(id), editState: 'REMOVED', onCommit: false };
-                      }
-                    });
+  _.each(ids, id => {
+    const cFlag = clientState.exists(id);
+    const sFlag = serverState.exists(id);
+    if (cFlag && sFlag) {
+      const changedObj = oneLineDiff(clientState.getItem(id), serverState.getItem(id));
+      if (changedObj) {
+        changeLog[id] = changedObj;
+      }
+    } else if (cFlag && !sFlag) {
+      changeLog[id] = { item: clientState.getItem(id), editState: 'CREATED', onCommit: false };
+    } else if (!cFlag && sFlag) {
+      changeLog[id] = { item: serverState.getItem(id), editState: 'REMOVED', onCommit: false };
+    }
+  });
   return changeLog;
 }
 
@@ -159,10 +157,6 @@ export class Editor {
     return 'NOTEXISTED';
   }
 
-  setItemEditState() {
-
-  }
-
   getEditState(){
     return JSON.stringify(this._changedData);
   }
@@ -174,52 +168,6 @@ export class Editor {
     return { item: this._data[key], editState: 'UNCHANGED', onCommit: false };
   }
 
-  setItem(key, stateString, onCommitFlag, newItem={}) {
-    if (_.has(this._changedData, key)) {
-      const { item, editState, onCommit } = this._changedData[key];
-      switch (editState) {
-        case 'CREATED':
-          if (stateString === 'REMOVED') {
-            delete this._changedData[key];
-          } else if (stateString === 'UPDATED') {
-            this._changedData[key].item = defaultsDeep(newItem, item);
-          } 
-          break;
-        case 'UPDATED':
-          if (stateString === 'REMOVED') {
-            this._changedData[key].item = this._data[key];
-            this._changedData[key].editState = 'REMOVED';
-          } else if (stateString === 'UPDATED') {
-            this._changedData[key].item = defaultsDeep(newItem, item);
-          }
-          break;
-        case 'REMOVED':
-          if (stateString === 'UPDATED') {
-            this._changedData[key].item = defaultsDeep(newItem, this._data[key])
-            this._changedData[key].editState = 'UPDATED';
-          }
-          break;
-        default:
-          delete this._changedData[key];
-          break;
-      }
-    } else if (_.has(this._data, key)) {
-      const original = this._data[key];
-      switch (stateString) {
-        case 'UPDATED':
-          this._changedData[key] = { item: defaultsDeep(newItem, original), editState: stateString, onCommit: onCommitFlag };
-          break;
-        case 'REMOVED':
-          this._changedData[key] = { item: original, editState: stateString, onCommit: onCommitFlag };
-          break;
-        default:
-          break;
-      }
-    } else {
-      // TODO handle error
-    }
-  }
-
   addCommond(command){
     const commandChainEnd = this._commandChain.length - 1;
     if (this._head < commandChainEnd) {
@@ -229,12 +177,15 @@ export class Editor {
     this._head += 1;
   }
 
-  create(item) {
+  createItem(item) {
     const key = _.uniqueId('temporary-');
     const newItem = item;
     newItem[this.primaryKey] = key;
-    
     this._changedData[key] = { item: newItem, editState: 'CREATED', onCommit: false };
+  }
+
+  create(item) {
+    this.createItem(item);
     this.addCommond(new Command(this._changedData, this._data));
     this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
   }
@@ -262,26 +213,50 @@ export class Editor {
     }).value();
   }
 
+  destroyItem(key) {
+    const currentState = this.getItemEditState(key);
+    if (currentState === 'CREATED') {
+      delete this._changedData[key];
+    } else if (currentState === 'UPDATED') {
+      this._changedData[key].editState = 'REMOVED';
+    } else if (currentState === 'UNCHANGED') {
+      this._changedData[key] = { item: this._data[key], editState: 'REMOVED', onCommit: false };
+    } else {
+      throw new Error('Element does not exist or has been removed!');
+    }
+  }
+
   destroy(key) {
-    this.setItem(key, 'REMOVED', false);
+    this.destroyItem(key);
     this.addCommond(new Command(this._changedData, this._data));
     this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
   }
 
   destroyAll(...keys) {
-    _.each(keys, key => (this.setItem(key, 'REMOVED', false)));
+    _.each(keys, key => (this.destroyItem(key)));
     this.addCommond(new Command(this._changedData, this._data));
     this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
   }
 
+  updateItem(key, attrs) {
+    const currentState = this.getItemEditState(key);
+    if (currentState === 'CREATED' || currentState === 'UPDATED') {
+      this._changedData[key].item = defaultsDeep(attrs, this._changedData[key].item);
+    } else if (currentState === 'UNCHANGED') {
+      this._changedData[key] = { item: defaultsDeep(attrs, this._data[key]), editState: 'UPDATED', onCommit: false };
+    } else {
+      throw new Error('Element does not exist or has been removed!');
+    }
+  }
+
   update(key, attrs) {
-    this.setItem(key, 'UPDATED', false, attrs);
+    this.updateItem(key, attrs);
     this.addCommond(new Command(this._changedData, this._data));
     this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
   }
 
   updateAll(...params) { /* param { key: key, attrs: {} } */
-    _.each(params, param => (this.setItem(param.key, 'UPDATED', false, param.attrs)));
+    _.each(params, param => (this.updateItem(param.key, param.attrs)));
     this.addCommond(new Command(this._changedData, this._data));
     this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
   }
