@@ -101,6 +101,6 @@ export const selection = {
 
     return _.defaults({ columns, events }, state);
   },
-  defaults: {},
+  defaults: null,
 };
 
