@@ -163,8 +163,13 @@ const projectionConfigs = {
       }
     });
 
+    const tooltipText = _.result(config.editable, 'tooltipText', 'Edit');
+    const iconClasses = _.result(config.editable, 'iconClasses', ['glyphicon', 'glyphicon-pencil']);
+
     return {
       'column.editable': editableOptions,
+      'editable.tooltip.text': tooltipText,
+      'editable.icon.class': iconClasses,
     };
   },
 

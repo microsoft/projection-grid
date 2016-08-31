@@ -264,7 +264,9 @@ require([
       },
     });
     var editable = new EditableProjection({
-      'column.editable': ['OrderID', 'Freight'],
+      'column.editable': ['OrderID', 'Freight', 'ShipCity'],
+      'editable.tooltip.text': 'Edit Me!',
+      'editable.icon.class': ['glyphicon', 'glyphicon-wrench'],
     });
     var checkbox = null;
 
