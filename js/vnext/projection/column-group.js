@@ -2,55 +2,101 @@ import _ from 'underscore';
 import { normalizeClasses } from './common.js';
 import defaultCellTemplate from './default-cell.jade';
 
+function stringProperty(property) {
+  const segs = property.split('/');
+
+  return {
+    key: property,
+    get(item) {
+      return _.reduce(segs, (memo, key) => (memo || {})[key], item);
+    },
+    set(item, value) {
+      return _.reduce(segs, (memo, seg, index) => {
+        if (index < segs.length - 1) {
+          if (!_.isObject(memo[seg])) {
+            memo[seg] = {};
+          }
+        } else {
+          memo[seg] = value;
+        }
+      }, item);
+    },
+  };
+}
+
+function normalizeProperty(property, column) {
+  if (!property) {
+    return stringProperty(column.name);
+  }
+
+  if (_.isString(property)) {
+    return stringProperty(property);
+  }
+  
+  if (_.isFunction(property)) {
+    return {
+      get: property,
+      set: property,
+    };
+  }
+
+  return property;
+}
+
+function normalizeSortable(sortable, column) {
+  const columnKey = column.property.key || column.property.get;
+
+  if (sortable === true) {
+    return {
+      key: columnKey,
+      direction: 1,
+    };
+  }
+
+  if (_.isString(sortable) || _.isFunction(sortable)) {
+    return {
+      key: sortable,
+      direction: 1,
+    };
+  }
+
+  if (_.isNumber(sortable) && sortable) {
+    return {
+      key: columnKey,
+      direction: sortable > 0 ? 1 : -1,
+    };
+  }
+
+  if (_.isObject(sortable)) {
+    return _.extend({
+      key: columnKey,
+      direction: 1,
+    }, sortable);
+  }
+
+  return null;
+}
+
 /**
-* The column group class.
-* It takes columns configuration as input and generates headerRows, leafColumns, columnIndex and root(a tree-like column structure).
-*/
+ * The column group class.
+ * It takes columns configuration as input and generates headerRows, leafColumns, columnIndex and root(a tree-like column structure).
+ */
 class ColumnGroup {
   constructor(columns) {
     this.headerRows = [];
     this.leafColumns = [];
     this.columnIndex = {};
 
-/**
-* Build tree-like columns structure using DFS
-*/
+    /**
+     * Build tree-like columns structure using DFS
+     */
     const buildColumn = col => {
-      const { parent, columns, height, name } = col;
+      const { parent, columns, height, name, property, sortable } = col;
 
       this.columnIndex[name] = col;
       
-      if (!col.property) {
-        col.property = name;
-      }
-      if (_.isString(col.property)) {
-        const propName = col.property;
-        const segs = propName.split('/');
-        col.property = { 
-          get(item) {
-            return _.reduce(segs, (memo, key) => (memo || {})[key], item);
-          },
-          set(item, value) {
-            return _.reduce(segs, (memo, seg, index) => {
-              if (index < segs.length - 1) {
-                if (!_.has(memo, seg)) {
-                  memo[seg] = {};
-                } else if (!_.isObject(memo[seg])) {
-                  memo[seg] = Object(memo[seg]);
-                } 
-              } else {
-                memo[seg] = value;
-              }
-            }, item);
-          },
-        }
-      } else if (_.isFunction(col.property)) {
-        const propFunction = col.property;
-        col.property = {
-          get: propFunction,
-          set: propFunction,
-        };
-      }
+      col.property = normalizeProperty(property, col);
+      col.sortable = normalizeSortable(sortable, col);
 
       if (!_.isFunction(col.template)) {
         col.template = defaultCellTemplate;
@@ -72,9 +118,9 @@ class ColumnGroup {
       return col;
     };
 
-/**
-* Build column header with BFS
-*/
+    /**
+     * Build column header with BFS
+     */
     const buildColumnHeader = col => {
       if (col.parent) {
         const colspan = col.treeWidth;
@@ -134,12 +180,12 @@ function translateColumnGroup(columnGroup) {
 }
 
 /**
-* Resolve grid structure from columns configuration
-*
-* @param {Object} state
-* @param {Object[]} [state.columns] columns configuration
-*
-*/
+ * Resolve grid structure from columns configuration
+ *
+ * @param {Object} state
+ * @param {Object[]} [state.columns] columns configuration
+ *
+ */
 export const columnGroup = {
   name: 'columnGroup',
   handler(state) {

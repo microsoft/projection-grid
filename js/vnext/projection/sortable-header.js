@@ -3,67 +3,50 @@ import sortableHeaderTemplate from './sortable-header.jade';
 
 const regexKey = /\s*(-)?\s*(\w+)/;
 
-/*
-* Reorder column data referring to 'column.sortable'.
-* 'column.sortable' takes four types of values: boolean, number, string and function.
-*/
+/**
+ * Reorder column data referring to 'column.sortable'.
+ * 'column.sortable' takes four types of values: boolean, number, string and function.
+ */
 function reorder(e) {
   const name = this.$(e.target).closest('th').attr('data-name');
-  const column = this.columnWithName(name);
-  let sortable = column.sortable;
-
-  if (_.isString(sortable) || _.isFunction(sortable)) {
-    sortable = {
-      key: sortable,
-      direction: 1,
-    };
-  } else if (_.isNumber(sortable) && sortable) {
-    sortable = {
-      key: column.value || column.field || column.name,
-      direction: sortable,
-    };
-  } else if (sortable === true) {
-    sortable = {
-      key: column.value || column.field || column.name,
-      direction: 1,
-    };
-  }
+  const sortable = this.columnWithName(name).sortable;
 
   if (sortable) {
     const sortableHeaderCur = this.get('sortableHeader') || {};
     let direction = sortable.direction;
+
     if (sortableHeaderCur.name === name) {
       direction = -sortableHeaderCur.direction;
     }
 
-    const sortableHeader = { name, direction };
-
-    const dataSource = _.defaults({
-      orderby: [{
-        key: sortable.key,
-        direction,
-      }],
-    }, this.get('dataSource'));
-
-    this.set({ dataSource, sortableHeader });
+    this.patch({
+      dataSource: {
+        orderby: [{
+          key: sortable.key,
+          direction,
+        }],
+      },
+      sortableHeader: { name, direction },
+    });
   }
 }
 
 /**
-* Add click event to sortable column and wrap sortable column's head with a template
-*
-* @param {Object} state
-* @param {Object[]} [state.headRows]
-* @param {Object} [state.events]
-* @param {String} name sortable column name
-* @param {Number} direction sortable direction: ascending or decending
-*
-*/
+ * Add click event to sortable column and wrap sortable column's head with a template
+ *
+ * @param {Object} state
+ * @param {Object[]} [state.headRows]
+ * @param {Object} [state.events]
+ * @param {String} name sortable column name
+ * @param {Number} direction sortable direction: ascending or decending
+ *
+ */
 export const sortableHeader = {
   name: 'sortableHeader',
   handler(state, {
     name,
     direction,
+    template = sortableHeaderTemplate,
   } = {}) {
     const patch = {};
     const leafColumns = state.columnGroup.leafColumns;
@@ -80,12 +63,12 @@ export const sortableHeader = {
         if (column && column.sortable) {
           patchCell.classes = cell.classes.concat('column-header-sortable');
 
-          if (column.name === name) {
-            patchCell.html = sortableHeaderTemplate({
-              html: cell.html,
-              direction,
-            });
-          }
+          const decorationTemplate = column.sortable.template || template;
+
+          patchCell.html = decorationTemplate({
+            html: cell.html,
+            direction: column.name === name ? direction : 0,
+          });
         }
 
         return _.defaults(patchCell, cell);
