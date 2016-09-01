@@ -36,7 +36,10 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
     primaryKey: 'OrderID',
   },
-  selection: true,
+  selection: {
+    headClasses: 'grid-select-all',
+    bodyClasses: 'grid-select-row',
+  },
   rows: {
     headRows: [
       {

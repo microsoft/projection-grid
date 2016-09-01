@@ -6,6 +6,8 @@ function normalize(selection) {
   return _.defaults(_.isObject(selection) ? selection : {}, {
     single: false,
     selected: [],
+    headClasses: [],
+    bodyClasses: [],
   });
 }
 
@@ -58,13 +60,13 @@ function changeSelectRow(e) {
 }
 
 /**
-* Add selection box to rows
-*
-* @param {Object} state
-* @param {Object} [state.items] Original data from data source
-* @param {Boolean | Object} selection 'true': add a multiple selection column. Object with property 'single: true': add a radio selection column.
-*
-*/
+ * Add selection box to rows
+ *
+ * @param {Object} state
+ * @param {Object} [state.items] Original data from data source
+ * @param {Boolean | Object} selection 'true': add a multiple selection column. Object with property 'single: true': add a radio selection column.
+ *
+ */
 export const selection = {
   name: 'selection',
   handler(state, selection) {
@@ -72,7 +74,7 @@ export const selection = {
       return state;
     }
 
-    const { selected, single } = normalize(selection);
+    const { selected, single, headClasses, bodyClasses } = normalize(selection);
     const selectedIndex = _.reduce(selected, (memo, key) => {
       memo[key] = true;
       return memo;
@@ -92,6 +94,8 @@ export const selection = {
         checked: selectedIndex[item[primaryKey]],
       }),
       sortable: false,
+      headClasses,
+      bodyClasses,
     }].concat(state.columns);
 
     const events = _.defaults({
