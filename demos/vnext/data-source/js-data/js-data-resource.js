@@ -6,7 +6,7 @@ JSData.DSUtils.Promise = require('bluebird');
 
 var store = new JSData.DS();
 store.registerAdapter('http', new DSHttpAdapter({
-  basePath: 'http://services.odata.org/V4/Northwind/Northwind.svc/',
+  basePath: 'http://services.odata.org/V4/(S(20p0zd1adk24myrl0xpanp02))/TripPinServiceRW/'/*'http://services.odata.org/V4/Northwind/Northwind.svc/'*/,
   deserialize: function (definition, response) {
     return response.data.value;
   },
@@ -24,6 +24,7 @@ store.registerAdapter('http', new DSHttpAdapter({
 }), { default: true });
 
 module.exports = store.defineResource({
-  name: 'Customers',
-  idAttribute: 'CustomerID',
+  name: 'People',
+  idAttribute: 'UserName',
+  basePath: 'http://services.odata.org/V4/(S(20p0zd1adk24myrl0xpanp02))/TripPinServiceRW/'
 });
