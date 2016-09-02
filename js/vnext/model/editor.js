@@ -177,7 +177,7 @@ export class Editor {
   }
 
   createItem(item) {
-    const key = _.uniqueId('temporary-');
+    const key = item[this.primaryKey] === undefined ? _.uniqueId('temporary-') : item[this.primaryKey];
     const newItem = item;
     newItem[this.primaryKey] = key;
     this._changedData[key] = { item: newItem, editState: 'CREATED', onCommit: false };
@@ -290,52 +290,6 @@ export class Editor {
   }
 
   commit(){
-    //const allChanges = this._changedData;
-    /*
-    for(let key in allChanges) {
-      const {item, editState} = allChanges[key];
-      new Promise((resolve, reject) => {
-        let serverKey;
-        if(editState == 'UPDATED') {
-          this._storage.update(key, item);
-        } else if(editState == 'CREATED') {
-          serverKey = this._storage.create(_.omit(item, this.primaryKey));
-        } else if(editState == 'REMOVED') {
-          this._storage.destroy(key);
-        } else {
-          // TODO handle error
-        }
-        resolve(serverKey);
-      }).bind(this).then((serverKey, clientKey = key) => {
-        delete this._changedData[clientKey];
-        if (serverKey) {
-          this.updatePrimaryKey(clientKey, serverKey);
-        }
-      }).bind(this);
-    }
-    */
-    /*
-    new Promise((resolve, reject) => {
-      const allChanges = this._changedData;
-      for (let key in allChanges) {
-        const {item, editState} = allChanges[key];
-        if (editState === 'UPDATED') {
-          this._storage.update(key, item);
-        } else if (editState === 'CREATED') {
-          this._storage.create(item).then((data, clientKey = key) => { //_.omit(item, this.primaryKey)
-            const serverKey = data[this.primaryKey]
-            this.updatePrimaryKey(clientKey, data);
-          }).bind(this);
-        } else if (editState === 'REMOVED') {
-          this._storage.destroy(key);
-        }
-      }
-      resolve();
-    }).bind(this).then(() => {
-      this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });
-    }).bind(this);
-    */
-    
     const allChanges = [];
     _.mapObject(this._changedData, (value, key) => {
       const { item, editState } = value;
@@ -363,16 +317,12 @@ export class Editor {
 
         allChanges.push(p$remove);
       }
-      allChanges.push([key, value]);
     });
 
     Promise.all(allChanges).then(() => {
       this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });
     }).bind(this);
     
-    /*
-    this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });
-    */
   }
 
 }

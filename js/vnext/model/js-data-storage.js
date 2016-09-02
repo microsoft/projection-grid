@@ -63,7 +63,7 @@ export class JSDataStorage extends Storage {
         headers: { "Content-Type": "application/json" },
         data: JSON.stringify(attrs),
       })
-      .success(resolve)
+      .done(resolve)
       .fail((jqXHR, textStatus, errorThrown) => reject(new Error(errorThrown)));
     });
     //return this.entity.create(attrs);
@@ -80,7 +80,7 @@ export class JSDataStorage extends Storage {
         },
         data: JSON.stringify(attrs),
       })
-      .success(resolve)
+      .done(resolve)
       .fail((jqXHR, textStatus, errorThrown) => reject(new Error(errorThrown)));
     });
   }
@@ -94,7 +94,7 @@ export class JSDataStorage extends Storage {
           "If-Match" : this.etag,
         }
       })
-      .success(resolve)
+      .done(resolve)
       .fail((jqXHR, textStatus, errorThrown) => reject(new Error(errorThrown)));
     });
   }
