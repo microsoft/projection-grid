@@ -93,7 +93,7 @@ function diff(clientState, serverState) {
                 .filter(serverState.exists, serverState)
                 .value();
   const ids = _.union(cids, sids);
-  
+
   const changeLog = {};
   _.each(ids, id => {
     const cFlag = clientState.exists(id);
@@ -134,18 +134,17 @@ export class Editor {
       return Promise.resolve(this._orignal);
     }
     const p$state = this._storage.read(options);
-    const self = this;
-    p$state.then((data, editor = self) => {
+    return p$state.then((data) => {
       const primaryKey = this.primaryKey;
-      editor._orignal = data;
-      editor._data = {};
+      this._orignal = data;
+      this._data = {};
       _.each(data.items, item => {
-        editor._data[item[primaryKey]] = item;
+        this._data[item[primaryKey]] = item;
       });
-    });
-    this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });// TODO: it should be returned by server
-    this._serverEditID = this.model.get('query').serverEditID;
-    return p$state;
+      this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });// TODO: it should be returned by server
+      this._serverEditID = this.model.get('query').serverEditID;
+      return data;
+    }).bind(this);
   }
 
   getItemEditState(key) {
@@ -291,47 +290,90 @@ export class Editor {
   }
 
   commit(){
-    const allChanges = this._changedData;
-    const self = this;
-    
+    //const allChanges = this._changedData;
+    /*
     for(let key in allChanges) {
       const {item, editState} = allChanges[key];
-      new Promise((resolve, reject, editor = self) => {
+      new Promise((resolve, reject) => {
         let serverKey;
         if(editState == 'UPDATED') {
-          editor._storage.update(key, item);
+          this._storage.update(key, item);
         } else if(editState == 'CREATED') {
-          serverKey = editor._storage.create(_.omit(item, editor.primaryKey));
+          serverKey = this._storage.create(_.omit(item, this.primaryKey));
         } else if(editState == 'REMOVED') {
-          editor._storage.destroy(key);
+          this._storage.destroy(key);
         } else {
           // TODO handle error
         }
         resolve(serverKey);
-      }).then((serverKey, clientKey = key, editor = self) => {
-        delete editor._changedData[clientKey];
+      }).bind(this).then((serverKey, clientKey = key) => {
+        delete this._changedData[clientKey];
         if (serverKey) {
-          editor.updatePrimaryKey(clientKey, serverKey);
+          this.updatePrimaryKey(clientKey, serverKey);
         }
-      });
+      }).bind(this);
     }
-    
+    */
     /*
-    new Promise((editor = self) => {
-      const allChanges = editor._changedData;
+    new Promise((resolve, reject) => {
+      const allChanges = this._changedData;
       for (let key in allChanges) {
         const {item, editState} = allChanges[key];
         if (editState === 'UPDATED') {
-          editor._storage.update(key, item);
+          this._storage.update(key, item);
         } else if (editState === 'CREATED') {
-          editor._storage.create(_.omit(item, editor.primaryKey)).then();
+          this._storage.create(item).then((data, clientKey = key) => { //_.omit(item, this.primaryKey)
+            const serverKey = data[this.primaryKey]
+            this.updatePrimaryKey(clientKey, data);
+          }).bind(this);
+        } else if (editState === 'REMOVED') {
+          this._storage.destroy(key);
         }
       }
-    }).then((editor = self) => {
-      editor.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });
-    });
+      resolve();
+    }).bind(this).then(() => {
+      this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });
+    }).bind(this);
     */
+    
+    const allChanges = [];
+    _.mapObject(this._changedData, (value, key) => {
+      const { item, editState } = value;
+      if (editState === 'UPDATED') {
+        const p$update = this._storage.update(key, item).then(
+          (primaryKey = key) => {
+            delete this._changedData[primaryKey];
+          }).bind(this);
+
+        allChanges.push(p$update);
+
+      } else if (editState === 'CREATED') {
+        const p$create = this._storage.create(item).then((data, clientKey = key) => {
+          const serverKey = data[this.primaryKey]
+          this.updatePrimaryKey(clientKey, serverKey);
+          delete this._changedData[serverKey];
+        }).bind(this);
+
+        allChanges.push(p$create);
+
+      } else if (editState === 'REMOVED') {
+        const p$remove = this._storage.destroy(key).then(
+          (primaryKey = key) => {
+            delete this._changedData[primaryKey];
+          }).bind(this);
+
+        allChanges.push(p$remove);
+      }
+      allChanges.push([key, value]);
+    });
+    
+    Promise.all(allChanges).then(() => {
+      this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });
+    }).bind(this);
+    
+    /*
     this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });
+    */
   }
 
 }

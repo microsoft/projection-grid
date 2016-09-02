@@ -46,8 +46,42 @@ export class ODataStorage extends Storage {
     }));
   }
 
+  /*
   update(id, attrs) {
     return new Promise(resolve => window.setTimeout(() => resolve(attrs), 3000));
+  }
+  */
+  create(attrs) {
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: this.url,
+        type: 'POST',
+        header: { "Content-Type": "application/json" },
+        data: JSON.stringify(attrs),
+      }).success(resolve);
+    }); 
+  }
+
+  update(key, attrs) {
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: this.url + "('" + key + "')",
+        type: 'PATCH',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: JSON.stringify(attrs),
+      }).success(resolve);
+    });
+  }
+
+  destroy(key) {
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: this.url+ "('" + key + "')",
+        type: 'DELETE',
+      }).success(resolve);
+    });
   }
 }
 

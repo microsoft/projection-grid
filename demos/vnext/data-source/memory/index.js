@@ -60,7 +60,6 @@ window.gridView = pgrid.factory({ vnext: true }).create({
   },
   columns: [{
     name: '__primary_key__',
-    //bodyClasses: 'primaryKey',
    },{
     name: 'UserName',
     editable: true,

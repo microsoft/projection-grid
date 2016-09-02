@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import $ from 'jquery';
 
 import Promise from 'bluebird';
 import { Storage } from './storage.js';
@@ -7,6 +8,7 @@ export class JSDataStorage extends Storage {
   constructor(options) {
     super(options);
     this.entity = options.entity;
+    this.etag = '*';
   }
 
   read({
@@ -42,22 +44,53 @@ export class JSDataStorage extends Storage {
     }
 
     return this.entity.findAll(options, { all: true })
-      .then(data => ({
-        items: data,
-        itemCount: data.totalCount || 0,
-      }));
+      .then(data => {
+        const itemCount = _.isArray(data) ? data.length : (data.totalCount || 0);
+        this.etag = _.isArray(data) ? data[0]['@odata.etag'] : data.etag;
+        const jsdata = {
+          items: data,
+          itemCount: itemCount,
+        }
+        return jsdata;
+    }).bind(this);
   }
   
   create(attrs) {
-    return this.entity.create(attrs);
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: this.entity.basePath + '/' + this.entity.name,
+        type: 'POST',
+        headers: { "Content-Type": "application/json" },
+        data: JSON.stringify(attrs),
+      }).success(resolve);
+    });
+    //return this.entity.create(attrs);
   }
 
   update(key, attrs) {
-    throw new Error('Not implemented');
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: this.entity.basePath + '/' + this.entity.name + "('" + key + "')",
+        type: 'PATCH',
+        headers: { 
+          "Content-Type": "application/json",
+          "If-Match" : this.etag,
+        },
+        data: JSON.stringify(attrs),
+      }).success(resolve);
+    });
   }
 
   destroy(key) {
-    throw new Error('Not implemented');
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: this.entity.basePath + '/' + this.entity.name + "('" + key + "')",
+        type: 'DELETE',
+        headers: {
+          "If-Match" : this.etag,
+        }
+      }).success(resolve);
+    });
   }
   
 }

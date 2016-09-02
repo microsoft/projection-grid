@@ -166,7 +166,7 @@ export class GridView extends Backbone.View {
       this._chainData,
       this._chainStructure,
       this._chainContent,
-    ], (memo, chain) => chain.update(memo), this.editor.clientEditID)
+    ], (memo, chain) => chain.update(memo), null)
       .then(patchEvents)
       .then(state => this._tableView.set(state))
       .finally(() => this.trigger('didUpdate'));
@@ -213,7 +213,7 @@ export class GridView extends Backbone.View {
     });
     return this;
   }
-
+  
   remove() {
     this._tableView.remove();
     super.remove();

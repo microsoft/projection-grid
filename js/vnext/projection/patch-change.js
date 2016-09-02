@@ -7,16 +7,17 @@ export function patchChange (state,  options) {
     const key = item[primaryKey];
     if(key in changedData) {
       //just for demo
-      memo.push(changedData[key].item);
-      return memo;
-      /*
+      //memo.push(changedData[key].item);
+      //return memo;
+      
+      
       if(changedData[key].editState == 'REMOVED') {
         return memo;
       } else {
         memo.push(changedData[key].item);
         return memo;
       }
-      */
+      
     } else {
       memo.push(item);
       return memo;

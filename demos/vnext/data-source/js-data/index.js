@@ -13,7 +13,25 @@ window.gridView = pgrid.factory({ vnext: true }).create({
   dataSource: {
     type: 'js-data',
     entity: store,
+    primaryKey: 'UserName',
   },
+  editableOption: false,
+  columns: [{
+    name: 'UserName',
+    editable: true,
+  },{
+    name: 'FirstName',
+    editable: true,
+  },{
+    name: 'LastName',
+    editable: true,
+  },{
+    name: 'Emails',
+    editable: true,
+  },{
+    name: 'Gender',
+    editable: true,
+  }],
   /*
   query: {
     skip: 2,

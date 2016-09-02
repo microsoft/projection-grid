@@ -66,7 +66,7 @@ export class MemoryStorage extends Storage {
     const serverKey = _.uniqueId('grid-item-');
     this.data[serverKey] = attrs;
     this.data[serverKey][this.primaryKey] = serverKey
-    return serverKey;
+    return Promise.resolve(this.data[serverKey]);
   }
 
   update(key, attrs) {
@@ -74,10 +74,12 @@ export class MemoryStorage extends Storage {
       return new Error("Data doesn't exist !");
     }
     this.data[key] = defaultsDeep(attrs, this.data[key]);
+    return Promise.resolve('update successfully');
   }
 
   destroy(key) {
-    return delete this.data[key];
+    delete this.data[key];
+    return Promise.resolve('delete successfully');
   }
 
 }
