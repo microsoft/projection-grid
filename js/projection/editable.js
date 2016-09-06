@@ -18,6 +18,8 @@ define([
   return BaseProjection.extend({
     defaults: {
       'column.editable': [],
+      'editable.icon.class': ['glyphicon', 'glyphicon-pencil'],
+      'editable.tooltip.text': 'Edit',
     },
     name: 'column-editable',
     events: {
@@ -66,7 +68,8 @@ define([
       if (BaseProjection.prototype.update.call(this, options)) {
         var model = this.src.data;
         var columns = model.get('columns');
-        var iconClasses = this.get('editable.icon.class') || ['glyphicon', 'glyphicon-pencil'];
+        var iconClasses = this.get('editable.icon.class');
+        var tooltipText = this.get('editable.tooltip.text');
 
         _.each(this.viewConfig, function (view, key) {
           var column = columns[key] || { property: key };
@@ -98,6 +101,7 @@ define([
               value.$html = editableTemplate({
                 $html: $html,
                 text: text,
+                tooltipText: tooltipText,
                 classes: iconClasses,
               });
             }
