@@ -34,7 +34,7 @@ export const jsdata = {
     }
 
     if (orderby && orderby.length) {
-      op.orderby = _.map(orderby, ({ key, direction }) => [key, direction > 0 ? 'ASC' : 'DESC']);
+      op.orderBy = _.map(orderby, ({ key, direction }) => [key, direction > 0 ? 'ASC' : 'DESC']);
     }
 
     return entity.findAll(op, _.defaults(options, { all: true }))
