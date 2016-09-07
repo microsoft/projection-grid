@@ -84,7 +84,7 @@ class ProjectionChain {
       .flatten()
       .each(proj => {
         this.projections.push(proj);
-        this.model.set(proj.name, proj.defaults);
+        this.model.set(proj.name, this.model.get(proj.name) || proj.defaults);
       })
       .value();
     return this;
