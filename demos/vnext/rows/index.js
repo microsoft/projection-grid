@@ -52,15 +52,17 @@ window.gridView = pgrid.factory({ vnext: true }).create({
       },
       'column-header-rows',
     ],
-    bodyRows: [
-      {
-        name: 'data-rows',
-        classes: {
-          redColor: true,
-          longer: (row) => { return row.ShipAddress.length > 15; }, 
-        }
+    bodyRows: [{
+      name: 'data-rows',
+      classes: {
+        redColor: true,
+        longer: (row) => { return row.ShipAddress.length > 15; }, 
       }
-    ],
+    }, {
+      item: {
+        CustomerID: 'foobar',
+      },
+    }],
     footRows: [{
       classes: ['noborder'],
       view: titleFooter,

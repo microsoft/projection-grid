@@ -22,27 +22,35 @@ export const rows = {
     footRows = [],
     bodyRows = [{ name: 'data-rows' }],
   } = {}) {
+    const patch = { headRows, footRows };
+
     const primaryKey = state.primaryKey;
     const changed = this.get('buffer').changed || {};
-    const stateItems = state.items.slice(0, state.items.length);
-    const body = _.reduce(bodyRows, (memo, row) => {
-      if (row === 'data-rows' || row.name === 'data-rows'){
-        _.each(stateItems, stateItem => memo.push(_.extend({}, row, stateItem)));
+
+    const items = state.items.slice(0, state.items.length);
+
+    patch.bodyRows = _.reduce(bodyRows, (memo, row) => {
+      if (row === 'data-rows' || row.name === 'data-rows') {
+        _.each(items, item => {
+          const key = item[primaryKey];
+          const bufferState = _.chain(changed).result(key).result('state').value();
+          const classes = _.union(
+            normalizeClasses(row.classes, item),
+            _.result(bufferStateClasses, bufferState, [])
+          );
+
+          memo.push({ item, classes });
+        });
+      } else if (row.view) {
+        throw new Error('Body row cannot have subviews');
       } else {
         memo.push(row);
       }
+
       return memo;
     }, []);
-    const bodyItems = {
-      length: body.length, 
-      slice: (...args) => body.slice(...args).map(item => {
-        const key = item[primaryKey];
-        const state = _.chain(changed).result(key).result('state').value();
-        const classes = _.union(normalizeClasses(item.classes, item), _.result(bufferStateClasses, state, []));
-        return item.html ? { classes, html: item.html } : { classes, item };
-      }),
-    };
-    return _.defaults({ headRows, bodyRows: bodyItems, footRows }, state);
+
+    return _.defaults(patch, state);
   },
 
   defaluts: {},
