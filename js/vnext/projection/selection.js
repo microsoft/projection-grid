@@ -53,8 +53,7 @@ export function setSelectRow(gridView, key, checked) {
 }
 
 function changeSelectRow(e) {
-  const index = this.indexOfElement(e.target);
-  const key = _.result(this.itemAt(index), this.primaryKey);
+  const key = this.keyOfElement(e.target);
 
   setSelectRow(this, key, e.target.checked);
 }
@@ -83,7 +82,6 @@ export const selection = {
 
     const columns = [{
       name: 'selection',
-      width: '30px',
       html: selectionHeadTemplate({
         single,
         checked: this.countRows > 0 && selected.length === this.countRows,

@@ -30,7 +30,7 @@ export const rows = {
     const items = state.items.slice(0, state.items.length);
 
     patch.bodyRows = _.reduce(bodyRows, (memo, row) => {
-      if (row === 'data-rows' || row.name === 'data-rows') {
+      if (row === 'data-rows' || row.type === 'data-rows') {
         _.each(items, item => {
           const key = item[primaryKey];
           const bufferState = _.chain(changed).result(key).result('state').value();
@@ -39,7 +39,7 @@ export const rows = {
             _.result(bufferStateClasses, bufferState, [])
           );
 
-          memo.push({ item, classes });
+          memo.push({ item, classes, type: 'data' });
         });
       } else if (row.view) {
         throw new Error('Body row cannot have subviews');
