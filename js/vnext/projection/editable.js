@@ -15,8 +15,8 @@ function deepClone(obj) {
 function editInColumn(column) {
   return function (e) {
     const $td = $(e.target).closest('td');
-    const index = this.indexOfElement(e.target);
-    const item = this.itemAt(index);
+    const key = this.keyOfElement(e.target);
+    const item = this.itemWithKey(key);
 
     if($td.hasClass('grid-editable-cell')) {
       this.trigger('willEdit', item);
@@ -68,6 +68,10 @@ export const editable = {
     const bodyRows = {
       length: state.bodyRows.length,
       slice: (...args) => state.bodyRows.slice(...args).map(row => {
+        if (row.type !== 'data') {
+          return row;
+        }
+
         const cells = _.map(row.cells, (cell, index) => {
           const col = leafColumns[index];
 

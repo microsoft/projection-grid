@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import $ from 'jquery';
 import Backbone from 'backbone';
 import Promise from 'bluebird';
 import {
@@ -226,6 +227,23 @@ export class GridView extends Backbone.View {
 
   getItemCount() {
     return _.result(this._chainData.state, 'itemCount', 0);
+  }
+
+  itemWithKey(key) {
+    return _.chain(this._chainData.state)
+      .result('itemIndex')
+      .result(key, null)
+      .value();
+  }
+
+  keyOfElement(el) {
+    const $tr = $(el).closest('tr', this.$el);
+
+    if ($tr.length > 0) {
+      return $tr.attr('data-key') || null;
+    }
+
+    return null;
   }
 
   itemAt(index) {

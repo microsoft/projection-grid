@@ -1,7 +1,12 @@
 import _ from 'underscore';
 import { normalizeClasses } from './common.js';
 
-function translateRow(columnGroup, row, rowType) {
+function translateRow({
+  columnGroup,
+  row,
+  rowType,
+  primaryKey,
+}) {
   const patch = {};
 
   if (_.has(row, 'html')) {
@@ -38,6 +43,10 @@ function translateRow(columnGroup, row, rowType) {
 
       return cell;
     });
+
+    patch.attributes = _.defaults({
+      'data-key': row.item[primaryKey],
+    }, row.attributes);
   }
 
   return _.defaults(patch, row, { attributes: {} });
@@ -59,12 +68,18 @@ export const cells = {
   name: 'cells',
   handler(state) {
     const columnGroup = state.columnGroup;
+    const primaryKey = this.primaryKey;
 
     const headRows = _.reduce(state.headRows, (memo, row) => {
       if (row === 'column-header-rows') {
         return memo.concat(columnGroup.headerRows);
       }
-      memo.push(translateRow(columnGroup, row, 'head'));
+      memo.push(translateRow({
+        columnGroup,
+        row,
+        rowType: 'head',
+        primaryKey,
+      }));
       return memo;
     }, []);
 
@@ -72,11 +87,21 @@ export const cells = {
       length: state.bodyRows.length,
       slice: (begin = 0, end = state.bodyRows.length) => {
         return state.bodyRows.slice(begin, end)
-          .map(row => translateRow(columnGroup, row, 'body'));
+          .map(row => translateRow({
+            columnGroup,
+            row,
+            rowType: 'body',
+            primaryKey,
+          }));
       },
     };
 
-    const footRows = _.map(state.footRows, row => translateRow(columnGroup, row, 'foot'));
+    const footRows = _.map(state.footRows, row => translateRow({
+      columnGroup,
+      row,
+      rowType: 'foot',
+      primaryKey,
+    }));
 
     return _.defaults({
       headRows,
