@@ -20,7 +20,7 @@ export const rows = {
   handler(state, {
     headRows = ['column-header-rows'],
     footRows = [],
-    bodyRows = [{ name: 'data-rows' }],
+    bodyRows = ['data-rows'],
   } = {}) {
     const patch = { headRows, footRows };
 
