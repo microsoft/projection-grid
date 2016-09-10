@@ -20,9 +20,20 @@ function editInColumn(column) {
 
     if($td.hasClass('grid-editable-cell')) {
       this.trigger('willEdit', item);
+
+      const promptPos = {};
+      const offset = $td.offset();
+      if (offset.left > window.innerWidth * 0.9) {
+        promptPos.right = document.body.clientWidth - offset.left;
+      } else {
+        promptPos.left = offset.left;
+      }
+
+      promptPos.top = offset.top;
+
       prompt({
         model: deepClone(item),
-        position: { left: $td.offset().left, top: $td.offset().top },
+        position: promptPos,
         property: column.name,
         onSubmit: model => {
           this.trigger('didEdit', _.isEqual(model, item) ? null : model);
