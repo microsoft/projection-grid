@@ -31,6 +31,8 @@ define([
       this.position = options.position;
       this.model = options.model;
       this.property = options.property;
+      this.saveButtonText = options.saveButtonText || 'Save';
+      this.cancelButtonText = options.cancelButtonText || 'Cancel';
     },
 
     getValue: function () {
@@ -54,7 +56,11 @@ define([
     render: function () {
       var val = this.getValue();
 
-      this.$el.html(template({ value: val }));
+      this.$el.html(template({
+        value: val,
+        saveButtonText: this.saveButtonText,
+        cancelButtonText: this.cancelButtonText,
+      }));
       this.$el.css({
         position: 'absolute',
         left: this.position.left,
