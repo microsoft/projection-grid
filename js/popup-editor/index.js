@@ -53,11 +53,18 @@ define([
       var val = this.getValue();
 
       this.$el.html(template({ value: val }));
-      this.$el.css({
-        position: 'absolute',
-        left: this.position.left,
-        top: this.position.top,
-      });
+      this.$el.css({ position: 'absolute' });
+
+      if (this.position.left) {
+        this.$el.css({ left: this.position.left });
+      } else {
+        this.$el.css({ right: this.position.right });
+      }
+      if (this.position.top) {
+        this.$el.css({ top: this.position.top });
+      } else {
+        this.$el.css({ bottom: this.position.bottom });
+      }
 
       this.dismiss = function () {
         this.trigger('cancel');
