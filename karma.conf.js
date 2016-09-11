@@ -7,9 +7,21 @@ function getWebpackConfig() {
 
   webpackConfig.module.preLoaders = [
     {
+      test: /.js$/,
+      include: /spec/,
+      loader: 'babel',
+      query: {
+        cacheDirectory: true,
+      },
+    },
+    {
       test: /\.js$/,
-      include: path.resolve('./js/'),
+      include: '/js/',
+      exclude: /(spec|node_modules)/,
       loader: 'istanbul-instrumenter',
+      query: {
+        cacheDirectory: true,
+      },
     },
     {
       test: /sinon\.js$/,
