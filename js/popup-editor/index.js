@@ -59,7 +59,6 @@ define([
         saveButtonText: this.saveButtonText,
         cancelButtonText: this.cancelButtonText,
       }));
-      this.$el.html(template({ value: val }));
       this.$el.css({ position: 'absolute' });
 
       if (this.position.left) {
