@@ -72,17 +72,42 @@ class Command {
 function oneLineDiff(cLine, sLine) {
   const cKeys = _.keys(cLine);
   const sKeys = _.keys(sLine);
+  
+  const allKeys = _.union(cKeys, sKeys);
+  const item = {};
+  let isChanged = false;
+  _.chain(cKeys).union(sKeys).each(key => {
+    if (key in cLine){
+      if (!_.isEqual(cLine[key], sLine[key])) {
+        isChanged = true;
+      }
+      item[key] = cLine[key];
+    } else {
+      isChanged = true;
+      item[key] = null;
+    }
+  }).value();
+
+  if (isChanged) {
+    return { item, editState: 'UPDATED', onCommit: false };
+  } else {
+    return null;
+  }
+  
+  /*
   if (cKeys.length != sKeys.length) {
     return { item: cLine, editState: 'UPDATED', onCommit: false };
   } else {
     const allKeys = _.union(cKeys, sKeys);
     for(let i in allKeys) {
       const key = allKeys[i];
-      if (!_.isEqual(cLine, sLine)) {
+      if (!_.isEqual(cLine[key], sLine[key])) {
         return { item: cLine, editState: 'UPDATED', onCommit: false };
       }
     }
   }
+  */
+  
 }
 
 function diff(clientState, serverState) {
@@ -295,42 +320,7 @@ export class Editor {
     this._changedData = diff(clientState, serverState);
     this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
   }
-  /*
-  commit(){
-    const allChanges = [];
-    _.mapObject(this._changedData, (value, key) => {
-      const { item, editState } = value;
-      if (editState === 'UPDATED') {
-        const p$update = this._storage.update(key, item).then(
-          (data, primaryKey = key) => (delete this._changedData[primaryKey]),
-          (error) => (alert(error))).bind(this);
 
-        allChanges.push(p$update);
-
-      } else if (editState === 'CREATED') {
-        const p$create = this._storage.create(item).then((data, clientKey = key) => {
-          const serverKey = data[this.primaryKey]
-          this.updatePrimaryKey(clientKey, serverKey);
-          delete this._changedData[serverKey];
-        }).bind(this);
-
-        allChanges.push(p$create);
-
-      } else if (editState === 'REMOVED') {
-        const p$remove = this._storage.destroy(key).then(
-          (data, primaryKey = key) => {
-            delete this._changedData[primaryKey];
-          }).bind(this);
-
-        allChanges.push(p$remove);
-      }
-    });
-
-    Promise.all(allChanges).then(() => {
-      this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });
-    }).bind(this); 
-  }
-  */
   commit() {
     let clientState;
 

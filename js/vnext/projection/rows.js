@@ -28,28 +28,33 @@ export const rows = {
     footRows = [],
     bodyRows = ['data-rows'],
   } = {}) {
+    const patch = { headRows, footRows };
 
-    const primaryKey = this.editor.primaryKey;
-    const stateItems = state.items.slice(0, state.items.length);
-    const body = _.reduce(bodyRows, (memo, row) => {
+    const primaryKey = state.primaryKey;
+    const items = state.items.slice(0, state.items.length);
+
+    patch.bodyRows = _.reduce(bodyRows, (memo, row) => {
       if (row === 'data-rows' || row.name === 'data-rows'){
-        _.each(stateItems, stateItem => memo.push(_.extend({}, row, stateItem)));
+        _.each(items, item => {
+          const key = item[primaryKey];
+          const editState = this.editor.getItemEditState(key);
+          const classes = _.union(
+            normalizeClasses(item.classes, item), 
+            _.result(editStateClasses, editState, [])
+          );
+
+          memo.push({ item, classes, type: 'data' });
+        });
+      } else if (row.view) {
+        throw new Error('Body row cannot have subviews');
       } else {
         memo.push(row);
       }
+
       return memo;
     }, []);
 
-    const bodyItems = {
-      length: body.length, 
-      slice: (...args) => body.slice(...args).map(item => {
-        const key = item[primaryKey];
-        const editState = this.editor.getItemEditState(key);
-        const classes = _.union(normalizeClasses(item.classes, item), _.result(editStateClasses, editState, []));
-        return item.html ? { classes, html: item.html } : { classes, item };
-      }),
-    };
-    return _.defaults({ headRows, bodyRows: bodyItems, footRows }, state);
+    return _.defaults(patch, state);
   },
 
   defaluts: {},

@@ -8,6 +8,9 @@ export default (definePlugin) =>
     ], ({
       plugins: { dataSource } = {},
     } = {}, gridView) => {
-      gridView.editor = new Editor(dataSource, gridView.model);
+      const editor = new Editor(dataSource, gridView.model);
+      gridView.set({
+        dataSource: _.defaults({ read: editor.read }, dataSource),
+      });
 
   });
