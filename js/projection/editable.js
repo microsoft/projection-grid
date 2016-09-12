@@ -5,7 +5,7 @@ define([
   'component/grid/layout/template/editable.jade',
   'component/popup-editor/index',
   '../../less/editable.less',
-], function (_, $, BaseProjection, editableTemplate, prompt) {
+], function (_, $, BaseProjection, defaultEditableTemplate, prompt) {
   'use strict';
 
   function isReadonlyRow(item) {
@@ -20,6 +20,7 @@ define([
       'column.editable': [],
       'editable.icon.class': ['glyphicon', 'glyphicon-pencil'],
       'editable.tooltip.text': 'Edit',
+      'editable.template': defaultEditableTemplate,
     },
     name: 'column-editable',
     events: {
@@ -70,6 +71,7 @@ define([
         var columns = model.get('columns');
         var iconClasses = this.get('editable.icon.class');
         var tooltipText = this.get('editable.tooltip.text');
+        var editableTemplate = this.get('editable.template');
 
         _.each(this.viewConfig, function (view, key) {
           var column = columns[key] || { property: key };
@@ -125,11 +127,11 @@ define([
         e.target.tagName !== 'A' &&
         $(e.target).closest('.is-not-trigger').length === 0) {
         schema = arg.grid.options.get('schema');
-        let editor = this.viewConfig[property] || prompt;
+        let editor = this.viewConfig[arg.property] || prompt;
         editor({
           model: arg.model,
           schema: schema,
-          position: arg.grid.layout.container.offset(e.target),
+          position: arg.grid.layout.container.offset(e.currentTarget),
           property: property,
           onSubmit: model => {
             this.trigger('edit', model, property);

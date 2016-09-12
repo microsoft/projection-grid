@@ -9,4 +9,3 @@ export { sortableHeader } from './sortable-header.js';
 export { editable } from './editable.js';
 export { editableOption } from './editable-option.js';
 export { events } from './events.js';
-

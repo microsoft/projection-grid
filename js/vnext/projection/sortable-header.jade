@@ -1,3 +1,7 @@
-- var classGlyphicon = direction < 0 ? 'glyphicon-arrow-down' : 'glyphicon-arrow-up';
-span.sort-indicator.glyphicon(class=classGlyphicon)
+if direction < 0
+  span.sort-indicator.glyphicon.glyphicon-arrow-down
+else if direction > 0
+  span.sort-indicator.glyphicon.glyphicon-arrow-up
+
 != html
+

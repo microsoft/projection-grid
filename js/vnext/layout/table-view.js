@@ -168,6 +168,10 @@ export class TableView extends Backbone.View {
     const $stickyHeaderFiller = this.$('.sticky-header-filler');
     const $table = this.$('.sticky-header-filler + table');
     const adjustStickyHeader = () => {
+      if (!this.$el.is(':visible')) {
+        return;
+      }
+
       const topVP = listView.viewport.getMetrics().outer.top;
       const offset = _.result(this._props.scrolling.header, 'offset', 0);
       const rectContainer =  $tableContainer.get(0).getBoundingClientRect();

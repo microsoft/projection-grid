@@ -26,9 +26,10 @@ export const rows = {
   handler(state, {
     headRows = ['column-header-rows'],
     footRows = [],
-    bodyRows = [{ name: 'data-rows' }],
+    bodyRows = ['data-rows'],
   } = {}) {
-    const primaryKey = this.editor.primaryKey;
+
+    const primaryKey = state.primaryKey;
     const stateItems = state.items.slice(0, state.items.length);
     const body = _.reduce(bodyRows, (memo, row) => {
       if (row === 'data-rows' || row.name === 'data-rows'){
@@ -38,6 +39,7 @@ export const rows = {
       }
       return memo;
     }, []);
+
     const bodyItems = {
       length: body.length, 
       slice: (...args) => body.slice(...args).map(item => {
