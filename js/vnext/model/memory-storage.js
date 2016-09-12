@@ -56,10 +56,22 @@ export class MemoryStorage extends Storage {
     const start = _.isUndefined(skip) ? 0 : skip;
     const stop = _.isUndefined(take) ? data.length : start + take;
 
-    return Promise.resolve({
-      itemCount: data.length || 0,
-      items: data.slice(start, stop),
+    const itemCount = data.length || 0;
+    const items = data.slice(start, stop);
+    const itemIndex = {};
+
+    _.each(items, item => {
+      itemIndex[item[this.primaryKey]] = item;
     });
+
+    return Promise.resolve({
+        uniqueId: _.uniqueId('grid-data-'),
+        items,
+        itemIndex,
+        primaryKey: this.primaryKey,
+        update: _.noop,
+        itemCount,
+    }).bind(this);
   }
 
   create(attrs) {

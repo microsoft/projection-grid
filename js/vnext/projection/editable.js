@@ -70,10 +70,11 @@ export const editable = {
     const bodyRows = {
       length: state.bodyRows.length,
       slice: (...args) => state.bodyRows.slice(...args).map(row => {
+        /*
         if (row.type !== 'data') {
           return row;
         }
-
+        */
         const cells = _.map(row.cells, (cell, index) => {
           const col = leafColumns[index];
 

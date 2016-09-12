@@ -46,12 +46,22 @@ export class JSDataStorage extends Storage {
     return this.entity.findAll(options, { all: true })
       .then(data => {
         const itemCount = _.isArray(data) ? data.length : (data.totalCount || 0);
+        const itemIndex = {};
+
+        _.each(items, item => {
+          itemIndex[item[this.primaryKey]] = item;
+        });
+
         this.etag = _.isArray(data) ? data[0]['@odata.etag'] : data.etag;
-        const jsdata = {
+
+        return {
+          uniqueId: _.uniqueId('grid-data-'),
           items: data,
-          itemCount: itemCount,
-        }
-        return jsdata;
+          itemIndex,
+          primaryKey: this.primaryKey,
+          update: _.noop,
+          itemCount,
+        };
     }).bind(this);
   }
   

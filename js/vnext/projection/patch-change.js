@@ -3,7 +3,9 @@ import _ from 'underscore';
 export function patchChange (state,  options) {
   const changedData = this.editor._changedData;
   const primaryKey = this.editor.primaryKey;
-  const data = _.reduce(state.items, (memo, item) => {
+  const itemIndex = state.itemIndex;
+  const itemCount = state.itemCount; 
+  const items = _.reduce(state.items, (memo, item, itemCount) => {
     const key = item[primaryKey];
     if(key in changedData) {
       //just for demo
@@ -12,6 +14,7 @@ export function patchChange (state,  options) {
       
       
       if(changedData[key].editState == 'REMOVED') {
+        itemCount--;
         return memo;
       } else {
         memo.push(changedData[key].item);
@@ -23,10 +26,12 @@ export function patchChange (state,  options) {
       return memo;
     }
   }, []);
-  _.each(changedData, change => {
+  _.each(changedData, (change, key, itemCount) => {
     if(change.editState == 'CREATED') {
-      data.unshift(change.item);
+      items.unshift(change.item);
+      itemIndex[key] = change.item;
+      itemCount++;
     }
   });
-  return _.defaults({ items: data }, state);
+  return _.defaults({ items, itemIndex, itemCount }, state);
 }

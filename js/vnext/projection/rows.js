@@ -29,7 +29,7 @@ export const rows = {
     bodyRows = ['data-rows'],
   } = {}) {
 
-    const primaryKey = state.primaryKey;
+    const primaryKey = this.editor.primaryKey;
     const stateItems = state.items.slice(0, state.items.length);
     const body = _.reduce(bodyRows, (memo, row) => {
       if (row === 'data-rows' || row.name === 'data-rows'){

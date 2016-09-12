@@ -138,10 +138,8 @@ export class Editor {
     return p$state.then((data) => {
       const primaryKey = this.primaryKey;
       this._orignal = data;
-      this._data = {};
-      _.each(data.items, item => {
-        this._data[item[primaryKey]] = item;
-      });
+      this._data = $.extend(true, {}, data.itemIndex);
+
       this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });// TODO: it should be returned by server
       this._serverEditID = this.model.get('query').serverEditID;
       return data;

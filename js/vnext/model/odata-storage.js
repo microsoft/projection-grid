@@ -40,10 +40,24 @@ export class ODataStorage extends Storage {
       $.getJSON(_.result(options, 'url'), _.omit(options, 'url'))
         .success(resolve)
         .fail((jqXHR, textStatus, errorThrown) => reject(new Error(errorThrown)));
-    }).then(data => ({
-      items: data.value || [],
-      itemCount: data['@odata.count'] || 0,
-    }));
+    }).then(data => {
+      const items = data.value || [];
+      const itemCount = data['@odata.count'] || 0;
+      const itemIndex = {};
+
+      _.each(items, item => {
+        itemIndex[item[this.primaryKey]] = item;
+      });
+
+      return {
+        uniqueId: _.uniqueId('grid-data-'),
+        items,
+        itemIndex,
+        primaryKey: this.primaryKey,
+        update: _.noop,
+        itemCount,
+      };
+    }).bind(this);
   }
 
   /*

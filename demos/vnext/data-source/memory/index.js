@@ -72,6 +72,7 @@ window.gridView = pgrid.factory({ vnext: true }).create({
   },{
     name: 'Emails',
     editable: true,
+    width: 100,
   },{
     name: 'Gender',
     editable: true,
