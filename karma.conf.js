@@ -1,28 +1,10 @@
 var _ = require('underscore');
-var path = require('path');
 
 function getWebpackConfig() {
   var webpackConfig = _.omit(require('./webpack.config'), 'entry', 'externals');
   _.defaults(webpackConfig, { module: {} });
 
   webpackConfig.module.preLoaders = [
-    {
-      test: /.js$/,
-      include: /spec/,
-      loader: 'babel',
-      query: {
-        cacheDirectory: true,
-      },
-    },
-    {
-      test: /\.js$/,
-      include: '/js/',
-      exclude: /(spec|node_modules)/,
-      loader: 'istanbul-instrumenter',
-      query: {
-        cacheDirectory: true,
-      },
-    },
     {
       test: /sinon\.js$/,
       loader: 'imports?define=>false,require=>false',
@@ -34,6 +16,11 @@ function getWebpackConfig() {
   _.extend(webpackConfig.resolve.alias, {
     sinon: 'sinon/pkg/sinon.js',
   });
+
+  _.extend(webpackConfig.babel, {
+    plugins: ['istanbul'],
+  });
+
   webpackConfig.devtool = 'inline-source-map';
   return webpackConfig;
 }
