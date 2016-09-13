@@ -11,7 +11,7 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     virtualized: true,
   },
   dataSource: {
-    type: 'jsdata',
+    type: 'js-data',
     entity: store,
   },
 }).gridView.render();
