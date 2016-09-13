@@ -39,7 +39,7 @@ export const rows = {
           const key = item[primaryKey];
           const editState = editor.getItemEditState(key);
           const classes = _.union(
-            normalizeClasses(row.classes, item), 
+            normalizeClasses(item.classes, item), 
             _.result(editStateClasses, editState, [])
           );
 

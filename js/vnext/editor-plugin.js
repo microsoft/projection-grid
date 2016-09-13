@@ -19,4 +19,5 @@ export default (definePlugin) =>
         patchChange: { editor },
         editable: { editor },
       });
+
   });

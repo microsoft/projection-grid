@@ -226,11 +226,10 @@ export class GridView extends Backbone.View {
     return _.result(this._chainData.state, 'items', []).length;
   }
 
- 
   get primaryKey() {
     return _.result(this._chainData.state, 'primaryKey');
   }
-  
+
   getItemCount() {
     return _.result(this._chainData.state, 'itemCount', 0);
   }
