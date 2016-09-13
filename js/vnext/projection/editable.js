@@ -12,7 +12,7 @@ function deepClone(obj) {
   return obj;
 }
 
-function editInColumn(column, editor) {
+function editInColumn(column) {
   return function (e) {
     const $td = $(e.target).closest('td');
     const key = this.keyOfElement(e.target);
@@ -37,7 +37,7 @@ function editInColumn(column, editor) {
         property: column.name,
         onSubmit: model => {
           this.trigger('didEdit', _.isEqual(model, item) ? null : model);
-          editor.update(model[editor.primaryKey], model);/*TODO: the global value gridView may not be used*/
+          gridView.editor.update(model[gridView.editor.primaryKey], model);/*TODO: the global value gridView may not be used*/
         },
         onCancel: model => {
           this.trigger('didEdit', null);
@@ -60,11 +60,11 @@ function editInColumn(column, editor) {
 */
 export const editable = {
   name: 'editable',
-  handler(state, options) {
+  handler(state) {
     const leafColumns = state.columnGroup.leafColumns;
     const iconClasses = ['glyphicon', 'glyphicon-pencil'];
     const events = _.reduce(leafColumns, (memo, col) => {
-      memo[`click td.grid-editable-cell.grid-column-${col.name}`] = editInColumn(col, options.editor);
+      memo[`click td.grid-editable-cell.grid-column-${col.name}`] = editInColumn(col);
       return memo;
     }, {});
     const bodyRows = {

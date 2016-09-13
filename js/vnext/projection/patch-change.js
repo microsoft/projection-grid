@@ -1,8 +1,8 @@
 import _ from 'underscore';
 
 export function patchChange (state,  options) {
-  const changedData = options.editor._changedData;
-  const primaryKey = state.primaryKey;
+  const changedData = this.editor._changedData;
+  const primaryKey = this.editor.primaryKey;
   const itemIndex = state.itemIndex;
   const itemCount = state.itemCount; 
   const items = _.reduce(state.items, (memo, item, itemCount) => {
