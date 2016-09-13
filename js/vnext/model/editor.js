@@ -165,7 +165,8 @@ export class Editor {
       this._orignal = data;
       this._data = $.extend(true, {}, data.itemIndex);
 
-      this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });// TODO: it should be returned by server
+      const query = _.defaults({ serverEditID: _.uniqueId('serverEditID') }, this.model.get('query'));
+      this.model.set({ query });// TODO: it should be returned by server
       this._serverEditID = this.model.get('query').serverEditID;
       return data;
     }).bind(this);
@@ -218,7 +219,8 @@ export class Editor {
   create(item) {
     this.createItem(item);
     this.addCommond(new Command(this._changedData, this._data));
-    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
+    const patchChange = _.defaults({ clientEditID: _.uniqueId('clientEditID') }, this.model.get('patchChange'));
+    this.model.set({ patchChange });
   }
 
   updatePrimaryKey(clientKey, serverKey) {
@@ -260,13 +262,15 @@ export class Editor {
   destroy(key) {
     this.destroyItem(key);
     this.addCommond(new Command(this._changedData, this._data));
-    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
+    const patchChange = _.defaults({ clientEditID: _.uniqueId('clientEditID') }, this.model.get('patchChange'));
+    this.model.set({ patchChange });
   }
 
   destroyAll(...keys) {
     _.each(keys, key => (this.destroyItem(key)));
     this.addCommond(new Command(this._changedData, this._data));
-    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
+    const patchChange = _.defaults({ clientEditID: _.uniqueId('clientEditID') }, this.model.get('patchChange'));
+    this.model.set({ patchChange });
   }
 
   updateItem(key, attrs) {
@@ -283,13 +287,15 @@ export class Editor {
   update(key, attrs) {
     this.updateItem(key, attrs);
     this.addCommond(new Command(this._changedData, this._data));
-    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
+    const patchChange = _.defaults({ clientEditID: _.uniqueId('clientEditID') }, this.model.get('patchChange'));
+    this.model.set({ patchChange });
   }
 
   updateAll(...params) { /* param { key: key, attrs: {} } */
     _.each(params, param => (this.updateItem(param.key, param.attrs)));
     this.addCommond(new Command(this._changedData, this._data));
-    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
+    const patchChange = _.defaults({ clientEditID: _.uniqueId('clientEditID') }, this.model.get('patchChange'));
+    this.model.set({ patchChange });
   }
 
   undo() {
@@ -307,7 +313,8 @@ export class Editor {
     
     const serverState = new Command({}, this._data);
     this._changedData = diff(clientState, serverState);
-    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
+    const patchChange = _.defaults({ clientEditID: _.uniqueId('clientEditID') }, this.model.get('patchChange'));
+    this.model.set({ patchChange });
   }
 
   redo() {
@@ -318,7 +325,8 @@ export class Editor {
     const clientState = this._commandChain[this._head];
     const serverState = new Command({}, this._data);
     this._changedData = diff(clientState, serverState);
-    this.model.set({ patchChange: { clientEditID: _.uniqueId('clientEditID') } });
+    const patchChange = _.defaults({ clientEditID: _.uniqueId('clientEditID') }, this.model.get('patchChange'));
+    this.model.set({ patchChange });
   }
 
   commit() {
@@ -366,7 +374,8 @@ export class Editor {
     });
 
     Promise.all(allChanges).then(() => {
-      this.model.set({ query: { serverEditID: _.uniqueId('serverEditID') } });
+      const query = _.defaults({ serverEditID: _.uniqueId('serverEditID') }, this.model.get('query'));
+      this.model.set({ query });
     }).bind(this); 
   }
 

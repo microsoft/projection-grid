@@ -12,7 +12,7 @@ function deepClone(obj) {
   return obj;
 }
 
-function editInColumn(column, editor) {
+function editInColumn(column) {
   return function (e) {
     const $td = $(e.target).closest('td');
     const key = this.keyOfElement(e.target);
@@ -60,11 +60,11 @@ function editInColumn(column, editor) {
 */
 export const editable = {
   name: 'editable',
-  handler(state, options) {
+  handler(state) {
     const leafColumns = state.columnGroup.leafColumns;
     const iconClasses = ['glyphicon', 'glyphicon-pencil'];
     const events = _.reduce(leafColumns, (memo, col) => {
-      memo[`click td.grid-editable-cell.grid-column-${col.name}`] = editInColumn(col, options.editor);
+      memo[`click td.grid-editable-cell.grid-column-${col.name}`] = editInColumn(col);
       return memo;
     }, {});
     const bodyRows = {

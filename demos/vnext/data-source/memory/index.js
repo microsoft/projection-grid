@@ -13,28 +13,28 @@ window.toolbar = new ToolbarView({
     classes: ['btn', 'btn-primary', 'create-row'],
     text: 'CREATE',
     onClick(e) {
-      gridView.editor.create({});
+      editor.create({});
     }
   },{
     type: 'button',
     classes: ['btn', 'btn-primary', 'undo'],
     text: 'UNDO',
     onClick(e) {
-      gridView.editor.undo();
+      editor.undo();
     }
   },{
     type: 'button',
     classes: ['btn', 'btn-primary', 'redo'],
     text: 'REDO',
     onClick(e) {
-      gridView.editor.redo();
+      editor.redo();
     }
   },{
     type: 'button',
     classes: ['btn', 'btn-success', 'commit'],
     text: 'COMMIT',
     onClick(e) {
-      gridView.editor.commit();
+      editor.commit();
     }
   }],
 }).render();

@@ -3,7 +3,7 @@ import $ from 'jquery';
 import Backbone from 'backbone';
 import editableOptionTemplate from './editable-option.jade';
 
-function deleteRow(editor) {
+function deleteRow() {
   return function (e) {
     const index = this.indexOfElement(e.target);
     const primaryKey = _.result(this.itemAt(index), this.primaryKey);
@@ -11,7 +11,7 @@ function deleteRow(editor) {
   };
 }
 
-function createRow(editor) {
+function createRow() {
   return function (e) {
     editor.create({});
   };
@@ -30,9 +30,8 @@ export const editableOption = {
       template: editableOptionTemplate,
     }]);
 
-    const editor = this.editor;
     const events = _.defaults({
-      'click button.delete': deleteRow(editor),
+      'click button.delete': deleteRow(),
       /*'click button.undo': editor.undo.bind(editor),
       'click button.redo': editor.redo.bind(editor),
       'click button.commit': editor.commit.bind(editor),
