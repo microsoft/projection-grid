@@ -128,18 +128,18 @@ export class GridView extends Backbone.View {
       defaults: proj.defaults,
     });
 
-    this.editor = new Editor(dataSource, this.model);
+    //this.editor = new Editor(dataSource, this.model);
 
     this._chainData = new ProjectionChain(this.model);
     this._chainStructure = new ProjectionChain(this.model);
     this._chainContent = new ProjectionChain(this.model);
 
-    this.pipeDataProjections(query, patchChange);
+    this.pipeDataProjections(query);
     this.pipeStructureProjections(columns, rows, selection, editableOption);
     this.pipeContentProjections([
       columnGroup,
       cells,
-      editable,
+      //editable,
       sortableHeader,
       events,
     ]);
@@ -226,10 +226,11 @@ export class GridView extends Backbone.View {
     return _.result(this._chainData.state, 'items', []).length;
   }
 
+ 
   get primaryKey() {
-    return this.editor.primaryKey;
+    return _.result(this._chainData.state, 'primaryKey');
   }
-
+  
   getItemCount() {
     return _.result(this._chainData.state, 'itemCount', 0);
   }

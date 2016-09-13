@@ -1,5 +1,6 @@
 import pgrid from '../../../../js';
 import { ToolbarView } from 'backbone-toolbar';
+import EditorCoxe from '../../../../js/vnext/editor-plugin.js';
 import people from './people.json';
 
 import './index.less';
@@ -38,7 +39,7 @@ window.toolbar = new ToolbarView({
   }],
 }).render();
 
-window.gridView = pgrid.factory({ vnext: true }).create({
+window.gridView = pgrid.factory({ vnext: true }).use(EditorCoxe).create({
   el: '.grid-container',
   tableClasses: ['table', 'table-bordered'],
   scrolling: {

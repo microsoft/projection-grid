@@ -37,9 +37,9 @@ export const rows = {
       if (row === 'data-rows' || row.name === 'data-rows'){
         _.each(items, item => {
           const key = item[primaryKey];
-          const editState = this.editor.getItemEditState(key);
+          const editState = '';//this.editor.getItemEditState(key);
           const classes = _.union(
-            normalizeClasses(item.classes, item), 
+            normalizeClasses(row.classes, item), 
             _.result(editStateClasses, editState, [])
           );
 
