@@ -119,7 +119,7 @@ class ColumnGroup {
     };
 
     /**
-     * Build column header with BFS
+     * Build column header with DFS
      */
     const buildColumnHeader = col => {
       if (col.parent) {
@@ -175,7 +175,7 @@ function translateColumnGroup(columnGroup) {
     return {
       classes: colClasses,
       width: _.isNumber(col.width) ? `${col.width}px` : col.width,
-    }
+    };
   });
 }
 

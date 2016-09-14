@@ -167,7 +167,7 @@ export class TableView extends Backbone.View {
     const $stickyHeader = this.$('.sticky-header');
     const $stickyHeaderFiller = this.$('.sticky-header-filler');
     const $table = this.$('.sticky-header-filler + table');
-    const adjustStickyHeader = () => {
+    const adjustStickyHeader = (resize) => {
       if (!this.$el.is(':visible')) {
         return;
       }
@@ -183,12 +183,20 @@ export class TableView extends Backbone.View {
           display: sticky ? 'block' : 'none',
           height: sticky ? $stickyHeader.height() : '',
         });
-        $stickyHeader.css({
+
+        const style = {
           position: sticky ? 'fixed' : 'static',
           top: sticky ? topVP + offset : '',
-          width: sticky ? $tableContainer.width() : '',
           left: sticky ? rectContainer.left : '',
-        });
+        };
+
+        if (resize) {
+          // Let the content table layout freely, then sync the width to sticky header
+          $stickyHeader.css({ width: 'auto' });
+          style.width = $table.width();
+        }
+
+        $stickyHeader.css(style);
       } else {
         $stickyHeaderFiller.css({
           display: 'none',
@@ -200,8 +208,9 @@ export class TableView extends Backbone.View {
       }
     };
 
-    listView.viewport.on('change', adjustStickyHeader);
-    listView.on('didRedraw', adjustStickyHeader);
+    listView.viewport.on('resize', _.partial(adjustStickyHeader, true));
+    listView.viewport.on('scroll', _.partial(adjustStickyHeader, false));
+    listView.on('didRedraw', _.partial(adjustStickyHeader, true));
   }
 
   _renderStatic(callback) {
