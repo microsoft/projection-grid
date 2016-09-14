@@ -30,7 +30,6 @@ module.exports = {
     umdNamedDefine: false,
     devtoolModuleFilenameTemplate: function (info) {
       if (path.isAbsolute(info.absoluteResourcePath)) {
-        // return 'webpack-src:///projection-grid/' + path.posix.relative('.', info.absoluteResourcePath);
         return 'webpack-src:///projection-grid/' + path.relative('.', info.absoluteResourcePath).replace(/\\/g, '/');
       }
       return info.absoluteResourcePath;
