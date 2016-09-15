@@ -2,21 +2,35 @@ import _ from 'underscore';
 import selectionHeadTemplate from './selection-head.jade';
 import selectionBodyTemplate from './selection-body.jade';
 
-function normalize(selection) {
-  return _.defaults(_.isObject(selection) ? selection : {}, {
+function normalize(selection, items, primaryKey) {
+  const config = _.defaults({}, _.isObject(selection) ? selection : {}, {
     single: false,
     selected: [],
+    selectable: (item) => _.has(item, primaryKey),
+    colClasses: [],
     headClasses: [],
     bodyClasses: [],
+    footClasses: [],
   });
+
+  if (_.isFunction(config.selectable)) {
+    config.selectable = _.chain(items.slice())
+      .filter(config.selectable)
+      .pluck(primaryKey)
+      .map(String)
+      .value();
+  }
+
+  return config;
 }
 
 export function setSelectAll(gridView, checked) {
-  let selection = normalize(gridView.get('selection'));
+  const items = _.result(gridView._chainData.state, 'items', []);
+  let selection = normalize(gridView.get('selection'), items, gridView.primaryKey);
 
   if (checked) {
     selection = _.defaults({
-      selected: _.keys(gridView._chainData.state.itemIndex),
+      selected: selection.selectable,
     }, selection);
   } else {
     selection = _.defaults({
@@ -33,7 +47,12 @@ function changeSelectAll(e) {
 
 export function setSelectRow(gridView, key, checked) {
   const keyStr = key.toString();
-  let selection = normalize(gridView.get('selection'));
+  const items = _.result(gridView._chainData.state, 'items', []);
+  let selection = normalize(gridView.get('selection'), items, gridView.primaryKey);
+
+  if (!_.contains(selection.selectable, key)) {
+    return;
+  }
 
   if (selection.single) {
     selection = _.defaults({ selected: [keyStr] }, selection);
@@ -73,27 +92,42 @@ export const selection = {
       return state;
     }
 
-    const { selected, single, headClasses, bodyClasses } = normalize(selection);
-    const selectedIndex = _.reduce(selected, (memo, key) => {
+    const {
+      selected,
+      single,
+      colClasses,
+      headClasses,
+      bodyClasses,
+      footClasses,
+      selectable,
+    } = normalize(selection, state.items, state.primaryKey);
+
+    const [selectedIndex, selectableIndex] = _.map([
+      selected,
+      selectable,
+    ], keys => _.reduce(keys, (memo, key) => {
       memo[key] = true;
       return memo;
-    }, {});
+    }, {}));
     const primaryKey = state.primaryKey;
 
     const columns = [{
       name: 'selection',
       html: selectionHeadTemplate({
         single,
-        checked: this.countRows > 0 && selected.length === this.countRows,
+        checked: selectable.length > 0 && selected.length == selectable.length,
       }),
       template: selectionBodyTemplate,
       property: item => ({ 
         single,
+        selectable: selectableIndex[item[primaryKey]],
         checked: selectedIndex[item[primaryKey]],
       }),
       sortable: false,
+      colClasses,
       headClasses,
       bodyClasses,
+      footClasses,
     }].concat(state.columns);
 
     const events = _.defaults({

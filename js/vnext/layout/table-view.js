@@ -193,7 +193,10 @@ export class TableView extends Backbone.View {
         if (resize) {
           // Let the content table layout freely, then sync the width to sticky header
           $stickyHeader.css({ width: 'auto' });
-          style.width = $table.width();
+          $table.css({ width: 'auto' });
+          const width = $tableContainer.width();
+          style.width = width;
+          $table.css({ width });
         }
 
         $stickyHeader.css(style);
