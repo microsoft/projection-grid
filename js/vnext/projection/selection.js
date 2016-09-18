@@ -2,35 +2,30 @@ import _ from 'underscore';
 import selectionHeadTemplate from './selection-head.jade';
 import selectionBodyTemplate from './selection-body.jade';
 
-function normalize(selection, items, primaryKey) {
+function normalize(selection, items, gridView) {
   const config = _.defaults({}, _.isObject(selection) ? selection : {}, {
     single: false,
     selected: [],
-    selectable: (item) => _.has(item, primaryKey),
+    selectable: (item) => _.has(item, gridView.primaryKey),
     colClasses: [],
     headClasses: [],
     bodyClasses: [],
     footClasses: [],
   });
 
-  if (_.isFunction(config.selectable)) {
-    config.selectable = _.chain(items.slice())
-      .filter(config.selectable)
-      .pluck(primaryKey)
-      .map(String)
-      .value();
-  }
-
   return config;
 }
 
 export function setSelectAll(gridView, checked) {
   const items = _.result(gridView._chainData.state, 'items', []);
-  let selection = normalize(gridView.get('selection'), items, gridView.primaryKey);
+  let selection = normalize(gridView.get('selection'), items, gridView);
+
 
   if (checked) {
     selection = _.defaults({
-      selected: selection.selectable,
+      selected: _.filter(selection.selected, (key) => {
+        return selection.selectable(gridView.itemWithKey(key));
+      }),
     }, selection);
   } else {
     selection = _.defaults({
@@ -48,11 +43,7 @@ function changeSelectAll(e) {
 export function setSelectRow(gridView, key, checked) {
   const keyStr = key.toString();
   const items = _.result(gridView._chainData.state, 'items', []);
-  let selection = normalize(gridView.get('selection'), items, gridView.primaryKey);
-
-  if (!_.contains(selection.selectable, key)) {
-    return;
-  }
+  let selection = normalize(gridView.get('selection'), items, gridView);
 
   if (selection.single) {
     selection = _.defaults({ selected: [keyStr] }, selection);
@@ -100,29 +91,36 @@ export const selection = {
       bodyClasses,
       footClasses,
       selectable,
-    } = normalize(selection, state.items, state.primaryKey);
+    } = normalize(selection, state.items, this);
 
-    const [selectedIndex, selectableIndex] = _.map([
-      selected,
-      selectable,
-    ], keys => _.reduce(keys, (memo, key) => {
+    const selectedIndex = _.reduce(selected, (memo, key) => {
       memo[key] = true;
       return memo;
-    }, {}));
+    }, {});
     const primaryKey = state.primaryKey;
+    let selectedAll = false;
+
+    if (!single) {
+      const selectableCount = _.filter(state.items.slice(), selectable).length;
+      const selectedCount = _.filter(selected, key => selectable(gridView.itemWithKey(key))).length;
+
+      selectedAll = selectedCount === selectableCount;
+    }
 
     const columns = [{
       name: 'selection',
       html: selectionHeadTemplate({
         single,
-        checked: selectable.length > 0 && selected.length == selectable.length,
+        checked: selectedAll
       }),
       template: selectionBodyTemplate,
-      property: item => ({ 
-        single,
-        selectable: selectableIndex[item[primaryKey]],
-        checked: selectedIndex[item[primaryKey]],
-      }),
+      property: item => {
+        return { 
+          single,
+          selectable: selectable(item),
+          checked: selectedIndex[item[primaryKey]],
+        };
+      },
       sortable: false,
       colClasses,
       headClasses,
