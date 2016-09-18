@@ -102,7 +102,7 @@ export const selection = {
 
     if (!single) {
       const selectableCount = _.filter(state.items.slice(), selectable).length;
-      const selectedCount = _.filter(selected, key => selectable(gridView.itemWithKey(key))).length;
+      const selectedCount = _.filter(selected, key => selectable(this.itemWithKey(key))).length;
 
       selectedAll = selectedCount === selectableCount;
     }
