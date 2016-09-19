@@ -14,6 +14,17 @@ import columnGroupTemplate from './column-group.jade';
 const STATE_OPTIONS = ['cols', 'headRows', 'bodyRows', 'footRows', 'events'];
 const HEADER_TYPES = ['static', 'fixed', 'sticky'];
 
+/**
+ * Table view with virtualization support
+ * @class TableView
+ * @extends Backbone.View
+ * @param {Object} options
+ *  the constructor options
+ * @param {string[]} [options.classes=[]]
+ *  the classes for the TABLE elements (content table and sticky/fixed header)
+ * @param {ScrollingConfig} [options.scrolling={virtualized: false, header: 'static'}]
+ *  the scrolling related configurations
+ */
 export class TableView extends Backbone.View {
   initialize({ scrolling = {}, classes = [] }) {
     this._props = {
@@ -68,6 +79,47 @@ export class TableView extends Backbone.View {
     return header;
   }
 
+  /**
+   * @typedef ScrollingConfig
+   * @type {Object}
+   *
+   * @property {boolean} virtualized
+   *  flag for virtualization.
+   *
+   * @property {(string|HTMLElement|jQuery|window)} viewport
+   *  the scrolling viewport. If omit, the table view will auto detect the
+   *  closest ancestor of the $el with 'overflowY' style being 'auto' or
+   *  'scroll'. Use the window viewport if found none.
+   *
+   *  NOTE: the viewport takes no effect when using fixed header. Tables with
+   *  fixed header render its viewport inside, as the container of the body
+   *  and footer.
+   *
+   * @property {(string|HeaderConfig)} header
+   *  the header scrolling behavior configurations. It can be a string to
+   *  indicate the header type (`'static'`, `'sticky'` or `'fixed'`). Or an
+   *  detailed configuration object.
+   *
+   */
+
+  /**
+   * @typedef HeaderConfig
+   * @type {Object}
+   * @property {string} type
+   * the header type. It can have the following values
+   *
+   *  * `'static'`: static header, the normal case, the header is rendered to
+   *    the top of the grid.
+   *  * `'sticky'`: sticky header, the header will stick to the viewport with
+   *    a given offset.
+   *  * `'fixed'`: fixed header, the header will be outside the viewport. Only
+   *    the body and footer are scrollable.
+   *
+   * @property {number|function} offset
+   * special configuration for sticky header indicating its position. It's can
+   * be a number or a function returning a number, represents number of pixels
+   * below the viewport top.
+   */
   _normalizeScrollingConfig({
     viewport,
     virtualized = false,

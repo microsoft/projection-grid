@@ -36,8 +36,8 @@ function nextTick() {
 }
 
 /**
-* The projection chain class.
-*/
+ * The projection chain class.
+ */
 
 class ProjectionChain {
   constructor(model) {
@@ -99,24 +99,16 @@ class ProjectionChain {
 }
 
 /**
-* The grid view class.
-*
-* In addition to ordinary Backbone View options, the constructor also takes
-*
-* __virtualized: whether or not the virtualization is enabled.
-*
-* __viewport__: the CSS selector to locate the scrollable viewport.
-*
-* * If it's omitted, the 'window' will be used as the viewport.
-*
-* __stickyHeader__: whether or not sticky header is enabled.
-*
-* @param {Object} options The constructor options.
-* @param {Boolean} [options.virtualized=false]
-* @param {Boolean | Object} [options.stickyHeader=false]
-* @param {String} [options.viewport]
-*
-*/
+ * Class of a projection grid view
+ * @class GridView
+ * @extends Backbone.View
+ * @param {Object} options
+ *  the constructor options.
+ * @param {string[]} [options.tableClasses=[]]
+ *  the classes for the TABLE elements (content table and sticky/fixed header)
+ * @param {ScrollingConfig} [options.scrolling={virtualized: false, header: 'static'}]
+ *  the scrolling related configurations
+ */
 export class GridView extends Backbone.View {
   initialize({ scrolling, tableClasses }) {
     this._tableView = new TableView({
