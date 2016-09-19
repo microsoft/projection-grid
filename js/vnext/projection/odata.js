@@ -3,9 +3,6 @@ import $ from 'jquery';
 import Promise from 'bluebird';
 import { normalizeOrderBy } from './common.js';
 
-/**
-* odata data source
-*/
 export const odata = {
   findAll({
     verb = 'get',

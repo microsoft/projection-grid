@@ -121,15 +121,34 @@ function normalizeSortable(sortable, column) {
   return null;
 }
 
-/*
+/**
  * The column group class.
+ *
  * It takes columns configuration as input and generates headerRows, leafColumns,
  * columnIndex and root(a tree-like column structure).
+ *
+ * @param {ColumnConfig[]} columns
+ *    The columns configuration
  */
 class ColumnGroup {
   constructor(columns) {
+    
+    /**
+     * The column header rows
+     * @type {RowContent[]}
+     */
     this.headerRows = [];
+
+    /**
+     * The leaf columns
+     * @type {ExtendedColumnConfig[]}
+     */
     this.leafColumns = [];
+
+    /**
+     * The columns indexed by name
+     * @type {Object.<string,ExtendedColumnConfig>}
+     */
     this.columnIndex = {};
 
     /*
@@ -143,6 +162,8 @@ class ColumnGroup {
        * @type ColumnConfig
        * @property {ExtendedColumnConfig} parent
        *    The parent column if there's a column hierarchy.
+       * @property {ExtendedColumnConfig[]} columns
+       *    The children columns.
        * @property {CellContent} cell
        *    The configuration of the header cell.
        * @property {number} height
@@ -180,7 +201,7 @@ class ColumnGroup {
       return col;
     };
 
-    /**
+    /*
      * Build column header with DFS
      */
     const buildColumnHeader = col => {
@@ -209,8 +230,12 @@ class ColumnGroup {
       _.each(col.columns, buildColumnHeader);
     };
 
+    /**
+     * The root column
+     * @type {ExtendedColumnConfig}
+     */
     this.root = buildColumn({
-      name: '$root',
+      name: '__root__',
       height: 0,
       columns,
     });
@@ -234,6 +259,15 @@ class ColumnGroup {
 function translateColumnGroup(columnGroup) {
   return _.map(columnGroup.leafColumns, col => {
     const colClasses = _.union(normalizeClasses(col.colClasses, col), [`col-${col.name}`]);
+    /**
+     * The content of a `COL` element in `COLGROUP`.
+     * @typedef ColContent
+     * @type {Object}
+     * @property {string[]} classes
+     *    The classes of the `COL` element.
+     * @property {number|string} width
+     *    The CSS width for the column.
+     */
     return {
       classes: colClasses,
       width: _.isNumber(col.width) ? `${col.width}px` : col.width,
@@ -242,21 +276,24 @@ function translateColumnGroup(columnGroup) {
 }
 
 /**
- * Resolve grid structure from columns configuration
+ * Resolve grid structure from columns configuration and build the
+ * {@link ColumnGroup} object.
  *
- * @param {Object} state
- * @param {Object[]} [state.columns] columns configuration
- *
+ * @param {ContentChainState} state
+ *    The input content chain state.
+ * @return {ContentChainState}
  */
+function columnGroupProjectionHandler(state) {
+  const columnGroup = new ColumnGroup(state.columns || []);
+  return _.defaults({
+    columnGroup,
+    cols: translateColumnGroup(columnGroup),
+  }, state);
+}
+
 export const columnGroup = {
   name: 'columnGroup',
-  handler(state) {
-    const columnGroup = new ColumnGroup(state.columns || []);
-    return _.defaults({
-      columnGroup,
-      cols: translateColumnGroup(columnGroup),
-    }, state);
-  },
+  handler: columnGroupProjectionHandler(state),
   defaults: {},
 };
 

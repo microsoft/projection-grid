@@ -43,28 +43,31 @@ import _ from 'underscore';
  *    The classes for the `TD` elements in `TBODY`.
  * @property {ClassesConfig} footClasses
  *    The classes for the `TD` elements in `TFOOT`.
+ * @property {ColumnConfig[]} columns
+ *    The children columns.
  */
+
+/**
+ * Columns projection handling columns configuration
+ * @param {Object} state
+ * @param {(object[]|FakeArray)} [state.items]
+ *    Original data items from data source.
+ * @param {ColumnConfig[]} [columns]
+ *    Columns configuration defined by user. If omitted, all columns in original
+ *    data will be shown.
+ */
+function columnsProjectionHandler(state, columns) {
+  return _.defaults({
+    columns: columns || _.chain(state.items.slice(0, 1)).first().keys().map(name => ({
+      name,
+        sortable: true,
+    })).value(),
+  }, state);
+}
 
 export const columns = {
   name: 'columns',
-
-  /**
-   * Columns projection handling columns configuration
-   * @param {Object} state
-   * @param {(object[]|FakeArray)} [state.items]
-   *    Original data items from data source.
-   * @param {ColumnConfig[]} [columns]
-   *    Columns configuration defined by user. If omitted, all columns in original
-   *    data will be shown.
-   */
-  handler(state, columns) {
-    return _.defaults({
-      columns: columns || _.chain(state.items.slice(0, 1)).first().keys().map(name => ({
-        name,
-        sortable: true,
-      })).value(),
-    }, state);
-  },
+  handler: columnsProjectionHandler,
   defaults: null,
 };
 

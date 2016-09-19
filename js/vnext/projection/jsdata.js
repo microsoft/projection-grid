@@ -1,9 +1,6 @@
 import _ from 'underscore';
 import { normalizeOrderBy } from './common.js';
 
-/**
- * jsdata data source.
- */
 export const jsdata = {
   findAll({
     query,

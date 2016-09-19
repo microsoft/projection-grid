@@ -9,66 +9,94 @@ import { jsdata } from './jsdata.js';
 const defaultPrimaryKey = '__primary_key__';
 
 /**
- * Fetching data from different data source
+ * The data source configurations.
+ * @typedef DataSourceConfig
+ * @type {Object}
+ * @property {string|CustomDataSource} type
+ *    The data source type. It could be 'odata', 'memory', 'jsdata' or a
+ *    customized data source object.
+ * @property {OrderByConfig} orderby
+ *    The sorting parameter.
+ * @property {Object} filter
+ *    The filter object in MangoDB format.
+ * @property {Object} options
+ *    The additional options to the data source.
+ * @property {number} skip
+ *    The number of item to skip from the query result.
+ * @property {number} take
+ *    The number of item to take from the query result.
  *
- * @param {Object} state
- * @param {Object} options 
- * @param {String | Function} [options.type] Data source type
- * @param {String} [options.url] An option for odata
- * @param {String} [options.verb] An option for odata. Http request mode, such as 'get', 'post'
- * @param {Resource} [options.entity] An option of js-data
- * @param {Object[]} [options.data] An option of memory. Array of original data from memory
- * @param {Number} [options.skip] Beginning index. If omitted, it takes '0'
- * @param {Number} [options.take] Take this length of data. If omitted, it takes all data between 'skip' and  data.length
- * @param {Object[]} [options.orderby] Each array item is an object 
- * @param {String} [options.orderby.key] Column name identifying which column to apply the order
- * @param {Number} [options.orderby.direction] direction > 0 : ascending, else descending
- * @param {Function} [options.filter] Filter applyed to original data from data source
- * @param {Array} [options.select]
- * 
+ * @property {?string} url
+ *    An option for odata data source, the root URL of the entity set.
+ * @property {?Resource} entity
+ *    An option of jsdata data source, the JSData Resource for the entity set.
+ * @property {Object[]} data
+ *    An option of memory data source, an array of the original data items.
  */
+
+/**
+ * Fetching data from different data source
+ * @param {DataChainState} state
+ * @param {DataSourceConfig} options 
+ *    The data source configurations.
+ */
+function dataSourceProjectionHandler(state, options) {
+  const type = options.type;
+  /**
+   * @typedef CustomDataSource
+   * @type {Object}
+   * @property {FindAllCallback} findAll
+   *    Make query with the query parameters.
+   */
+  const { findAll, update } = _.isString(type) ? ({
+    odata,
+    memory,
+    jsdata,
+  })[type] : type;
+
+  const primaryKey = _.result(options, 'primaryKey') ||
+    _.result(options.schema, 'primaryKey') ||
+    defaultPrimaryKey;
+
+  this.trigger('willReload');
+  /**
+   * @callback FindAllCallback
+   * @param {DataSourceConfig} options
+   *    The data source configuration including the query parameters.
+   * @return {Object[]|Promise}
+   *    An array or a `Promise` of array of data items.
+   */
+  return Promise.resolve(findAll(options)).catch(error => {
+    return {
+      itemCount: 0,
+      items: [],
+      error,
+    };
+  }).then(({ itemCount, items }) => {
+    const itemIndex = {};
+
+    _.each(items, item => {
+      if (!_.has(item, primaryKey)) {
+        item[primaryKey] = _.uniqueId('grid-item-');
+      }
+      itemIndex[item[primaryKey]] = item;
+    });
+
+    return {
+      uniqueId: _.uniqueId('grid-data-'),
+      items,
+      itemIndex,
+      primaryKey,
+      update: item => update(item, options),
+      itemCount: itemCount,
+    };
+  }).finally(() => this.trigger('didReload'));
+}
+
 
 export const dataSource = {
   name: 'dataSource',
-  handler(state, options) {
-    const type = options.type;
-    const { findAll, update } = _.isString(type) ? ({
-      odata,
-      memory,
-      jsdata,
-    })[type] : type;
-
-    const primaryKey = _.result(options, 'primaryKey') ||
-      _.result(options.schema, 'primaryKey') ||
-      defaultPrimaryKey;
-
-    this.trigger('willReload');
-    return Promise.resolve(findAll(options)).catch(error => {
-      return {
-        itemCount: 0,
-        items: [],
-        error,
-      };
-    }).then(({ itemCount, items }) => {
-      const itemIndex = {};
-
-      _.each(items, item => {
-        if (!_.has(item, primaryKey)) {
-          item[primaryKey] = _.uniqueId('grid-item-');
-        }
-        itemIndex[item[primaryKey]] = item;
-      });
-
-      return {
-        uniqueId: _.uniqueId('grid-data-'),
-        items,
-        itemIndex,
-        primaryKey,
-        update: item => update(item, options),
-        itemCount: itemCount,
-      };
-    }).finally(() => this.trigger('didReload'));
-  },
+  handler: dataSourceProjectionHandler,
   defaults: {},
 };
 
