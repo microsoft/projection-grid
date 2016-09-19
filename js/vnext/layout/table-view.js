@@ -37,6 +37,12 @@ export class TableView extends Backbone.View {
 
     this._headerView = new HeaderView({ tableView: this });
     this._footerView = new FooterView({ tableView: this });
+
+    _.each(['willRedraw', 'didRedraw'], event => {
+      this._listView.on(event, (...args) => {
+        this.trigger(event, ...args);
+      });
+    });
   }
 
   _normalizeHeaderConfig(config) {

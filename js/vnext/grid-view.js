@@ -31,6 +31,10 @@ function defaultsDeep(dest, src) {
   return dest;
 }
 
+function nextTick() {
+  return new Promise((resolve, reject) => window.setTimeout(resolve, 0));
+}
+
 /**
 * The projection chain class.
 */
@@ -78,14 +82,16 @@ class ProjectionChain {
   }
 
   /**
-  * Add projection functions to model.projections
-  */
+   * Add projection functions to model.projections
+   */
   pipe(...projs) {
     _.chain(projs)
       .flatten()
       .each(proj => {
+        const config = this.model.get(proj.name) || proj.defaults;
+
         this.projections.push(proj);
-        this.model.set(proj.name, this.model.get(proj.name) || proj.defaults);
+        this.model.set(proj.name, proj.normalize(config));
       })
       .value();
     return this;
@@ -120,11 +126,24 @@ export class GridView extends Backbone.View {
     });
     this.model = new Backbone.Model();
 
-    this._wrapProjection = proj => ({
-      name: proj.name,
-      handler: (_.isFunction(proj) ? proj : proj.handler).bind(this),
-      defaults: proj.defaults,
-    });
+    const projections = this._projections = {};
+
+    this._registerProjection = proj => {
+      const name = proj.name;
+
+      if (_.has(projections, ['name'])) {
+        throw new Error('Duplication projectons');
+      }
+
+      projections[name] = {
+        name,
+        handler: (_.isFunction(proj) ? proj : proj.handler).bind(this),
+        defaults: proj.defaults,
+        normalize: (proj.normalize || _.identity).bind(this),
+      };
+
+      return projections[name];
+    };
 
     this._chainData = new ProjectionChain(this.model);
     this._chainStructure = new ProjectionChain(this.model);
@@ -147,17 +166,51 @@ export class GridView extends Backbone.View {
     const patchEvents = state => _.extend(state, {
       events: _.mapObject(state.events, handler => handler.bind(this)),
     });
+    const updateState = {
+      changes: null,
+      promise: null,
+    };
 
-    this.model.on('change', () => {
-      this.trigger('willUpdate', this.model.changedAttributes());
+    const update = () => {
+      const changes = updateState.changes;
+
+      updateState.changes = null;
+
+      this.trigger('willUpdate', changes);
+
       _.reduce([
         this._chainData,
         this._chainStructure,
         this._chainContent,
       ], (memo, chain) => chain.update(memo), null)
         .then(patchEvents)
-        .then(state => this._tableView.set(state))
-        .finally(() => this.trigger('didUpdate'));
+        .then(state => new Promise((resolve, reject) => {
+          this._tableView.set(state, resolve);
+        }))
+        .then(nextTick)
+        .finally(() => this.trigger('didUpdate', changes));
+    };
+
+    const scheduleUpdate = () => {
+      if (updateState.changes) {
+        _.extend(updateState.changes, this.model.changedAttributes());
+      } else {
+        updateState.changes = this.model.changedAttributes();
+
+        if (updateState.promise) {
+          updateState.promise = updateState.promise.then(update);
+        } else {
+          updateState.promise = update();
+        }
+      }
+    };
+
+    this.model.on('change', scheduleUpdate);
+
+    _.each(['willRedraw', 'didRedraw'], event => {
+      this._tableView.on(event, (...args) => {
+        this.trigger(event, ...args);
+      });
     });
 
     this.on('all', (event, ...args) => {
@@ -172,22 +225,27 @@ export class GridView extends Backbone.View {
   }
 
   pipeDataProjections(...projs) {
-    this._chainData.pipe(_.map(_.flatten(projs), this._wrapProjection));
+    this._chainData.pipe(_.map(_.flatten(projs), this._registerProjection));
     return this;
   }
 
   pipeStructureProjections(...projs) {
-    this._chainStructure.pipe(_.map(_.flatten(projs), this._wrapProjection));
+    this._chainStructure.pipe(_.map(_.flatten(projs), this._registerProjection));
     return this;
   }
 
   pipeContentProjections(...projs) {
-    this._chainContent.pipe(_.map(_.flatten(projs), this._wrapProjection));
+    this._chainContent.pipe(_.map(_.flatten(projs), this._registerProjection));
     return this;
   }
 
-  set(state = {}) {
-    this.model.set(state);
+  set(state = {}, callback = _.noop) {
+    this.model.set(_.mapObject(state, (value, key) => {
+      const projection = this._projections[key];
+
+      return projection ? projection.normalize(value) : value;
+    }));
+    this.once('didUpdate', callback);
     return this;
   }
 
@@ -195,14 +253,14 @@ export class GridView extends Backbone.View {
     return this.model.get(attribute);
   }
 
-  patch(state = {}) {
+  patch(state = {}, callback = _.noop) {
     this.set(_.reduce(_.keys(state), (memo, key) => {
       const value = state[key];
       const valueCur = this.model.get(key);
       
       memo[key] = defaultsDeep(value, valueCur);
       return memo;
-    }, {}));
+    }, {}), callback);
   }
 
   render(callback) {
@@ -217,8 +275,16 @@ export class GridView extends Backbone.View {
 
   /* Helper functions */
 
+  get items() {
+    return _.result(this._chainData.state, 'items', []);
+  }
+
+  get itemArray() {
+    return this.items.slice();
+  }
+
   get countRows() {
-    return _.result(this._chainData.state, 'items', []).length;
+    return this.items.length;
   }
 
   get primaryKey() {

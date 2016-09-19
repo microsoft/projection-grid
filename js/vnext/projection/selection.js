@@ -1,71 +1,40 @@
 import _ from 'underscore';
+import { SingleSelectionResolver } from './single-selection-resolver.js';
+import { MultipleSelectionResolver } from './multiple-selection-resolver.js';
 import selectionHeadTemplate from './selection-head.jade';
 import selectionBodyTemplate from './selection-body.jade';
 
-function normalize(selection, items, gridView) {
-  const config = _.defaults({}, _.isObject(selection) ? selection : {}, {
-    single: false,
-    selected: [],
-    selectable: (item) => _.has(item, gridView.primaryKey),
-    colClasses: [],
-    headClasses: [],
-    bodyClasses: [],
-    footClasses: [],
+function updateSelection(gridView, selection) {
+  gridView.trigger('willSelect', selection.selected);
+  gridView.set({ selection }, () => {
+    gridView.trigger('didSelect', selection.selected);
   });
-
-  return config;
 }
 
 export function setSelectAll(gridView, checked) {
-  const items = _.result(gridView._chainData.state, 'items', []);
-  let selection = normalize(gridView.get('selection'), items, gridView);
+  const { resolver } = gridView.get('selection');
+  const selection = checked ? resolver.selectAll() : resolver.deselectAll();
 
-
-  if (checked) {
-    selection = _.defaults({
-      selected: _.filter(selection.selected, (key) => {
-        return selection.selectable(gridView.itemWithKey(key));
-      }),
-    }, selection);
-  } else {
-    selection = _.defaults({
-      selected: [],
-    }, selection);
-  }
-
-  gridView.set({ selection });
+  updateSelection(gridView, selection);
 }
 
 function changeSelectAll(e) {
   setSelectAll(this, e.target.checked);
+  e.preventDefault();
 }
 
 export function setSelectRow(gridView, key, checked) {
-  const keyStr = key.toString();
-  const items = _.result(gridView._chainData.state, 'items', []);
-  let selection = normalize(gridView.get('selection'), items, gridView);
+  const { resolver } = gridView.get('selection');
+  const selection = checked ? resolver.selectRow(key) : resolver.deselectRow(key);
 
-  if (selection.single) {
-    selection = _.defaults({ selected: [keyStr] }, selection);
-  } else {
-    let selected = null;
-
-    if (checked) {
-      selected = _.union(selection.selected, [keyStr]);
-    } else {
-      selected = _.without(selection.selected, keyStr);
-    }
-
-    selection = _.defaults({ selected }, selection);
-  }
-
-  gridView.set({ selection });
+  updateSelection(gridView, selection);
 }
 
 function changeSelectRow(e) {
   const key = this.keyOfElement(e.target);
 
   setSelectRow(this, key, e.target.checked);
+  e.preventDefault();
 }
 
 /**
@@ -78,8 +47,8 @@ function changeSelectRow(e) {
  */
 export const selection = {
   name: 'selection',
-  handler(state, selection) {
-    if (!selection) {
+  handler(state, { enabled, resolver }) {
+    if (!enabled) {
       return state;
     }
 
@@ -91,7 +60,7 @@ export const selection = {
       bodyClasses,
       footClasses,
       selectable,
-    } = normalize(selection, state.items, this);
+    } = resolver.updateItems(state.items);
 
     const selectedIndex = _.reduce(selected, (memo, key) => {
       memo[key] = true;
@@ -135,6 +104,34 @@ export const selection = {
 
     return _.defaults({ columns, events }, state);
   },
-  defaults: null,
+
+  normalize(selection) {
+    if (!selection) {
+      return { enabled: false };
+    }
+
+    const config = _.defaults({}, _.isObject(selection) ? selection : {}, {
+      enabled: true,
+      single: false,
+      selected: [],
+      selectable: (item) => _.has(item, this.primaryKey),
+      colClasses: [],
+      headClasses: [],
+      bodyClasses: [],
+      footClasses: [],
+    });
+
+    if (!_.isFunction(config.Resolver)) {
+      config.Resolver = config.single ? SingleSelectionResolver : MultipleSelectionResolver;
+    }
+
+    if (!(config.resolver instanceof config.Resolver)) {
+      config.resolver = new config.Resolver(this);
+    }
+
+    return config;
+  },
+
+  defaults: {},
 };
 
