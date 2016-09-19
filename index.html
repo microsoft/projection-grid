@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Documentation Index</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.simplex.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Documentation</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="ColumnGroup.html">ColumnGroup</a></li><li><a href="GridView.html">GridView</a></li><li><a href="TableView.html">TableView</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="GridView.html#event:didRedraw">GridView#event:didRedraw</a></li><li><a href="GridView.html#event:didReload">GridView#event:didReload</a></li><li><a href="GridView.html#event:didUpdate">GridView#event:didUpdate</a></li><li><a href="GridView.html#event:willRedraw">GridView#event:willRedraw</a></li><li><a href="GridView.html#event:willReload">GridView#event:willReload</a></li><li><a href="GridView.html#event:willUpdate">GridView#event:willUpdate</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#cellsProjectionHandler">cellsProjectionHandler</a></li><li><a href="global.html#columnGroupProjectionHandler">columnGroupProjectionHandler</a></li><li><a href="global.html#columnsProjectionHandler">columnsProjectionHandler</a></li><li><a href="global.html#dataSourceProjectionHandler">dataSourceProjectionHandler</a></li><li><a href="global.html#eventsProjectionHandler">eventsProjectionHandler</a></li><li><a href="global.html#normalizeClasses">normalizeClasses</a></li><li><a href="global.html#normalizeOrderBy">normalizeOrderBy</a></li><li><a href="global.html#normalizeSelectionConfig">normalizeSelectionConfig</a></li><li><a href="global.html#rowsProjectionHandler">rowsProjectionHandler</a></li><li><a href="global.html#selectionProjectionHandler">selectionProjectionHandler</a></li><li><a href="global.html#sortableHeaderProjectionHandler">sortableHeaderProjectionHandler</a></li><li><a href="global.html#translateRow">translateRow</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="externals.list.html" class="dropdown-toggle" data-toggle="dropdown">Externals<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="external-BackboneViewEventHash.html">BackboneViewEventHash</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+
+
+
+
+    <section class="readme-section">
+        <article><h1>projection-grid</h1><p><a href="https://travis-ci.org/lesliekim/projection-grid"><img src="https://travis-ci.org/lesliekim/projection-grid.svg?branch=master" alt="Build Status"></a>
+<a href="https://coveralls.io/github/lesliekim/projection-grid?branch=master"><img src="https://coveralls.io/repos/github/lesliekim/projection-grid/badge.svg?branch=master" alt="Coverage percentage"></a></p>
+<blockquote>
+<p>Client side grid control in JavaScript using pipe and filter patterns. Our data starts its journey at a data-source (OData, Memory, Mock) and travels through multiple filters before it makes it to the grid renderer. Those filters are called 'projections'.</p>
+</blockquote>
+<h2>Install</h2><pre class="prettyprint source lang-bash"><code>npm install --save projection-grid</code></pre><h2>Usage</h2><h3>As AMD</h3><pre class="prettyprint source lang-javascript"><code>require(['projection-grid'], function (pgrid) {
+  var gridView = pgrid.factory().create({
+    el: '.some-css-selector',
+    dataSource: {
+      type: 'js-data',
+      resource: someJSDataResource,
+    },
+    columns: [
+      { name: 'Foo' },
+      { name: 'Bar', template: someTemplate },
+    ],
+  }).gridView;
+
+  gridView.render();
+});</code></pre><h3>As CommonJS</h3><pre class="prettyprint source lang-javascript"><code>var pgrid = require('projection-grid');
+
+var gridView = pgrid.factory().create({
+  el: '.some-css-selector',
+  dataSource: {
+    type: 'js-data',
+    resource: someJSDataResource,
+  },
+  columns: [
+    { name: 'Foo' },
+    { name: 'Bar', template: someTemplate },
+  ],
+}).gridView;
+
+gridView.render();</code></pre><h2>Play with the demos</h2><pre class="prettyprint source lang-bash"><code>git clone https://github.com/Microsoft/projection-grid
+cd projection-grid
+npm install
+gulp demos</code></pre><p>A demo server will start at http://localhost:8080/demos/, each sub-folders of
+<code>demos</code> would be a standalone demo page.</p>
+<p>The standard usage is demoed at http://localhost:8080/demos/factory</p>
+<p>The source code is <code>demos/factory/index.js</code>.</p>
+<h2>Configurations</h2><p>The configuration object passed to <code>factory.create(...)</code>.</p>
+<h3><code>el</code></h3><p>The root element of the grid. It should be a CSS selector.</p>
+<h3><code>dataSource</code></h3><p>Data source of the grid. Tells grid where to get the row data.</p>
+<h3><code>dataSource.type</code></h3><p>The type of the data source. Available values are</p>
+<ul>
+<li><code>'js-data'</code>, the JSData data source</li>
+<li><code>'memory'</code>, the memory data source</li>
+</ul>
+<p>The default value is <code>'memory'</code>.</p>
+<h3><code>dataSource.data</code></h3><p>An option of <code>'memory'</code> data source which should be an array of row data, or
+a Backbone.Collection.</p>
+<h3><code>dataSource.resource</code></h3><p>An option of <code>'js-data'</code> data source which is a <a href="http://www.js-data.io/docs/resources">JSData Resource</a>.</p>
+<h3><code>dataSource.schema</code></h3><p>An optional <a href="http://json-schema.org/">JSON schema</a> object specifying the schema of the row data.</p>
+<h3><code>columns</code></h3><p>An array of grid column configuration objects.</p>
+<h3><code>columns[].name</code></h3><p>The name of the column. By default, it's also the <code>title</code> showing in the column
+header, the <code>field</code> of the cell data.</p>
+<h3><code>columns[].title</code></h3><p>The title showing in the column header. It overrides the <code>columns[].name</code>.</p>
+<h3><code>columns[].field</code></h3><p>The field of the cell data. It overrides the <code>columns[].name</code>.
+In case you row data is in form of</p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;companyName&quot;: &quot;Microsoft Corporation&quot;,
+  &quot;address&quot;: {
+    &quot;country&quot;: &quot;USA&quot;,
+    &quot;state&quot;: &quot;WA&quot;,
+    &quot;city&quot;: &quot;Redmond&quot;,
+    &quot;street&quot;: &quot;One Microsoft Way&quot;,
+    &quot;zip&quot;: &quot;98053&quot;
+  }
+}</code></pre><ul>
+<li>To reference the company name, the field should be <code>companyName</code>.</li>
+<li>To reference the zip code, the field should be <code>address/zip</code>.</li>
+</ul>
+<h3><code>columns[].value</code></h3><p>A function to calculate the cell value from the row data. It's used in complex
+scenarios when the cell value is not a field of the row data. For example,</p>
+<pre class="prettyprint source lang-javascript"><code>// A column of combined address information
+{
+  name: 'address',
+  value: function (rowData) {
+    return [
+      rowData.street,
+      rowData.city,
+      rowData.state,
+      rowData.country,
+      rowData.zip,
+    ].join(', ');
+  },
+}</code></pre><h3><code>columns[].template</code></h3><p>A template function to generate the HTML in cells.</p>
+<h3><code>columns[].headerTemplate</code></h3><p>A template function to generate the HTML in column header.</p>
+<h3><code>columns[].View</code></h3><p>A Backbone view class to render the data cells. It will be instantiated with
+<code>{ model: dataOfTheRow }</code>. Within the view, you can access the row data with
+<code>this.model</code>.</p>
+<h3><code>columns[].HeaderView</code></h3><p>A Backbone view class to render the header cell.</p>
+<h3><code>columns[].attributes</code></h3><p>User defined attributes attached to the cells (<code>TD</code>).</p>
+<h3><code>columns[].headerAttributes</code></h3><p>User defined attributes attached to the column header (<code>TH</code>).</p>
+<h3><code>columns[].locked</code></h3><p>A boolean value specifies whether or not the column is locked.
+Locked columns are always visible when column shifter is on.</p>
+<h3><code>columns[].hidden</code></h3><p>A boolean value specifies whether or not the column is hide.</p>
+<h3><code>columns[].sortable</code></h3><p>A boolean value specifies whether the column is sortable by clicking the header.</p>
+<h3><code>columns[].editable</code></h3><p>A boolean value specifies whether the cell data is editable with a pop up editor.</p>
+<h3><code>pageable</code></h3><p>Define the pagination behavior.</p>
+<h3><code>pageable.pageSize</code></h3><p>The default page size.</p>
+<h3><code>pageable.pageSizes</code></h3><p>An array of available page sizes.</p>
+<h3><code>selectable</code></h3><p>Boolean or string value. Available values are</p>
+<ul>
+<li><code>false</code>, no selection support</li>
+<li><code>true</code>, multiple selection, show a checkbox column to the left</li>
+<li><code>'single'</code>, single selection, show a radio button column to the left</li>
+</ul>
+<h3><code>scrollable</code></h3><p>Scroll behavior configurations.</p>
+<h3><code>scrollable.virtual</code></h3><p>A boolean value telling whether or not the virtualization is turned on.</p>
+<h3><code>scrollable.fixedHeader</code></h3><p>Fixed header configuration. If it's a truthy value, the grid header will stick
+to a container when scrolled out of it. The default container is the browser
+window.</p>
+<h3><code>scrollable.fixedHeader.container</code></h3><p>A CSS selector specifying the container element the header sticks to.</p>
+<h3><code>columnShifter</code></h3><p>Column shifter configurations. Column shifter limit the number of visible
+columns, and provide a pair of control button to shift the columns.</p>
+<h3><code>columnShifter.totalColumns</code></h3><p>The number of visible columns.</p>
+<h3><code>aggregate</code></h3><p>Configurations of aggregation rows</p>
+<h3><code>aggregate.top</code></h3><p>A function returning an array of aggregation row data for the rows showing on
+top of the grid.</p>
+<h3><code>aggregate.bottom</code></h3><p>A function returning an array of aggregation row data for the rows showing at
+the bottom of the grid.</p>
+<h2>Create accessory views with plugins</h2><p>The <code>factory.create(...)</code> method not only create the grid view, it can also
+create accessory views, like pager, and hook them up. The factory plugins are
+designed to handle this.</p>
+<h3>Using a plugin</h3><p>In case we have a <code>pagerView</code> defined in <code>pager-view-plugin.js</code>
+(Refer to the factory demo). The code using it should be something like</p>
+<pre class="prettyprint source lang-javascript"><code>var pgrid = require('projection-grid');
+// load the plugin
+var pagerViewPlugin = require('./pager-view-plugin');
+
+var grid = pgrid.factory()
+  // use the plugin
+  .use(pagerViewPlugin)
+  .create({
+    // the grid configurations
+  });
+
+var gridView = grid.gridView;
+// get the view
+var pagerView = grid.pagerView;
+
+gridView.render();
+pagerView.render();</code></pre><p>It would be even simpler with ES2015.</p>
+<pre class="prettyprint source lang-javascript"><code>import pgrid from 'projection-grid';
+import pagerViewPlugin from './pager-view-plugin';
+
+const { gridView, pagerView } = pgrid.factory()
+  .use(pagerViewPlugin)
+  .create({
+    /// the grid configurations
+  });
+
+gridView.render();
+pagerView.render();</code></pre><p>The object returned from <code>factory.create(...)</code> is a map, from plugin name to
+it's product. Technically, the <code>gridView</code> is the product of a builtin plugin
+called <code>'gridView'</code>.</p>
+<h3>Developing a plugin</h3><blockquote>
+<p>To develop a grid factory plugin, you need to understand the projection grid
+internal concepts like projections, renderers, layouts etc.</p>
+</blockquote>
+<p>A grid factory plugin is a function in form of</p>
+<pre class="prettyprint source lang-javascript"><code>function (definePlugin) {
+  definePlugin('pluginName', [
+    // name of dependent plugins
+  ], function (/* product of dependent plugins */) {
+
+    // create and return the product
+
+  });
+}</code></pre><p>The <code>definePlugin</code> is a function similar to the <code>define</code> of AMD. It's defined by
+the factory, having the factory context.</p>
+<p>For example, the pager plugin is defined like this.</p>
+<pre class="prettyprint source lang-javascript"><code>import _ from 'underscore';
+import { PaginationView } from 'pagination-control';
+
+export default definePlugin => definePlugin('pagerView', [
+  // builtin plugin, returning the configuration object
+  'config',
+  // builtin plugin, the chained projections of the grid
+  'projection',
+  // builtin plugin, the final grid view
+  'gridView',
+], function (config, projection, gridView) {
+
+  // create the pager view
+  const pagerView = new PaginationView(_.defaults({
+    pageSize: config.pageable.pageSize,
+    availablePageSizes: config.pageable.pageSizes,
+  }, config.pagerView));
+
+  // hook up the pager view with the grid and the projection chain
+  gridView.on('change:data', function (model) {
+    pagerView.itemCount = model.get('count');
+  });
+
+  pagerView.on('change:page-size', function (pageSize) {
+    projection.set('page.size', pageSize);
+  });
+
+  pagerView.on('change:page-number', function (pageNumber) {
+    projection.set('page.number', pageNumber);
+  });
+
+  // return the pager view
+  return pagerView;
+});</code></pre><h2>Developer instructions</h2><ol>
+<li>Create your own fork of the project</li>
+<li><p>Clone your own fork of the project to local</p>
+<pre class="prettyprint source lang-bash"><code>git clone https://github.com/your-github-user-name/projection-grid</code></pre></li>
+<li><p>Install dependencies</p>
+<pre class="prettyprint source lang-bash"><code>cd projection-grid
+npm install</code></pre></li>
+<li><p>Launch demo server which watch and build your changes automatically</p>
+<pre class="prettyprint source lang-bash"><code>gulp demos</code></pre></li>
+<li><p>Make changes with your favorite editor</p>
+</li>
+<li>Add unit test cases under <code>spec</code></li>
+<li>If necessary, add your own demo page under <code>demos</code></li>
+<li>Add selenium test cases under <code>demos/your-demo-page/spec</code></li>
+<li><p>Test your changes with</p>
+<pre class="prettyprint source lang-bash"><code>gulp test</code></pre></li>
+<li><p>Commit your local changes and push to GitHub</p>
+<pre class="prettyprint source lang-bash"><code>git add .
+git commit
+git push</code></pre></li>
+<li><p>Send pull request on GitHub and review it with the management team</p>
+</li>
+</ol></article>
+    </section>
+
+
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-09-20T02:55:59+08:00
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>
