@@ -293,7 +293,7 @@ function columnGroupProjectionHandler(state) {
 
 export const columnGroup = {
   name: 'columnGroup',
-  handler: columnGroupProjectionHandler(state),
+  handler: columnGroupProjectionHandler,
   defaults: {},
 };
 
