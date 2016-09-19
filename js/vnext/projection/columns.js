@@ -22,7 +22,7 @@ import _ from 'underscore';
  * @property {CellTemplate} template
  *    The template to render a cell for the column.
  *
- * @property {boolean|number|string|PropertyGetter|SortableConfig} sortable
+ * @property {(boolean|number|OrderByKey)} sortable
  *    The ordering configuration. If it's omitted, the column is unsortable.
  *    It could be
  *
@@ -33,6 +33,16 @@ import _ from 'underscore';
  *      Only available for memory data source.
  *    * A detailed {@link SortableConfig} object.
  *
+ * @property {bool} editable
+ *    Indicates whether the column is editable.
+ * @property {ClassesConfig} colClasses
+ *    The classes for the `COL` element in `COLGROUP`.
+ * @property {ClassesConfig} headClasses
+ *    The classes for the `TH` element in `THEAD`.
+ * @property {ClassesConfig} bodyClasses
+ *    The classes for the `TD` elements in `TBODY`.
+ * @property {ClassesConfig} footClasses
+ *    The classes for the `TD` elements in `TFOOT`.
  */
 
 export const columns = {

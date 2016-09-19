@@ -124,14 +124,24 @@ export class GridView extends Backbone.View {
       }
 
       /**
+       * @callback ProjectionHandler
+       * @param {DataChainState|StructureChainState|ContentChainState} state
+       *    The input state.
+       * @param {Object} config
+       *    The projection configuration object.
+       * @return {DataChainState|StructureChainState|ContentChainState|Promise}
+       *    The output state or the `Promise` of the output state.
+       */
+
+      /**
        * @typedef ProjectionDefinition
        * @type {Object}
-       * @param {string} name - name of the projection
-       * @param {ProjectionHandler} handler
+       * @property {string} name - name of the projection
+       * @property {ProjectionHandler} handler
        *    The callback to transform the state
-       * @param {Object} defaults
+       * @property {Object} defaults
        *    The default configuration of the projection
-       * @param {function} normalize
+       * @property {function} normalize
        *    The callback to normalize the projection configurations.
        */
       projections[name] = {
@@ -144,8 +154,57 @@ export class GridView extends Backbone.View {
       return projections[name];
     };
 
+    /**
+     * @typedef DataChainState
+     * @type {Object}
+     * @property {string} uniqueId
+     *    The unique id for the set of data items. It changes each time new
+     *    query is made to the server.
+     * @property {string} primaryKey
+     *    The primary key of the data items.
+     * @property {(Object[]|FakeArray)} items
+     *    An array or a fake array of data items.
+     * @property {number} itemCount
+     *    The total item count on the server.
+     * @property {Object.<string, Object>} itemIndex
+     *    The items indexed by primary key.
+     * @property {Object} events
+     *    The Backbone View events hash. Any projection can response to the DOM
+     *    events by adding its own event handlers to the hash.
+     */
     this._chainData = new ProjectionChain(this.model);
+
+    /**
+     * It extends the {@link DataChainState} with extra properties.
+     * @typedef StructureChainState
+     * @type {DataChainState}
+     * @property {ColumnConfig[]} columns
+     *    The array of column configurations.
+     * @property {RowConfig[]} headRows
+     *    The row configurations for `THEAD`.
+     * @property {RowConfig[]} bodyRows
+     *    The row configurations for `TBODY`.
+     * @property {RowConfig[]} footRows
+     *    The row configurations for `TFOOT`.
+     */
     this._chainStructure = new ProjectionChain(this.model);
+
+    /**
+     * It extends the {@link StructureChainState} with extra properties, and
+     * overrides some of the properties.
+     * @typedef ContentChainState
+     * @type {StructureChainState}
+     * @property {ColumnGroup} columnGroup
+     *    The column group object, represents the compiled column hierarchy.
+     * @property {ColContent[]} cols
+     *    The content for `COL` elements in `COLGROUP`.
+     * @property {RowContent} headRows
+     *    The content for rows in `THEAD`.
+     * @property {RowContent} bodyRows
+     *    The content for rows in `TBODY`.
+     * @property {RowContent} footRows
+     *    The content for rows in `TFOOT`.
+     */
     this._chainContent = new ProjectionChain(this.model);
 
     this.pipeDataProjections(dataSource, buffer);
@@ -496,53 +555,110 @@ export class GridView extends Backbone.View {
     return columnGroup ? columnGroup.columnWithName(name) : null;
   }
 
+  /**
+   * Get the row configurations for `THEAD`
+   * @return {RowConfig[]}
+   */
   getHeadRows() {
     return _.result(this.get('rows'), 'headRows', ['column-header-rows']);
   }
 
+  /**
+   * @callback SetRowsCallback
+   * @param {RowConfig[]} rows - The current row configurations.
+   * @return {RowConfig[]} - The new row configurations.
+   */
+
+  /**
+   * Set the row configurations for `THEAD`
+   * @param {RowConfig[]|SetRowsCallback} value
+   *    The new header rows or a function to transform the header rows.
+   */
   setHeadRows(value) {
     const headRows = _.isFunction(value) ? value(this.getHeadRows()) : value;
     this.patch({ rows: { headRows } });
   }
 
+  /**
+   * Prepend a set header rows
+   * @param {RowConfig[]} rows - The rows to prepend
+   */
   prependHeadRows(rows) {
     this.setHeadRows(headRows => rows.concat(headRows));
   }
 
+  /**
+   * Append a set header rows
+   * @param {RowConfig[]} rows - The rows to append
+   */
   appendHeadRows(rows) {
     this.setHeadRows(headRows => headRows.concat(rows));
   }
 
+  /**
+   * Get the row configurations for `TBODY`
+   * @return {RowConfig[]}
+   */
   getBodyRows() {
     return _.result(this.get('rows'), 'bodyRows', ['data-rows']);
   }
 
+  /**
+   * Set the row configurations for `TBODY`
+   * @param {RowConfig[]|SetRowsCallback} value
+   *    The new body rows or a function to transform the body rows.
+   */
   setBodyRows(value) {
     const bodyRows = _.isFunction(value) ? value(this.getBodyRows()) : value;
     this.patch({ rows: { bodyRows } });
   }
 
+  /**
+   * Prepend a set body rows
+   * @param {RowConfig[]} rows - The rows to prepend
+   */
   prependBodyRows(rows) {
     this.setBodyRows(bodyRows => rows.concat(bodyRows));
   }
 
+  /**
+   * Append a set body rows
+   * @param {RowConfig[]} rows - The rows to append
+   */
   appendBodyRows(rows) {
     this.setBodyRows(bodyRows => bodyRows.concat(rows));
   }
 
+  /**
+   * Get the row configurations for `TFOOT`
+   * @return {RowConfig[]}
+   */
   getFootRows() {
     return _.result(this.get('rows'), 'footRows', []);
   }
 
+  /**
+   * Set the row configurations for `TFOOT`
+   * @param {RowConfig[]|SetRowsCallback} value
+   *    The new footer rows or a function to transform the footer rows.
+   */
   setFootRows(value) {
     const footRows = _.isFunction(value) ? value(this.getFootRows()) : value;
     this.patch({ rows: { footRows } });
   }
 
+  /**
+   * Prepend a set footer rows
+   * @param {RowConfig[]} rows - The rows to prepend
+   */
   prependFootRows(rows) {
     this.setFootRows(footRows => rows.concat(footRows));
   }
 
+  /**
+   * Append a set footer rows
+   * @param {RowConfig[]} rows - The rows to append
+   */
   appendFootRows(rows) {
     this.setFootRows(footRows => footRows.concat(rows));
   }

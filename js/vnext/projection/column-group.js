@@ -143,7 +143,7 @@ class ColumnGroup {
        * @type ColumnConfig
        * @property {ExtendedColumnConfig} parent
        *    The parent column if there's a column hierarchy.
-       * @property {CellConfig} cell
+       * @property {CellContent} cell
        *    The configuration of the header cell.
        * @property {number} height
        *    The rowspan of the header cell.
