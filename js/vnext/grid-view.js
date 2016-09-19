@@ -168,9 +168,9 @@ export class GridView extends Backbone.View {
      *    The total item count on the server.
      * @property {Object.<string, Object>} itemIndex
      *    The items indexed by primary key.
-     * @property {Object} events
-     *    The Backbone View events hash. Any projection can response to the DOM
-     *    events by adding its own event handlers to the hash.
+     * @property {external:BackboneViewEventHash} events
+     *    The event has in form of `Backbone.View#events`. Any projection can
+     *    response to the DOM events by adding its own event handlers.
      */
     this._chainData = new ProjectionChain(this.model);
 
@@ -234,6 +234,10 @@ export class GridView extends Backbone.View {
 
       updateState.changes = null;
 
+      /**
+       * The `GridView` will update its configuration and redraw.
+       * @event GridView#willUpdate
+       */
       this.trigger('willUpdate', changes);
 
       _.reduce([
@@ -246,7 +250,13 @@ export class GridView extends Backbone.View {
           this._tableView.set(state, resolve);
         }))
         .then(nextTick)
-        .finally(() => this.trigger('didUpdate', changes));
+        .finally(() => {
+          /**
+           * The `GridView` did update its configuration and redraw.
+           * @event GridView#didUpdate
+           */
+          this.trigger('didUpdate', changes);
+        });
     };
 
     const scheduleUpdate = () => {
@@ -265,7 +275,21 @@ export class GridView extends Backbone.View {
 
     this.model.on('change', scheduleUpdate);
 
-    _.each(['willRedraw', 'didRedraw'], event => {
+    _.each([
+      /**
+       * The `GridView` will redraw the DOM. This event may trigger frequently
+       * when virtualization is enabled.
+       * @event GridView#willRedraw
+       */
+      'willRedraw',
+
+      /**
+       * The `GridView` did redraw the DOM. This event may trigger frequently
+       * when virtualization is enabled.
+       * @event GridView#didRedraw
+       */
+      'didRedraw',
+    ], event => {
       this._tableView.on(event, (...args) => {
         this.trigger(event, ...args);
       });

@@ -58,7 +58,12 @@ function dataSourceProjectionHandler(state, options) {
     _.result(options.schema, 'primaryKey') ||
     defaultPrimaryKey;
 
+  /**
+   * The `GridView` will reload data from the data source.
+   * @event GridView#willReload
+   */
   this.trigger('willReload');
+
   /**
    * @callback FindAllCallback
    * @param {DataSourceConfig} options
@@ -90,7 +95,14 @@ function dataSourceProjectionHandler(state, options) {
       update: item => update(item, options),
       itemCount: itemCount,
     };
-  }).finally(() => this.trigger('didReload'));
+  }).finally(() => {
+
+    /**
+     * The `GridView` did reload data from the data source.
+     * @event GridView#didReload
+     */
+    this.trigger('didReload')
+  });
 }
 
 
