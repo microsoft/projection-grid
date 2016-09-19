@@ -45,19 +45,22 @@ function editInColumn(column) {
     }
   }
 }
-/**
-* Enable editing and wrap each editable cell with a template
-*
-* @param {Object} state
-* @param {ColumnGroup} [state.columnGroup] Column group information
-* @param {Object} [state.bodyRows]
-* @param {Number} [state.bodyRows.length] bodyRows' length
-* @param {Function} [state.bodyRows.slice] Get bodyRows element
-* @param {Object} [state.events] Backbone view events handler
-* 
-*/
+
+
 export const editable = {
   name: 'editable',
+
+  /**
+   * Enable editing and wrap each editable cell with a template
+   *
+   * @param {Object} state
+   * @param {ColumnGroup} [state.columnGroup] Column group information
+   * @param {Object} [state.bodyRows]
+   * @param {Number} [state.bodyRows.length] bodyRows' length
+   * @param {Function} [state.bodyRows.slice] Get bodyRows element
+   * @param {Object} [state.events] Backbone view events handler
+   * 
+   */
   handler(state) {
     const leafColumns = state.columnGroup.leafColumns;
     const iconClasses = ['glyphicon', 'glyphicon-pencil'];

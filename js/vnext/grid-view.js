@@ -35,10 +35,6 @@ function nextTick() {
   return new Promise((resolve, reject) => window.setTimeout(resolve, 0));
 }
 
-/**
- * The projection chain class.
- */
-
 class ProjectionChain {
   constructor(model) {
     this.model = model;
@@ -47,9 +43,9 @@ class ProjectionChain {
     this.input = null;
   }
 
-  /**
-  * When updating, execute each function in projections successively
-  */
+  /*
+   * When updating, execute each function in projections successively
+   */
   update(input) {
     const updated = input !== this.input;
 
@@ -81,7 +77,7 @@ class ProjectionChain {
     });
   }
 
-  /**
+  /*
    * Add projection functions to model.projections
    */
   pipe(...projs) {
@@ -103,11 +99,11 @@ class ProjectionChain {
  * @class GridView
  * @extends Backbone.View
  * @param {Object} options
- *  the constructor options.
+ *    The constructor options.
  * @param {string[]} [options.tableClasses=[]]
- *  the classes for the TABLE elements (content table and sticky/fixed header)
+ *    The classes for the TABLE elements (content table and sticky/fixed header)
  * @param {ScrollingConfig} [options.scrolling={virtualized: false, header: 'static'}]
- *  the scrolling related configurations
+ *    The scrolling related configurations
  */
 export class GridView extends Backbone.View {
   initialize({ scrolling, tableClasses }) {
@@ -127,6 +123,17 @@ export class GridView extends Backbone.View {
         throw new Error('Duplication projectons');
       }
 
+      /**
+       * @typedef ProjectionDefinition
+       * @type {Object}
+       * @param {string} name - name of the projection
+       * @param {ProjectionHandler} handler
+       *    The callback to transform the state
+       * @param {Object} defaults
+       *    The default configuration of the projection
+       * @param {function} normalize
+       *    The callback to normalize the projection configurations.
+       */
       projections[name] = {
         name,
         handler: (_.isFunction(proj) ? proj : proj.handler).bind(this),
@@ -216,23 +223,48 @@ export class GridView extends Backbone.View {
     });
   }
 
+  /**
+   * Pipe a projection to procceed the grid data
+   * @param {...ProjectionDefinition} projs - A list of projection definitions
+   * @return {GridView} - This grid view
+   */
   pipeDataProjections(...projs) {
     this._chainData.pipe(_.map(_.flatten(projs), this._registerProjection));
     return this;
   }
 
+  /**
+   * Pipe a projection to procceed the grid structure
+   * @param {...ProjectionDefinition} projs - A list of projection definitions
+   * @return {GridView} - This grid view
+   */
   pipeStructureProjections(...projs) {
     this._chainStructure.pipe(_.map(_.flatten(projs), this._registerProjection));
     return this;
   }
 
+  /**
+   * Pipe a projection to procceed the grid visual content
+   * @param {...ProjectionDefinition} projs - A list of projection definitions
+   * @return {GridView} - This grid view
+   */
   pipeContentProjections(...projs) {
     this._chainContent.pipe(_.map(_.flatten(projs), this._registerProjection));
     return this;
   }
 
-  set(state = {}, callback = _.noop) {
-    this.model.set(_.mapObject(state, (value, key) => {
+  /**
+   * Change the grid(projection) configuratons
+   * @param {Object.<string, Object>} config
+   *    A hash of configurations to change. The keys are projection names while
+   *    the values are the projection configurations
+   * @param {function} callback
+   *    A callback to notify the update is completed
+   * @return {GridView}
+   *    This grid view.
+   */
+  set(config = {}, callback = _.noop) {
+    this.model.set(_.mapObject(config, (value, key) => {
       const projection = this._projections[key];
 
       return projection ? projection.normalize(value) : value;
@@ -241,10 +273,27 @@ export class GridView extends Backbone.View {
     return this;
   }
 
-  get(attribute) {
-    return this.model.get(attribute);
+  /**
+   * Read the grid(projection)_configuration
+   * @param {string} name - name of the projection
+   * @return {object}
+   */
+  get(name) {
+    return this.model.get(name);
   }
 
+  /**
+   * Patch the grid(projection) configurations.
+   * It's similar to {@link GridView#set}, but instead of replacing the
+   * projection configurations, `patch` do deep object merge.
+   * @param {Object.<string, Object>} config
+   *    A hash of configurations to change. The keys are projection names
+   *    while the values are the projection configurations
+   * @param {function} callback
+   *    A callback to notify the update is completed
+   * @return {GridView}
+   *    This grid view.
+   */
   patch(state = {}, callback = _.noop) {
     this.set(_.reduce(_.keys(state), (memo, key) => {
       const value = state[key];
@@ -255,11 +304,21 @@ export class GridView extends Backbone.View {
     }, {}), callback);
   }
 
+  /**
+   * Render the grid view.
+   * @param {function} callback
+   *    A callback to notify the render is completed.
+   * @return {GridView}
+   *    This grid view.
+   */
   render(callback) {
     this._tableView.render(callback);
     return this;
   }
 
+  /**
+   * Destroy and detach the view from DOM.
+   */
   remove() {
     this._tableView.remove();
     super.remove();
@@ -267,26 +326,64 @@ export class GridView extends Backbone.View {
 
   /* Helper functions */
 
+  /**
+   * A object implements a minimal interface of array to lazy fetch items.
+   * We use this structure a lot in projections, so that we don't need to
+   * procceed all the rows when virtualization is on.
+   * @typedef FakeArray
+   * @type {Object}
+   * @property {function} slice
+   *    a callback to get a slice of the items. It has the same signature as
+   *    `Array.slice()`.
+   * @property {number} length
+   *    length of the array
+   */
+
+  /**
+   * The data items. It's a fake array of original model.
+   * @type {(Object[]|FakeArray)}
+   */
   get items() {
     return _.result(this._chainData.state, 'items', []);
   }
 
+  /**
+   * The array data items.
+   * @type {Object[]}
+   */
   get itemArray() {
     return this.items.slice();
   }
 
+  /**
+   * The count of data rows.
+   * @type {number}
+   */
   get countRows() {
     return this.items.length;
   }
 
+  /**
+   * The primary key of data items.
+   * @type {string}
+   */
   get primaryKey() {
     return _.result(this._chainData.state, 'primaryKey');
   }
 
+  /**
+   * The total count of data items. This represents the server side state.
+   * @type {number}
+   */
   getItemCount() {
     return _.result(this._chainData.state, 'itemCount', 0);
   }
 
+  /**
+   * Query the data item with its primary key.
+   * @param {string} key - the primary key.
+   * @return {Object}
+   */
   itemWithKey(key) {
     return _.chain(this._chainData.state)
       .result('itemIndex')
@@ -294,6 +391,13 @@ export class GridView extends Backbone.View {
       .value();
   }
 
+  /**
+   * Get the primary key from a DOM element in a certain row.
+   * @param {HTMLElement|jQuery|string} el
+   *    The DOM element. It can be an `HTMLElement`, a jQuery object or a
+   *    jQuery selector.
+   * @return {string} - The primary key for the row.
+   */
   keyOfElement(el) {
     const $tr = $(el).closest('tr', this.$el);
 
@@ -304,18 +408,45 @@ export class GridView extends Backbone.View {
     return null;
   }
 
+  /**
+   * Get the data item with its index in the items array.
+   * @param {number} index - The index of the item.
+   * @return {Object}
+   */
   itemAt(index) {
     return _.result(this._chainData.state, 'items', []).slice(index, index + 1)[0];
   }
 
+  /**
+   * Given an element in the data rows, get the index of the corresponding
+   * data item.
+   *
+   * __NOTE__: It's not recommended to use this API to find the data item for
+   * a given element. It could be incorrect if there're custom projections
+   * changes the TR sequence of TBODY. Insteadly, you should use
+   * {@link GridView#keyOfElement}.
+   *
+   * @param {HTMLElement|jQuery|string} el
+   *    The DOM element. It can be an `HTMLElement`, a jQuery object or a
+   *    jQuery selector.
+   * @return {number} - The index of the data row.
+   */
   indexOfElement(el) {
     return this._tableView.indexOfElement(el);
   }
 
+  /**
+   * Get the primary keys of the selected items.
+   * @return {string[]} - An array of the selected keys.
+   */
   selectedKeys() {
     return _.result(this.get('selection'), 'selected', []);
   }
 
+  /**
+   * Get the selected items.
+   * @return {Object[]} - An array of the selected data items.
+   */
   selectedItems() {
     const itemIndex = _.result(this._chainData.state, 'itemIndex', {});
 
@@ -325,22 +456,41 @@ export class GridView extends Backbone.View {
       .value();
   }
 
+  /**
+   * Select a row with the given primary key.
+   * @param {string} key - The primary key for the row.
+   */
   selectRow(key) {
     setSelectRow(this, key, true);
   }
 
+  /**
+   * Deselect a row with the given primary key.
+   * @param {string} key - The primary key for the row.
+   */
   deselectRow(key) {
     setSelectRow(this, key, false);
   }
 
+  /**
+   * Select all the selectable items.
+   */
   selectAll() {
     setSelectAll(this, true);
   }
 
+  /**
+   * Deselect all the selectable items.
+   */
   deselectAll() {
     setSelectAll(this, false);
   }
 
+  /**
+   * Get the finalized column configuration with a given column name.
+   * @param {string} name - The name of the column.
+   * @return {ExtendedColumnConfig}
+   */
   columnWithName(name) {
     const columnGroup = _.result(this._chainContent.state, 'columnGroup');
     return columnGroup ? columnGroup.columnWithName(name) : null;
