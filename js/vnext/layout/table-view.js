@@ -173,12 +173,15 @@ export class TableView extends Backbone.View {
     const $stickyHeader = this.$('.sticky-header');
     const $stickyHeaderFiller = this.$('.sticky-header-filler');
     const $table = this.$('.sticky-header-filler + table');
-    const adjustStickyHeader = (resize) => {
+    const viewportSize = { width: 0, height: 0 };
+
+    const adjustStickyHeader = () => {
       if (!this.$el.is(':visible')) {
         return;
       }
 
-      const topVP = listView.viewport.getMetrics().outer.top;
+      const metricsVP = listView.viewport.getMetrics();
+      const topVP = metricsVP.outer.top;
       const offset = _.result(this._props.scrolling.header, 'offset', 0);
       const rectContainer =  $tableContainer.get(0).getBoundingClientRect();
       const topCur = rectContainer.top;
@@ -196,7 +199,15 @@ export class TableView extends Backbone.View {
           left: sticky ? rectContainer.left : '',
         };
 
+        const deltaWidth = Math.abs(metricsVP.outer.width - viewportSize.width);
+        const deltaHeight = Math.abs(metricsVP.outer.height - viewportSize.height);
+        const resize = deltaWidth >= 1 || deltaHeight >= 1;
+
         if (resize) {
+          // Update the viewportSize
+          viewportSize.width = metricsVP.outer.width;
+          viewportSize.height = metricsVP.outer.height;
+
           // Let the content table layout freely, then sync the width to sticky header
           $stickyHeader.css({ width: 'auto' });
           $table.css({ width: 'auto' });

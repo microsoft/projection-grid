@@ -42,6 +42,7 @@ export const dataSource = {
       _.result(options.schema, 'primaryKey') ||
       defaultPrimaryKey;
 
+    this.trigger('willReload');
     return Promise.resolve(findAll(options)).catch(error => {
       return {
         itemCount: 0,
@@ -66,7 +67,7 @@ export const dataSource = {
         update: item => update(item, options),
         itemCount: itemCount,
       };
-    });
+    }).finally(() => this.trigger('didReload'));
   },
   defaults: {},
 };

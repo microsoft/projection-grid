@@ -1,5 +1,4 @@
 import $ from 'jquery';
-import _ from 'underscore';
 import Backbone from 'backbone';
 import pgrid from '../../../../js';
 
@@ -24,9 +23,8 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     primaryKey: 'OrderID',
   },
   selection: {
-    single: true,
     selectable(item) {
-      return _.has(item, 'CustomerID') && item.CustomerID.match(/^[A-N]/);
+      return item.OrderID && (item.OrderID % 2 === 0);
     },
     colClasses: ['selection-column'],
     headClasses: ['selection-header'],
@@ -35,10 +33,10 @@ window.gridView = pgrid.factory({ vnext: true }).create({
 }).gridView.render();
 
 gridView.on('willSelect', (selections) => {
-  console.log(`Will select ${selections[0]}`);
+  console.log(`Will select ${selections.length} items`);
 });
 
 gridView.on('didSelect', (selections) => {
-  console.log(`Did select ${selections[0]}`);
+  console.log(`Did select ${selections.length} items`);
 });
 
