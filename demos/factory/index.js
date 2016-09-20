@@ -43,6 +43,7 @@ var grid = pgrid.factory().use(pagerViewPlugin).create({
     {
       name: 'CustomerID',
       title: 'Customer ID',
+      hoverText: 'This is hover text',
       sortable: true,
       locked: true,
       headerTemplate: keyHeaderTemplate,
