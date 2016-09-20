@@ -11,13 +11,9 @@ define([
         var columns = model.get('columns');
 
         _.each(columns, function(column) {
-          _.extend(column, {
-            $metadata: {
-              'attr.head': {
-                title: _.result(column.config, 'hoverText') || _.result(column.config, 'title') || '',
-              },
-            },
-          });
+          column.$metadata = _.result(column, '$metadata', {});
+          column.$metadata['attr.head'] = _.result(column.$metadata, 'attr.head', {});
+          column.$metadata['attr.head'].title = _.result(column.config, 'hoverText') || _.result(column.config, 'title') || '';
         });
 
         this.patch({ columns: columns });
