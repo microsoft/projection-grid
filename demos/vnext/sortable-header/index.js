@@ -54,7 +54,7 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     ],
     bodyRows: [
       {
-        name: 'data-rows',
+        type: 'data-rows',
         classes: {
           redColor: true,
           longer: (row) => { return row.ShipAddress.length > 15; }, 
@@ -98,7 +98,15 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     }],
   },{
     name: 'ShipCity',
-    sortable: true,
+    sortable(direction) {
+      return [{
+        key: 'ShipCity',
+        direction,
+      }, {
+        key: 'OrderID',
+        direction: 1,
+      }];
+    },
   }],
   events: {
     'click th.column-header': (e) => console.log(e.target),

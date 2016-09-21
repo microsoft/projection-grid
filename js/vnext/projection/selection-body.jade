@@ -1,4 +1,7 @@
-if value.single
-  input.select-row(type='radio', checked=value.checked)
+if value.selectable
+  if value.single
+    input.select-row(type='radio', checked=value.checked)
+  else
+    input.select-row(type='checkbox', checked=value.checked)
 else
-  input.select-row(type='checkbox', checked=value.checked)
+  span.unselectable

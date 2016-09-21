@@ -128,10 +128,15 @@ define([
         $(e.target).closest('.is-not-trigger').length === 0) {
         schema = arg.grid.options.get('schema');
         let editor = this.viewConfig[arg.property] || prompt;
+        let position = arg.grid.layout.container.offset(e.currentTarget);
+        let $td = $(e.currentTarget);
+        
+        position.right = position.left + $td.outerWidth();
+        position.bottom = position.top + $td.outerHeight();
         editor({
           model: arg.model,
           schema: schema,
-          position: arg.grid.layout.container.offset(e.currentTarget),
+          position: position,
           property: property,
           onSubmit: model => {
             this.trigger('edit', model, property);

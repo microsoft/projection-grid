@@ -384,10 +384,10 @@ export class Editor {
         const type = errorMsg[2];
         const errorString = (errorMsg[0]).toString();
         if (type === 'update' || type === 'destroy') {
-          msg[errorMsg[1]] = errorString;
+          msg[errorMsg[1]] = 'Can not ' + type + ' ' + errorMsg[1] + '<br>' + errorString;
           gridView.set({ patchError: { errorMsg: msg }});
         } else if (type === 'create') {
-          alert('Can not create ' + JSON.stringify(errorMsg[1]) + '\n' + errorString);
+          alert('Can not create ' + JSON.stringify(errorMsg[1]) + '<br>' + errorString);
         }
         
       }).bind(this); 

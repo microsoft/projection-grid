@@ -39,6 +39,7 @@ window.gridView = pgrid.factory({ vnext: true }).create({
   selection: {
     headClasses: 'grid-select-all',
     bodyClasses: 'grid-select-row',
+    selectable: (item) => item.OrderID % 2,
   },
   rows: {
     headRows: [
