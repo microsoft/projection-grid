@@ -1,19 +1,20 @@
 import _ from 'underscore';
+import $ from 'jquery';
 
 export function patchChange (state,  options) {
   const changedData = editor._changedData;
   const primaryKey = state.primaryKey;
-  const itemIndex = state.itemIndex;
-  const itemCount = state.itemCount; 
-  const items = _.reduce(state.items, (memo, item, itemCount) => {
+  const itemIndex = $.extend(true, {}, state.itemIndex);
+  let itemCount = state.itemCount; 
+  const items = _.reduce(state.items, (memo, item) => {
     const key = item[primaryKey];
     if(key in changedData) {
       //just for demo
       //memo.push(changedData[key].item);
       //return memo;
-      
-      
+
       if(changedData[key].editState == 'REMOVED') {
+        delete itemIndex[key];
         itemCount--;
         return memo;
       } else {
@@ -33,5 +34,6 @@ export function patchChange (state,  options) {
       itemCount++;
     }
   });
+
   return _.defaults({ items, itemIndex, itemCount }, state);
 }

@@ -6,10 +6,6 @@ const editStateClasses = {
   'UPDATED': ['row-buffer-updated'],
   'REMOVED': ['row-buffer-removed'],
   'COMMITTED': ['row-buffer-committed'],
-  /*
-  'CHANGED': ['row-buffer-changed'],
-  'COMMITTED': ['row-buffer-committed'],
-  */
 };
 
 /**
@@ -43,7 +39,12 @@ export const rows = {
             _.result(editStateClasses, editState, [])
           );
 
-          memo.push({ item, classes, type: 'data' });
+          if (item.html) {
+            memo.push({ html: item.html, classes, type: 'error' });
+          } else {
+            memo.push({ item, classes, type: 'data' });
+          }
+          
         });
       } else if (row.view) {
         throw new Error('Body row cannot have subviews');

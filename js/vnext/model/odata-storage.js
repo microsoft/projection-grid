@@ -72,7 +72,9 @@ export class ODataStorage extends Storage {
         type: 'POST',
         header: { "Content-Type": "application/json" },
         data: JSON.stringify(attrs),
-      }).success(resolve);
+      })
+      .success(resolve)
+      .fail((jqXHR, textStatus, errorThrown) => reject([new Error(errorThrown), attrs, 'create']));
     }); 
   }
 
@@ -85,7 +87,9 @@ export class ODataStorage extends Storage {
           "Content-Type": "application/json",
         },
         data: JSON.stringify(attrs),
-      }).success(resolve);
+      })
+      .success(resolve)
+      .fail((jqXHR, textStatus, errorThrown) => reject([new Error(errorThrown), key, 'update']));
     });
   }
 
@@ -94,7 +98,9 @@ export class ODataStorage extends Storage {
       $.ajax({
         url: this.url+ "('" + key + "')",
         type: 'DELETE',
-      }).success(resolve);
+      })
+      .success(resolve)
+      .fail((jqXHR, textStatus, errorThrown) => reject([new Error(errorThrown), key, 'destroy']));
     });
   }
 }

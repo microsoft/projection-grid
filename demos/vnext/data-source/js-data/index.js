@@ -1,10 +1,10 @@
 import pgrid from '../../../../js';
 import store from './js-data-resource.js';
-
+import Editor from '../../../../js/vnext/editor-plugin.js';
 import './index.less';
 import 'bootstrap-webpack';
 
-window.gridView = pgrid.factory({ vnext: true }).create({
+window.gridView = pgrid.factory({ vnext: true }).use(Editor).create({
   el: '.grid-container',
   tableClasses: ['table', 'table-bordered'],
   scrolling: {
@@ -15,8 +15,25 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     entity: store,
     primaryKey: 'UserName',
   },
-  editableOption: false,
   columns: [{
+    name: 'UserName',
+  },{
+    name: 'FirstName',
+  },{
+    name: 'LastName',
+  },{
+    name: 'Emails',
+  },{
+    name: 'Gender',
+  }],
+  /*
+  query: {
+    skip: 2,
+    take: 5,
+  },
+  */
+  plugin: {
+    editableColumns: [{
     name: 'UserName',
     editable: true,
   },{
@@ -32,10 +49,5 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     name: 'Gender',
     editable: true,
   }],
-  /*
-  query: {
-    skip: 2,
-    take: 5,
   },
-  */
 }).gridView.render();

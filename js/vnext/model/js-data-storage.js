@@ -74,7 +74,7 @@ export class JSDataStorage extends Storage {
         data: JSON.stringify(attrs),
       })
       .done(resolve)
-      .fail((jqXHR, textStatus, errorThrown) => reject(new Error(errorThrown)));
+      .fail((jqXHR, textStatus, errorThrown) => reject([new Error(errorThrown), attrs, 'create']));
     });
     //return this.entity.create(attrs);
   }
@@ -91,7 +91,7 @@ export class JSDataStorage extends Storage {
         data: JSON.stringify(attrs),
       })
       .done(resolve)
-      .fail((jqXHR, textStatus, errorThrown) => reject(new Error(errorThrown)));
+      .fail((jqXHR, textStatus, errorThrown) => reject([new Error(errorThrown), key, 'update']));
     });
   }
 
@@ -105,7 +105,7 @@ export class JSDataStorage extends Storage {
         }
       })
       .done(resolve)
-      .fail((jqXHR, textStatus, errorThrown) => reject(new Error(errorThrown)));
+      .fail((jqXHR, textStatus, errorThrown) => reject([new Error(errorThrown), key, 'destroy']));
     });
   }
   

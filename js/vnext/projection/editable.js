@@ -60,8 +60,12 @@ function editInColumn(column) {
 */
 export const editable = {
   name: 'editable',
-  handler(state) {
+  handler(state, options) {
     const leafColumns = state.columnGroup.leafColumns;
+    const editableColumns = _.reduce(options.editableColumns, (memo, col) => {
+      memo[col.name] = true;
+      return memo;
+    }, {});
     const iconClasses = ['glyphicon', 'glyphicon-pencil'];
     const events = _.reduce(leafColumns, (memo, col) => {
       memo[`click td.grid-editable-cell.grid-column-${col.name}`] = editInColumn(col);
@@ -78,7 +82,7 @@ export const editable = {
         const cells = _.map(row.cells, (cell, index) => {
           const col = leafColumns[index];
 
-          if (col.editable) {
+          if (col.name in editableColumns) {
             const classes = _.union(cell.classes, ['grid-editable-cell', `grid-column-${col.name}`]);
             const html = editTemplate({ $html: cell.html, classes: iconClasses });
             return _.defaults({ classes, html }, cell);

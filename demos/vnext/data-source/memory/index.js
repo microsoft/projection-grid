@@ -49,7 +49,6 @@ window.gridView = pgrid.factory({ vnext: true }).use(Editor).create({
     type: 'memory',
     data: people.value,
   },
-  editableOption: true,
   selection: false,
   rows: {
     headRows: [
@@ -63,22 +62,34 @@ window.gridView = pgrid.factory({ vnext: true }).use(Editor).create({
     name: '__primary_key__',
    },{
     name: 'UserName',
-    editable: true,
   },{
     name: 'FirstName',
-    editable: true,
   },{
     name: 'LastName',
-    editable: true,
   },{
     name: 'Emails',
-    editable: true,
-    width: 100,
   },{
     name: 'Gender',
-    editable: true,
   },{
     name: 'Concurrency',
-    editable: true,
   }],
+  plugin: {
+    editableColumns: [{
+      name: 'FirstName',
+      editable: true,
+    },{
+      name: 'LastName',
+      editable: true,
+    },{
+      name: 'Emails',
+      editable: true,
+      width: 100,
+    },{
+      name: 'Gender',
+      editable: true,
+    },{
+      name: 'Concurrency',
+      editable: true,
+    }],
+  },
 }).gridView.render();

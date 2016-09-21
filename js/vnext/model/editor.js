@@ -166,7 +166,7 @@ export class Editor {
       this._data = $.extend(true, {}, data.itemIndex);
 
       const query = _.defaults({ serverEditID: _.uniqueId('serverEditID') }, this.model.get('query'));
-      this.model.set({ query });// TODO: it should be returned by server
+      this.model.set({ query });
       this._serverEditID = this.model.get('query').serverEditID;
       return data;
     }).bind(this);
@@ -350,8 +350,7 @@ export class Editor {
       const { item, editState } = value;
       if (editState === 'UPDATED') {
         const p$update = this._storage.update(key, item).then(
-          (data, primaryKey = key) => ('update'),
-          (error) => (alert(error))).bind(this);
+          (data, primaryKey = key) => ('update')).bind(this);
 
         allChanges.push(p$update);
 
@@ -373,10 +372,25 @@ export class Editor {
       }
     });
 
-    Promise.all(allChanges).then(() => {
-      const query = _.defaults({ serverEditID: _.uniqueId('serverEditID') }, this.model.get('query'));
-      this.model.set({ query });
-    }).bind(this); 
+    Promise.all(allChanges).then(
+      () => {
+        const query = _.defaults({ serverEditID: _.uniqueId('serverEditID') }, this.model.get('query'));
+        this.model.set({ query });
+      }, 
+      (errorMsg) => {
+        const query = _.defaults({ serverEditID: _.uniqueId('serverEditID') }, this.model.get('query'));
+        this.model.set({ query }); 
+        const msg = {};
+        const type = errorMsg[2];
+        const errorString = (errorMsg[0]).toString();
+        if (type === 'update' || type === 'destroy') {
+          msg[errorMsg[1]] = errorString;
+          gridView.set({ patchError: { errorMsg: msg }});
+        } else if (type === 'create') {
+          alert('Can not create ' + JSON.stringify(errorMsg[1]) + '\n' + errorString);
+        }
+        
+      }).bind(this); 
   }
 
   autoCommit(time = 10000) {

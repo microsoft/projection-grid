@@ -1,4 +1,5 @@
 export { query } from './query.js';
+export { patchError } from './patch-error.js';
 export { patchChange } from './patch-change.js';
 export { selection, setSelectAll, setSelectRow } from './selection.js';
 export { columns } from './columns.js';
