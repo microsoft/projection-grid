@@ -6,6 +6,7 @@ define([
   var Model = BaseProjection.extend({
     defaults: {
       'row.classes': {},
+      'row.role': {},
     },
     name: 'row',
     update: function (options) {
@@ -23,9 +24,13 @@ define([
           }
         });
 
-        _.each(rows, row => {
+        _.each(rows, (row, index) => {
           var classArr = [];
           var classesRule = this.get('row.classes');
+
+          var checkId = this.get('row.check.id');
+          var checkboxAllow = this.get('row.check.allow');
+
           _.each(classesRule, (func, key) => {
             var originClass = _.chain(row)
               .result('$metadate')
@@ -42,13 +47,38 @@ define([
             if (_.isFunction(func) && func(row, type)) {
               classArr.push(key);
             }
-            _.extend(row, {
-              $metadata: {
-                attr: {
-                  class: _.flatten(classArr).join(' '),
-                },
+          });
+          
+          //attr info from meta 
+          var originId = _.chain(row)
+            .result('$metadate')
+            .result('attr')
+            .result('id')
+            .value();
+
+          var originRole = _.chain(row)
+            .result('$metadate')
+            .result('attr')
+            .result('role')
+            .value();
+
+          // if (_.isFunction(checkboxAllow) && checkboxAllow(row)) {
+          //   console.log('=========');
+          //   console.log(this.get('accessibility.row.check.idPrefix').concat(row[checkId]));
+          // }
+          var newId = row[checkId];
+          var newRole = this.get('row.role');
+          var id = newId || originId;
+          var role = newRole || originRole;
+
+          _.extend(row, {
+            $metadata: {
+              attr: {
+                class: _.flatten(classArr).join(' '),
+                id: id,
+                role: role,
               },
-            });
+            },
           });
         });
 

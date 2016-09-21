@@ -16,6 +16,7 @@ define([
       'row.check.allow': function () {
         return true;
       },
+      'accessibility.row.check.idPrefix': 'accessibility__',
     },
     name: 'row-check',
     events: {
@@ -61,12 +62,16 @@ define([
             checkedAll = checkedAll && checked;
             disabled = false;
             hasCheckboxable = true;
+            var labelledId = ret[checkId];
+            // var labelledId =  this.get('accessibility.row.check.idPrefix');
+            // var labelledId =  this.get('accessibility.row.check.idPrefix').concat(ret[checkId]);
 
             ret[col] = _.extend({}, ret[col], {
               $html: selectableTemplate({
                 type: isSingle ? 'radio' : 'checkbox',
                 checked: checked,
                 disabled: disabled,
+                labelledId: labelledId,
               }),
             });
           }

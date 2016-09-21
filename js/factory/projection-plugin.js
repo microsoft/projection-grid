@@ -211,6 +211,8 @@ const projectionConfigs = {
   Row(config) {
     return {
       'row.classes': _.result(config.rows, 'classes'),
+      'row.idPrefix': _.result(config.rows, 'idPrefix'),
+      'row.role': _.result(config.rows, 'role'),
     };
   },
 
