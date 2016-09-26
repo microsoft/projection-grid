@@ -7,16 +7,16 @@ define([
   var Model = BaseProjection.extend({
     defaults: {
       'accessibility.rowcheck.idPrefix': defaultPrefix,
-		},
-		name: 'accessibility',
-		update: function (options) {
+    },
+    name: 'accessibility',
+    update: function (options) {
       var accessibilityPre = this.get('accessibility.rowcheck.idPrefix');
       if (Model.__super__.update.call(this, options)) {
         this.patch({
           'accessibility.rowcheck.idPrefix': _.isString(accessibilityPre) ? accessibilityPre : defaultPrefix,
         });
       }
-		}
+    },
   });
   return Model;
 });
