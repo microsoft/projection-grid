@@ -5,6 +5,14 @@ import { delegateEvents } from './utility';
 import prompt from '../popup-editor/index';
 
 const projectionConfigs = {
+  Accessibility(config) {
+    const accConfig = {};
+    if (_.has(config.accessibility, 'rowcheck') && _.has(config.accessibility.rowcheck, 'idPrefix')) {
+      accConfig['accessibility.rowcheck.idPrefix'] = config.accessibility.rowcheck.idPrefix;
+    }
+    return accConfig;
+  },
+
   AggregateRow(config) {
     const configAgg = {};
 
@@ -211,8 +219,6 @@ const projectionConfigs = {
   Row(config) {
     return {
       'row.classes': _.result(config.rows, 'classes'),
-      'row.idPrefix': _.result(config.rows, 'idPrefix'),
-      'row.role': _.result(config.rows, 'role'),
     };
   },
 
@@ -298,6 +304,10 @@ export default definePlugin => definePlugin('projection', [
 
   const dataSourceProjection = projection;
 
+  if (config.accessibility) {
+    pipeProjection('Accessibility');
+  }
+
   pipeProjection('Columns');
   pipeProjection('Map');
   if (config.aggregate) {
@@ -320,7 +330,7 @@ export default definePlugin => definePlugin('projection', [
     pipeProjection('RowCheckbox');
   }
 
-  if (config.rows) {
+  if (config.rows || (config.accessibility && config.selectable)) {
     pipeProjection('Row');
   }
 

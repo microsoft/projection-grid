@@ -16,7 +16,6 @@ define([
       'row.check.allow': function () {
         return true;
       },
-      'accessibility.row.check.idPrefix': 'accessibility__',
     },
     name: 'row-check',
     events: {
@@ -33,13 +32,14 @@ define([
       // Model.__super__.update.call(this, options);
 
       if (Model.__super__.update.call(this, options)) {
+        var model = this.src.data;
         var checkId = this.get('row.check.id');
-        var value = this.src.data.get('value');
+        var value = model.get('value');
         var ids = _.pluck(value, checkId);
         var checked = _.intersection(this.get('row.check.list'), ids);
         var checkedLookup = _.object(checked, []);
         var col = this.get('column.checked');
-        var columns = _.clone(this.src.data.get('columns'));
+        var columns = _.clone(model.get('columns'));
         var checkedAll = value.length > 0;
         var hasCheckboxable = false;
         var checkboxAllow = this.get('row.check.allow');
@@ -62,17 +62,17 @@ define([
             checkedAll = checkedAll && checked;
             disabled = false;
             hasCheckboxable = true;
-            var labelledId = ret[checkId];
-            // var labelledId =  this.get('accessibility.row.check.idPrefix');
-            // var labelledId =  this.get('accessibility.row.check.idPrefix').concat(ret[checkId]);
-
+            var accessibilityPre = model.get('accessibility.rowcheck.idPrefix');
+            if (accessibilityPre) {
+              var labelledId = accessibilityPre.concat(ret[checkId]);
+            }
             ret[col] = _.extend({}, ret[col], {
-              $html: selectableTemplate({
+              $html: selectableTemplate(_.pick({
                 type: isSingle ? 'radio' : 'checkbox',
                 checked: checked,
                 disabled: disabled,
                 labelledId: labelledId,
-              }),
+              }, Boolean)),
             });
           }
 
@@ -107,6 +107,7 @@ define([
         this.patch({
           value: value,
           columns: columns,
+          'row.check.allow': checkboxAllow,
         });
       } else {
         // todo [akamel] unset our properties only

@@ -1,4 +1,5 @@
 module.exports = {
+  Accessibility: require('./accessibility'),
   AggregateRow: require('./aggregate-row'),
   Base: require('./base'),
   ColumnI18n: require('./column-i18n'),
