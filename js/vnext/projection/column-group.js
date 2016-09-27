@@ -24,6 +24,34 @@ function stringProperty(property) {
   };
 }
 
+/**
+ * @typedef PropertyConfig
+ * @type {Object}
+ * @property {PropertyGetter} get - The getter function.
+ * @property {PropertySetter} set - The setter function.
+ */
+
+/**
+ * @callback PropertyGetter
+ * @param {Object} item - The data item.
+ * @return {} - The value for the property.
+ */
+
+/**
+ * @callback PropertySetter
+ * @param {Object} item - The data item.
+ * @param {} value - The value for the property.
+ */
+
+/**
+ * It behaves as a {@link PropertyGetter} when passed 1 argument, and behaves
+ * as a {@link PropertySetter} when passed 2 arguments.
+ * @callback PropertyCallback
+ * @param {Object} item - The data item.
+ * @param {} [value] - The new value for the property.
+ * @return {} - The value for the property.
+ */
+
 function normalizeProperty(property, column) {
   if (!property) {
     return stringProperty(column.name);
@@ -42,6 +70,22 @@ function normalizeProperty(property, column) {
 
   return property;
 }
+
+/**
+ * @typedef SortableConfig
+ * @type {Object}
+ * @property {string|PropertyGetter} key
+ *    The sort key. It could be
+ *    * A string, the key path of the sorting values.
+ *    * A {@link PropertyGetter} to get the sorting values from data items.
+ *      Only available for memory data source.
+ *
+ * @property {number} direction
+ *    A number indicating the order on first click. Positive for ascending,
+ *    otherwise descending.
+ * @property {SortableHeaderTemplate} template
+ *    A customized template to render the sortable column header.
+ */
 
 function normalizeSortable(sortable, column) {
   const columnKey = column.property.key || column.property.get;
@@ -79,18 +123,57 @@ function normalizeSortable(sortable, column) {
 
 /**
  * The column group class.
- * It takes columns configuration as input and generates headerRows, leafColumns, columnIndex and root(a tree-like column structure).
+ *
+ * It takes columns configuration as input and generates headerRows, leafColumns,
+ * columnIndex and root(a tree-like column structure).
+ *
+ * @param {ColumnConfig[]} columns
+ *    The columns configuration
  */
 class ColumnGroup {
   constructor(columns) {
+    
+    /**
+     * The column header rows
+     * @type {RowContent[]}
+     */
     this.headerRows = [];
-    this.leafColumns = [];
-    this.columnIndex = {};
 
     /**
+     * The leaf columns
+     * @type {ExtendedColumnConfig[]}
+     */
+    this.leafColumns = [];
+
+    /**
+     * The columns indexed by name
+     * @type {Object.<string,ExtendedColumnConfig>}
+     */
+    this.columnIndex = {};
+
+    /*
      * Build tree-like columns structure using DFS
      */
     const buildColumn = col => {
+      /**
+       * An extended internal representation of columns. It extends
+       * {@link ColumnConfig} with several extra properties.
+       * @typedef ExtendedColumnConfig
+       * @type ColumnConfig
+       * @property {ExtendedColumnConfig} parent
+       *    The parent column if there's a column hierarchy.
+       * @property {ExtendedColumnConfig[]} columns
+       *    The children columns.
+       * @property {CellContent} cell
+       *    The configuration of the header cell.
+       * @property {number} height
+       *    The rowspan of the header cell.
+       * @property {number} treeWidth
+       *    The colspan of the header cell. The tree width of the column
+       *    subtree in number of columns.
+       * @property {number} treeHeight
+       *    The height of the column subtree in number of rows.
+       */
       const { parent, columns, height, name, property, sortable } = col;
 
       this.columnIndex[name] = col;
@@ -118,8 +201,8 @@ class ColumnGroup {
       return col;
     };
 
-    /**
-     * Build column header with BFS
+    /*
+     * Build column header with DFS
      */
     const buildColumnHeader = col => {
       if (col.parent) {
@@ -147,8 +230,12 @@ class ColumnGroup {
       _.each(col.columns, buildColumnHeader);
     };
 
+    /**
+     * The root column
+     * @type {ExtendedColumnConfig}
+     */
     this.root = buildColumn({
-      name: '$root',
+      name: '__root__',
       height: 0,
       columns,
     });
@@ -172,29 +259,41 @@ class ColumnGroup {
 function translateColumnGroup(columnGroup) {
   return _.map(columnGroup.leafColumns, col => {
     const colClasses = _.union(normalizeClasses(col.colClasses, col), [`col-${col.name}`]);
+    /**
+     * The content of a `COL` element in `COLGROUP`.
+     * @typedef ColContent
+     * @type {Object}
+     * @property {string[]} classes
+     *    The classes of the `COL` element.
+     * @property {number|string} width
+     *    The CSS width for the column.
+     */
     return {
       classes: colClasses,
       width: _.isNumber(col.width) ? `${col.width}px` : col.width,
-    }
+    };
   });
 }
 
 /**
- * Resolve grid structure from columns configuration
+ * Resolve grid structure from columns configuration and build the
+ * {@link ColumnGroup} object.
  *
- * @param {Object} state
- * @param {Object[]} [state.columns] columns configuration
- *
+ * @param {ContentChainState} state
+ *    The input content chain state.
+ * @return {ContentChainState}
  */
+function columnGroupProjectionHandler(state) {
+  const columnGroup = new ColumnGroup(state.columns || []);
+  return _.defaults({
+    columnGroup,
+    cols: translateColumnGroup(columnGroup),
+  }, state);
+}
+
 export const columnGroup = {
   name: 'columnGroup',
-  handler(state) {
-    const columnGroup = new ColumnGroup(state.columns || []);
-    return _.defaults({
-      columnGroup,
-      cols: translateColumnGroup(columnGroup),
-    }, state);
-  },
+  handler: columnGroupProjectionHandler,
   defaults: {},
 };
 

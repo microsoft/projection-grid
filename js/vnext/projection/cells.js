@@ -1,6 +1,19 @@
 import _ from 'underscore';
 import { normalizeClasses } from './common.js';
 
+/**
+ * Translate the {@link RowConfig} into {@link RowContent}
+ * @param {Object} options
+ * @param {ColumnGroup} options.columnGroup
+ *    The column group.
+ * @param {RowConfig} options.row
+ *    The {@link RowConfig} to translate.
+ * @param {string} rowType
+ *    Which group the row belongs to. It could be 'head', 'body' or 'foot'.
+ * @param {string} primaryKey
+ *    The primary key of the data items.
+ * @return {RowContent}
+ */
 function translateRow({
   columnGroup,
   row,
@@ -37,6 +50,20 @@ function translateRow({
       } else if (rowType === 'head') {
         cellClasses = normalizeClasses(col.headClasses, row);
       }
+      /**
+       * The object represents a cell.
+       * @typedef CellContent
+       * @type {Object}
+       * @property {string[]} classes
+       *    The classes for the `TD`/`TH` element
+       * @property {Object.<string,string>} attributes
+       *    The HTML attributes for the `TD`/`TH` element.
+       * @property {string} html
+       *    The HTML string to be rendered inside the cell.
+       * @property {Backbone.View} view
+       *    The Backbone View to be filled into the cell. Unsupported for
+       *    the body cells.
+       */
       const cell = { classes: cellClasses, attributes: {} };
       cell.value = col.property.get(row.item);
       cell.html = col.template(_.pick(cell, 'value'));
@@ -49,66 +76,72 @@ function translateRow({
     }, row.attributes);
   }
 
+  /**
+   * Extends the {@link RowConfig} with extra properties
+   * @typedef RowContent
+   * @type {RowConfig}
+   * @property {CellContent[]} cells
+   *    The cells in the row.
+   * @property {Object.<string,string>} attributes
+   *    The HTML attributes for the `TR` element.
+   */
   return _.defaults(patch, row, { attributes: {} });
 }
 
 /**
-* Handle cells content.
-*
-* @param {Object} state All data, configurations and events needed in grid cells.
-* @param {Object[]} [state.headRows] Grid header cells.
-* @param {Object} [state.bodyRows] 
-* @param {Number} [state.bodyRows.length] bodyRows' length
-* @param {Function} [state.bodyRows.slice] Get bodyRows element
-* @param {Object[]} [state.footRows] Grid footer cells.
-* @param {Object} [state.columns] Column configurations.
-*
-*/
-export const cells = {
-  name: 'cells',
-  handler(state) {
-    const columnGroup = state.columnGroup;
-    const primaryKey = this.primaryKey;
+ * Fill the headRows, bodyRows and footRows with cells.
+ * @param {ContentChainState} state
+ *    All data, configurations and events needed in grid cells.
+ * @return {ContentChainState}
+ */
+function cellsProjectionHandler(state) {
+  const columnGroup = state.columnGroup;
+  const primaryKey = this.primaryKey;
 
-    const headRows = _.reduce(state.headRows, (memo, row) => {
-      if (row === 'column-header-rows') {
-        return memo.concat(columnGroup.headerRows);
-      }
-      memo.push(translateRow({
-        columnGroup,
-        row,
-        rowType: 'head',
-        primaryKey,
-      }));
-      return memo;
-    }, []);
-
-    const bodyRows = {
-      length: state.bodyRows.length,
-      slice: (begin = 0, end = state.bodyRows.length) => {
-        return state.bodyRows.slice(begin, end)
-          .map(row => translateRow({
-            columnGroup,
-            row,
-            rowType: 'body',
-            primaryKey,
-          }));
-      },
-    };
-
-    const footRows = _.map(state.footRows, row => translateRow({
+  const headRows = _.reduce(state.headRows, (memo, row) => {
+    if (row === 'column-header-rows') {
+      return memo.concat(columnGroup.headerRows);
+    }
+    memo.push(translateRow({
       columnGroup,
       row,
-      rowType: 'foot',
+      rowType: 'head',
       primaryKey,
     }));
+    return memo;
+  }, []);
 
-    return _.defaults({
-      headRows,
-      bodyRows,
-      footRows,
-    }, state);
-  },
+  const bodyRows = {
+    length: state.bodyRows.length,
+    slice: (begin = 0, end = state.bodyRows.length) => {
+      return state.bodyRows.slice(begin, end)
+        .map(row => translateRow({
+          columnGroup,
+          row,
+          rowType: 'body',
+          primaryKey,
+        }));
+    },
+  };
+
+  const footRows = _.map(state.footRows, row => translateRow({
+    columnGroup,
+    row,
+    rowType: 'foot',
+    primaryKey,
+  }));
+
+  return _.defaults({
+    headRows,
+    bodyRows,
+    footRows,
+  }, state);
+}
+
+
+export const cells = {
+  name: 'cells',
+  handler: cellsProjectionHandler,
   defaults: {},
 };
 

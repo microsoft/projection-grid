@@ -1,10 +1,8 @@
 import _ from 'underscore';
 import $ from 'jquery';
 import Promise from 'bluebird';
+import { normalizeOrderBy } from './common.js';
 
-/**
-* odata data source
-*/
 export const odata = {
   findAll({
     verb = 'get',
@@ -31,8 +29,10 @@ export const odata = {
     }
 
     if (_.size(orderby)) {
-      const { key, direction } = _.first(orderby) || {};
-      op.$orderby = key + ' ' + (direction > 0 ? 'asc' : 'desc');
+      op.$orderby = _.chain(normalizeOrderBy(orderby))
+        .map(([key, direction]) => `${key} ${direction > 0 ? 'asc' : 'desc'}`)
+        .join(',')
+        .value();
     }
 
     return new Promise((resolve, reject) => {
