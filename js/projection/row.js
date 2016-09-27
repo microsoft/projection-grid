@@ -23,7 +23,7 @@ define([
           }
         });
 
-        _.each(rows, (row, index) => {
+        _.each(rows, (row) => {
           var classArr = [];
           var classesRule = this.get('row.classes');
 

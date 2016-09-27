@@ -61,22 +61,21 @@ mixin td(row, column)
       = res
 
 table.table.table-hover.grid&attributes($metadata || {})
-  - var headerRowAttr = a11yHeaderId ? {id: a11yHeaderId, role: 'row'} : {};
   if !hideHeaders
     thead
       if isApplyGroup && subSelect.length === 0
-        tr.table__row--header&attributes(headerRowAttr)
+        tr.table__row--header
           each columnName in locals['select'] || []
             +th(columns[columnName], true)
       else if isApplyGroup
-        tr.table__row--header&attributes(headerRowAttr)
+        tr.table__row--header
           each columnName in locals['select'] || []
             +th(columns[columnName], true)
-        tr.table__row--header.table__row--sub-header&attributes(headerRowAttr)
+        tr.table__row--header.table__row--sub-header
           each columnName in locals['subSelect']
             +th(columns[columnName], true, true)
       else
-        tr.table__row--header&attributes(headerRowAttr)
+        tr.table__row--header
           each columnName in locals['select'] || []
             +th(columns[columnName])
   tbody

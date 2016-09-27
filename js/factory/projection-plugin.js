@@ -7,8 +7,8 @@ import prompt from '../popup-editor/index';
 const projectionConfigs = {
   A11y(config) {
     const accConfig = {};
-    if (_.has(config.a11ySupport, 'rowcheck') && _.has(config.a11ySupport.rowcheck, 'idPrefix')) {
-      accConfig['a11y.rowcheck.idPrefix'] = config.a11ySupport.rowcheck.idPrefix;
+    if (_.has(config.a11y, 'rowcheck') && _.has(config.a11y.rowcheck, 'idPrefix')) {
+      accConfig['a11y.rowcheck.idPrefix'] = config.a11y.rowcheck.idPrefix;
     }
     return accConfig;
   },
@@ -304,7 +304,7 @@ export default definePlugin => definePlugin('projection', [
 
   const dataSourceProjection = projection;
 
-  if (config.a11ySupport) {
+  if (config.a11y) {
     pipeProjection('A11y');
   }
 
@@ -330,7 +330,7 @@ export default definePlugin => definePlugin('projection', [
     pipeProjection('RowCheckbox');
   }
 
-  if (config.rows || (config.a11ySupport && config.selectable)) {
+  if (config.rows || (config.a11y && config.selectable)) {
     pipeProjection('Row');
   }
 

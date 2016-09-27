@@ -6,7 +6,6 @@ define([
 ], function (_, Backbone, BaseProjection, selectableTemplate) {
   'use strict';
 
-  const headerCheckboxId = "header-checkbox-id";
   var Model = BaseProjection.extend({
     defaults: {
       'column.checked': 'checkbox',   // the checkbox column
@@ -64,9 +63,7 @@ define([
             disabled = false;
             hasCheckboxable = true;
 
-            var classes = [];
             if (model.get('a11y.enabled')) {
-              classes.push('clickable');
               var a11yPrefix = model.get('a11y.rowcheck.idPrefix');
               var labelledId = (a11yPrefix || '').concat(ret[checkId]);
             }
@@ -77,7 +74,6 @@ define([
                 checked: checked,
                 disabled: disabled,
                 labelledId: labelledId,
-                checkboxClasses: classes,
               }, Boolean)),
             });
           }
@@ -91,31 +87,21 @@ define([
             checkboxColumn.$html = '<span/>';
           } else {
             var disabled = _.size(ids) === 0;
-            var classes = [];
-            if (model.get('a11y.enabled')) {
-              classes.push('clickable');
-              var labelledId = headerCheckboxId;
-            }
-
             if (hasCheckboxable) {
-              checkboxColumn.$html = selectableTemplate(_.pick({
+              checkboxColumn.$html = selectableTemplate({
                 type: 'checkbox',
                 checked: checkedAll,
                 disabled: disabled,
-                labelledId: labelledId,
-                checkboxClasses: classes,
-              }, Boolean));
+              });
               if (!checkedAll) {
                 this.attributes['row.check.checked.all'] = false;
               }
             } else {
-              checkboxColumn.$html = selectableTemplate(_.pick({
+              checkboxColumn.$html = selectableTemplate({
                 type: 'checkbox',
                 checked: this.get('row.check.checked.all'),
                 disabled: disabled,
-                labelledId: labelledId,
-                checkboxClasses: classes,
-              }, Boolean));
+              });
             }
           }
         }
@@ -124,7 +110,6 @@ define([
           value: value,
           columns: columns,
           'row.check.allow': checkboxAllow,
-          'row.check.header.id': headerCheckboxId,
         });
       } else {
         // todo [akamel] unset our properties only

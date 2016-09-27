@@ -135,10 +135,6 @@ define([
     // TODO [akamel] [perf] 8.5%
     toHTML: function (value) {
       var data = _.defaults({ value: value }, this.data);
-      if (this.data['a11y.enabled']) {
-        var a11yHeaderId = data['row.check.header.id'];
-        data = _.defaults(data, {a11yHeaderId: a11yHeaderId});
-      }
 
       _.each(data.columns, function (col) {
         if (_.isObject(col.$metadata)) {
