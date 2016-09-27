@@ -5,10 +5,10 @@ import { delegateEvents } from './utility';
 import prompt from '../popup-editor/index';
 
 const projectionConfigs = {
-  Accessibility(config) {
+  A11y(config) {
     const accConfig = {};
-    if (_.has(config.accessibility, 'rowcheck') && _.has(config.accessibility.rowcheck, 'idPrefix')) {
-      accConfig['accessibility.rowcheck.idPrefix'] = config.accessibility.rowcheck.idPrefix;
+    if (_.has(config.a11ySupport, 'rowcheck') && _.has(config.a11ySupport.rowcheck, 'idPrefix')) {
+      accConfig['a11y.rowcheck.idPrefix'] = config.a11ySupport.rowcheck.idPrefix;
     }
     return accConfig;
   },
@@ -304,8 +304,8 @@ export default definePlugin => definePlugin('projection', [
 
   const dataSourceProjection = projection;
 
-  if (config.accessibility) {
-    pipeProjection('Accessibility');
+  if (config.a11ySupport) {
+    pipeProjection('A11y');
   }
 
   pipeProjection('Columns');
@@ -330,7 +330,7 @@ export default definePlugin => definePlugin('projection', [
     pipeProjection('RowCheckbox');
   }
 
-  if (config.rows || (config.accessibility && config.selectable)) {
+  if (config.rows || (config.a11ySupport && config.selectable)) {
     pipeProjection('Row');
   }
 

@@ -56,9 +56,9 @@ define([
             .value();
 
           if (_.isFunction(checkboxAllow) ? checkboxAllow(row) : checkboxAllow) {
-            var accessibilityPrefix = model.get('accessibility.rowcheck.idPrefix');
+            var a11yPrefix = model.get('a11y.rowcheck.idPrefix');
             var id = row[checkId] || originId;
-            var accessibilityId = accessibilityPrefix.concat(id);
+            var a11yId = a11yPrefix.concat(id);
             var role = 'row';
           }
 
@@ -66,7 +66,7 @@ define([
             $metadata: {
               attr: _.pick({
                 class: _.flatten(classArr).join(' '),
-                id: accessibilityId,
+                id: a11yId,
                 role: role,
               }, Boolean),
             },

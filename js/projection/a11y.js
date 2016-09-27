@@ -3,17 +3,18 @@ define([
   'lib/backbone',
   'component/grid/projection/base',
 ], function (_, Backbone, BaseProjection /* , schemaProperties, Response */) {
-  const defaultPrefix = 'accessibility-';
+  const defaultPrefix = 'a11y-';
   var Model = BaseProjection.extend({
     defaults: {
-      'accessibility.rowcheck.idPrefix': defaultPrefix,
+      'a11y.rowcheck.idPrefix': defaultPrefix,
     },
-    name: 'accessibility',
+    name: 'a11y',
     update: function (options) {
-      var accessibilityPre = this.get('accessibility.rowcheck.idPrefix');
+      var a11yPrefix = this.get('a11y.rowcheck.idPrefix');
       if (Model.__super__.update.call(this, options)) {
         this.patch({
-          'accessibility.rowcheck.idPrefix': _.isString(accessibilityPre) ? accessibilityPre : defaultPrefix,
+          'a11y.enabled': true,
+          'a11y.rowcheck.idPrefix': _.isString(a11yPrefix) ? a11yPrefix : defaultPrefix,
         });
       }
     },
