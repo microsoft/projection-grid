@@ -1,6 +1,9 @@
 import $ from 'jquery';
 import Backbone from 'backbone';
 import pgrid from '../../../js';
+import sortableHeaderTemplate from './sortable-header.jade';
+import sortableHeaderNumberTemplate from './sortable-header-number.jade';
+import sortableHeaderAlphabetTemplate from './sortable-header-alphabet.jade';
 
 import './index.less';
 import 'bootstrap-webpack';
@@ -36,11 +39,7 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
     primaryKey: 'OrderID',
   },
-  selection: {
-    headClasses: 'grid-select-all',
-    bodyClasses: 'grid-select-row',
-    selectable: (item) => item.OrderID % 2,
-  },
+  selection: true,
   rows: {
     headRows: [
       {
@@ -53,18 +52,15 @@ window.gridView = pgrid.factory({ vnext: true }).create({
       },
       'column-header-rows',
     ],
-    bodyRows: [{
-      type: 'data-rows',
-      classes: {
-        redColor: true,
-        longer: (row) => { return row.ShipAddress.length > 15; }, 
+    bodyRows: [
+      {
+        type: 'data-rows',
+        classes: {
+          redColor: true,
+          longer: (row) => { return row.ShipAddress.length > 15; }, 
+        }
       }
-    }, {
-      item: {
-        CustomerID: 'foobar',
-        OrderID: 'custom-row',
-      },
-    }],
+    ],
     footRows: [{
       classes: ['noborder'],
       view: titleFooter,
@@ -76,7 +72,9 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     headClasses: 'Iamgrouphead',
     columns: [{
       name: 'CustomerID',
-      sortable: true,
+      sortable: {
+        template: sortableHeaderAlphabetTemplate,
+      },
       editable: true,
       headClasses: 'Iamhead',
       bodyClasses: 'Iambody',
@@ -90,16 +88,30 @@ window.gridView = pgrid.factory({ vnext: true }).create({
       property: 'ShipAddress/length',
       title: 'Ship Address Length',
       width: 150, 
-      sortable: 'length(ShipAddress)',
+      sortable: {
+        key: 'length(ShipAddress)',
+        template: sortableHeaderNumberTemplate,
+      },
     }, {
       name: 'Destination',
       property: item => `${item.ShipCountry} / ${item.ShipCity}`,
     }],
   },{
     name: 'ShipCity',
-    sortable: true,
+    sortable(direction) {
+      return [{
+        key: 'ShipCity',
+        direction,
+      }, {
+        key: 'OrderID',
+        direction: 1,
+      }];
+    },
   }],
   events: {
     'click th.column-header': (e) => console.log(e.target),
   }, 
+  sortableHeader: {
+    template: sortableHeaderTemplate,
+  },
 }).gridView.render();

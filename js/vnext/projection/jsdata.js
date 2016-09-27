@@ -1,9 +1,6 @@
 import _ from 'underscore';
+import { normalizeOrderBy } from './common.js';
 
-/**
-* jsdata data source.
-*
-*/
 export const jsdata = {
   findAll({
     query,
@@ -34,7 +31,10 @@ export const jsdata = {
     }
 
     if (orderby && orderby.length) {
-      op.orderby = _.map(orderby, ({ key, direction }) => [key, direction > 0 ? 'ASC' : 'DESC']);
+      op.orderBy = _.map(normalizeOrderBy(orderby), ([key, direction]) => ([
+        key,
+        direction > 0 ? 'ASC' : 'DESC',
+      ]));
     }
 
     return entity.findAll(op, _.defaults(options, { all: true }))

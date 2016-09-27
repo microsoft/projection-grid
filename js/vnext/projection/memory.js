@@ -1,8 +1,5 @@
 import _ from 'underscore';
 
-/**
-* memory data source
-*/
 export const memory = {
   findAll({
     data,

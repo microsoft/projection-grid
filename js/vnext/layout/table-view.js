@@ -14,6 +14,17 @@ import columnGroupTemplate from './column-group.jade';
 const STATE_OPTIONS = ['cols', 'headRows', 'bodyRows', 'footRows', 'events'];
 const HEADER_TYPES = ['static', 'fixed', 'sticky'];
 
+/**
+ * Table view with virtualization support
+ * @class TableView
+ * @extends Backbone.View
+ * @param {Object} options
+ *  the constructor options
+ * @param {string[]} [options.classes=[]]
+ *  the classes for the TABLE elements (content table and sticky/fixed header)
+ * @param {ScrollingConfig} [options.scrolling={virtualized: false, header: 'static'}]
+ *  the scrolling related configurations
+ */
 export class TableView extends Backbone.View {
   initialize({ scrolling = {}, classes = [] }) {
     this._props = {
@@ -37,6 +48,12 @@ export class TableView extends Backbone.View {
 
     this._headerView = new HeaderView({ tableView: this });
     this._footerView = new FooterView({ tableView: this });
+
+    _.each(['willRedraw', 'didRedraw'], event => {
+      this._listView.on(event, (...args) => {
+        this.trigger(event, ...args);
+      });
+    });
   }
 
   _normalizeHeaderConfig(config) {
@@ -62,6 +79,47 @@ export class TableView extends Backbone.View {
     return header;
   }
 
+  /**
+   * @typedef ScrollingConfig
+   * @type {Object}
+   *
+   * @property {boolean} virtualized
+   *  flag for virtualization.
+   *
+   * @property {(string|HTMLElement|jQuery|window)} viewport
+   *  the scrolling viewport. If omit, the table view will auto detect the
+   *  closest ancestor of the $el with 'overflowY' style being 'auto' or
+   *  'scroll'. Use the window viewport if found none.
+   *
+   *  NOTE: the viewport takes no effect when using fixed header. Tables with
+   *  fixed header render its viewport inside, as the container of the body
+   *  and footer.
+   *
+   * @property {(string|HeaderConfig)} header
+   *  the header scrolling behavior configurations. It can be a string to
+   *  indicate the header type (`'static'`, `'sticky'` or `'fixed'`). Or an
+   *  detailed configuration object.
+   *
+   */
+
+  /**
+   * @typedef HeaderConfig
+   * @type {Object}
+   * @property {string} type
+   * the header type. It can have the following values
+   *
+   *  * `'static'`: static header, the normal case, the header is rendered to
+   *    the top of the grid.
+   *  * `'sticky'`: sticky header, the header will stick to the viewport with
+   *    a given offset.
+   *  * `'fixed'`: fixed header, the header will be outside the viewport. Only
+   *    the body and footer are scrollable.
+   *
+   * @property {number|function} offset
+   * special configuration for sticky header indicating its position. It's can
+   * be a number or a function returning a number, represents number of pixels
+   * below the viewport top.
+   */
   _normalizeScrollingConfig({
     viewport,
     virtualized = false,
@@ -167,8 +225,15 @@ export class TableView extends Backbone.View {
     const $stickyHeader = this.$('.sticky-header');
     const $stickyHeaderFiller = this.$('.sticky-header-filler');
     const $table = this.$('.sticky-header-filler + table');
+    const viewportSize = { width: 0, height: 0 };
+
     const adjustStickyHeader = () => {
-      const topVP = listView.viewport.getMetrics().outer.top;
+      if (!this.$el.is(':visible')) {
+        return;
+      }
+
+      const metricsVP = listView.viewport.getMetrics();
+      const topVP = metricsVP.outer.top;
       const offset = _.result(this._props.scrolling.header, 'offset', 0);
       const rectContainer =  $tableContainer.get(0).getBoundingClientRect();
       const topCur = rectContainer.top;
@@ -179,12 +244,31 @@ export class TableView extends Backbone.View {
           display: sticky ? 'block' : 'none',
           height: sticky ? $stickyHeader.height() : '',
         });
-        $stickyHeader.css({
+
+        const style = {
           position: sticky ? 'fixed' : 'static',
           top: sticky ? topVP + offset : '',
-          width: sticky ? $tableContainer.width() : '',
           left: sticky ? rectContainer.left : '',
-        });
+        };
+
+        const deltaWidth = Math.abs(metricsVP.outer.width - viewportSize.width);
+        const deltaHeight = Math.abs(metricsVP.outer.height - viewportSize.height);
+        const resize = deltaWidth >= 1 || deltaHeight >= 1;
+
+        if (resize) {
+          // Update the viewportSize
+          viewportSize.width = metricsVP.outer.width;
+          viewportSize.height = metricsVP.outer.height;
+
+          // Let the content table layout freely, then sync the width to sticky header
+          $stickyHeader.css({ width: 'auto' });
+          $table.css({ width: 'auto' });
+          const width = $tableContainer.width();
+          style.width = width;
+          $table.css({ width });
+        }
+
+        $stickyHeader.css(style);
       } else {
         $stickyHeaderFiller.css({
           display: 'none',
@@ -196,8 +280,9 @@ export class TableView extends Backbone.View {
       }
     };
 
-    listView.viewport.on('change', adjustStickyHeader);
-    listView.on('didRedraw', adjustStickyHeader);
+    listView.viewport.on('resize', _.partial(adjustStickyHeader, true));
+    listView.viewport.on('scroll', _.partial(adjustStickyHeader, false));
+    listView.on('didRedraw', _.partial(adjustStickyHeader, true));
   }
 
   _renderStatic(callback) {
