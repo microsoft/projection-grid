@@ -505,8 +505,13 @@ export class GridView extends Backbone.View {
    * The total count of data items. This represents the server side state.
    * @type {number}
    */
-  getItemCount() {
+  get totalCountRows() {
     return _.result(this._chainData.state, 'totalCount', 0);
+  }
+
+  // Backward compatibility
+  getItemCount() {
+    return this.totalCountRows;
   }
 
   /**
