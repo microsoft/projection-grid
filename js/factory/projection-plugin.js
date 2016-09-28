@@ -5,6 +5,17 @@ import { delegateEvents } from './utility';
 import prompt from '../popup-editor/index';
 
 const projectionConfigs = {
+  A11y(config) {
+    const accConfig = {};
+
+    // temp config to fix a11y bug of latency projection grid, should not to reuse it. 
+    if (_.has(config.a11y, 'selection') && _.has(config.a11y.selection, 'selectAllLabel')) {
+      accConfig['a11y.selection.selectAllLabel'] = config.a11y.selection.selectAllLabel;
+    }
+
+    return accConfig;
+  },
+
   AggregateRow(config) {
     const configAgg = {};
 
@@ -296,6 +307,7 @@ export default definePlugin => definePlugin('projection', [
 
   const dataSourceProjection = projection;
 
+  pipeProjection('A11y');
   pipeProjection('Columns');
   pipeProjection('Map');
   if (config.aggregate) {
@@ -306,22 +318,18 @@ export default definePlugin => definePlugin('projection', [
   if (config.enablePoP) {
     pipeProjection('ColumnGroup');
   }
-
   if (_.has(config.columnShifter, 'totalColumns')) {
     pipeProjection('ColumnShifter');
   }
-
   pipeProjection('ColumnTemplate');
   pipeProjection('PropertyTemplate');
   if (config.selectable) {
     pipeProjection('RowIndex');
     pipeProjection('RowCheckbox');
   }
-
-  if (config.rows) {
+  if (config.rows || (config.selectable)) {
     pipeProjection('Row');
   }
-
   if (_.has(config.pageable, 'pageSize')) {
     pipeProjection('Page');
   }
