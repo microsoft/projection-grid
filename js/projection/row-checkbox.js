@@ -63,8 +63,8 @@ define([
             disabled = false;
             hasCheckboxable = true;
 
-            var a11yPrefix = model.get('a11y.rowcheck.idPrefix');
-            var labelledId = (a11yPrefix || '').concat(ret[checkId]);
+            var uniqueId = model.get('a11y.selection.uniqueId');
+            var labelledId = (uniqueId || '').concat(ret[checkId]);
 
             ret[col] = _.extend({}, ret[col], {
               $html: selectableTemplate(_.pick({
@@ -85,7 +85,7 @@ define([
             checkboxColumn.$html = '<span/>';
           } else {
             var disabled = _.size(ids) === 0;
-            var labelString = model.get('a11y.rowcheck.checkAllI18n');
+            var labelString = model.get('a11y.selection.selectAllLabel');
             if (hasCheckboxable) {
               checkboxColumn.$html = selectableTemplate(_.pick({
                 type: 'checkbox',

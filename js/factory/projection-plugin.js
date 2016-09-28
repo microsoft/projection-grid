@@ -9,12 +9,8 @@ const projectionConfigs = {
     const accConfig = {};
 
     // temp config to fix a11y bug of latency projection grid, should not to reuse it. 
-    if (_.has(config.a11y, 'rowcheck') && _.has(config.a11y.rowcheck, 'idPrefix')) {
-      accConfig['a11y.rowcheck.idPrefix'] = config.a11y.rowcheck.idPrefix;
-    }
-
-    if (_.has(config.a11y, 'rowcheck') && _.has(config.a11y.rowcheck, 'checkAllI18n')) {
-      accConfig['a11y.rowcheck.checkAllI18n'] = config.a11y.rowcheck.checkAllI18n;
+    if (_.has(config.a11y, 'selection') && _.has(config.a11y.selection, 'selectAllLabel')) {
+      accConfig['a11y.selection.selectAllLabel'] = config.a11y.selection.selectAllLabel;
     }
 
     return accConfig;

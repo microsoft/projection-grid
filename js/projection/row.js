@@ -56,9 +56,9 @@ define([
             .value();
 
           if (_.isFunction(checkboxAllow) ? checkboxAllow(row) : checkboxAllow) {
-            var a11yPrefix = model.get('a11y.rowcheck.idPrefix');
+            var uniqueId = model.get('a11y.selection.uniqueId');
             var id = row[checkId] || originId;
-            var a11yId = a11yPrefix.concat(id);
+            var a11yId = uniqueId.concat(id);
             var role = 'row';
           }
 
