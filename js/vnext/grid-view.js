@@ -237,7 +237,7 @@ export class GridView extends Backbone.View {
      * @function refresh
      * @memberof GridView
      * @instance
-     * @param {boolean} force
+     * @param {boolean} [force=false]
      *    True for force refresh ignoring the cached states.
      */
     const refresh = this.refresh = force => {
@@ -358,7 +358,7 @@ export class GridView extends Backbone.View {
    * @param {Object.<string, Object>} config
    *    A hash of configurations to change. The keys are projection names while
    *    the values are the projection configurations
-   * @param {function} callback
+   * @param {function} [callback]
    *    A callback to notify the update is completed
    * @return {GridView}
    *    This grid view.
@@ -423,7 +423,7 @@ export class GridView extends Backbone.View {
 
   /**
    * Render the grid view.
-   * @param {function} callback
+   * @param {function} [callback]
    *    A callback to notify the render is completed.
    * @return {GridView}
    *    This grid view.

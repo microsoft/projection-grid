@@ -25,7 +25,7 @@ import {
  *    data source.
  * @property {string?} url
  *    The URL for the entity set. Required by 'odata' data source.
- * @property {Object[]} data
+ * @property {Object[]?} data
  *    The in-memory data set. Required by 'memory' data source.
  *
  */
