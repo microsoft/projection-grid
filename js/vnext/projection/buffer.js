@@ -2,10 +2,6 @@ import _ from 'underscore';
 import $ from 'jquery';
 import Promise from 'bluebird';
 
-import { odata } from './odata.js';
-import { memory } from './memory.js';
-import { jsdata } from './jsdata.js';
-
 function updateItemState(gridView, item, state) {
   const buffer = gridView.get('buffer');
   const changed = {};

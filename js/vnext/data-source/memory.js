@@ -1,14 +1,20 @@
 import _ from 'underscore';
+import { DataSource } from './base.js';
 
-export const memory = {
-  findAll({
-    data,
-    skip = 0,
-    take = data.length - skip,
-    filter = () => true,
-    orderby = [],
-    select = [],
-  } = {}) {
+export class MemoryDataSource extends DataSource {
+  constructor(data, primaryKey) {
+    super(primaryKey);
+    this._data = data;
+  }
+
+  query(params) {
+    const {
+      skip = 0,
+      take = this._data.length - skip,
+      filter = () => true,
+      orderby = [],
+    } = params || {};
+
     const { key, direction } = _.first(orderby) || {};
     let sortIteratee = null;
 
@@ -19,6 +25,8 @@ export const memory = {
       sortIteratee = item => _.reduce(segs, (memo, seg) => _.result(memo, seg), item);
     }
 
+    let data = _.filter(this._data, filter);
+
     if (sortIteratee) {
       data = _.sortBy(data, sortIteratee);
 
@@ -28,9 +36,9 @@ export const memory = {
     }
 
     return {
-      itemCount: data.length || 0,
-      items: _.chain(data).slice(skip, take + skip).filter(filter).value(),
+      totalCount: data.length,
+      items: data.slice(skip, skip + take),
     };
-  },
-};
+  }
+}
 

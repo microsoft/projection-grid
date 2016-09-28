@@ -18,7 +18,7 @@ function reorder(e) {
     }
 
     this.patch({
-      dataSource: {
+      query: {
         orderby: [{
           key: sortable.key,
           direction,

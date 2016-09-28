@@ -3,7 +3,7 @@ import $ from 'jquery';
 import Backbone from 'backbone';
 import Promise from 'bluebird';
 import {
-  dataSource,
+  query,
   buffer,
   selection,
   setSelectAll,
@@ -46,8 +46,8 @@ class ProjectionChain {
   /*
    * When updating, execute each function in projections successively
    */
-  update(input) {
-    const updated = input !== this.input;
+  update(input, force = false) {
+    const updated = force || input !== this.input;
 
     this.input = input;
 
@@ -106,13 +106,15 @@ class ProjectionChain {
  *    The scrolling related configurations
  */
 export class GridView extends Backbone.View {
-  initialize({ scrolling, tableClasses }) {
+  initialize({ scrolling, tableClasses, dataSource }) {
     this._tableView = new TableView({
       el: this.$el,
       scrolling,
       classes: tableClasses,
     });
     this.model = new Backbone.Model();
+
+    this._dataSource = dataSource;
 
     const projections = this._projections = {};
 
@@ -164,7 +166,7 @@ export class GridView extends Backbone.View {
      *    The primary key of the data items.
      * @property {(Object[]|FakeArray)} items
      *    An array or a fake array of data items.
-     * @property {number} itemCount
+     * @property {number} totalCount
      *    The total item count on the server.
      * @property {Object.<string, Object>} itemIndex
      *    The items indexed by primary key.
@@ -207,7 +209,7 @@ export class GridView extends Backbone.View {
      */
     this._chainContent = new ProjectionChain(this.model);
 
-    this.pipeDataProjections(dataSource, buffer);
+    this.pipeDataProjections(query, buffer);
     this.pipeStructureProjections([
       columns,
       rows,
@@ -224,15 +226,16 @@ export class GridView extends Backbone.View {
     const patchEvents = state => _.extend(state, {
       events: _.mapObject(state.events, handler => handler.bind(this)),
     });
-    const updateState = {
+    const refreshState = {
       changes: null,
       promise: null,
     };
 
-    const update = () => {
-      const changes = updateState.changes;
+    this._isRendered = false;
+    const refresh = this.refresh = force => {
+      const changes = refreshState.changes;
 
-      updateState.changes = null;
+      refreshState.changes = null;
 
       /**
        * The `GridView` will update its configuration and redraw.
@@ -240,11 +243,17 @@ export class GridView extends Backbone.View {
        */
       this.trigger('willUpdate', changes);
 
+      // Don't refresh before the view is rendered
+      if (!this._isRendered) {
+        this.trigger('didUpdate', changes);
+        return;
+      }
+
       _.reduce([
         this._chainData,
         this._chainStructure,
         this._chainContent,
-      ], (memo, chain) => chain.update(memo), null)
+      ], (memo, chain) => chain.update(memo, force), null)
         .then(patchEvents)
         .then(state => new Promise((resolve, reject) => {
           this._tableView.set(state, resolve);
@@ -260,15 +269,15 @@ export class GridView extends Backbone.View {
     };
 
     const scheduleUpdate = () => {
-      if (updateState.changes) {
-        _.extend(updateState.changes, this.model.changedAttributes());
+      if (refreshState.changes) {
+        _.extend(refreshState.changes, this.model.changedAttributes());
       } else {
-        updateState.changes = this.model.changedAttributes();
+        refreshState.changes = this.model.changedAttributes();
 
-        if (updateState.promise) {
-          updateState.promise = updateState.promise.then(update);
+        if (refreshState.promise) {
+          refreshState.promise = refreshState.promise.then(refresh);
         } else {
-          updateState.promise = update();
+          refreshState.promise = refresh();
         }
       }
     };
@@ -395,7 +404,11 @@ export class GridView extends Backbone.View {
    *    This grid view.
    */
   render(callback) {
-    this._tableView.render(callback);
+    this._tableView.render(() => {
+      this._isRendered = true;
+      this.refresh(true);
+      this.once('didRedraw', callback);
+    });
     return this;
   }
 
@@ -431,6 +444,15 @@ export class GridView extends Backbone.View {
   }
 
   /**
+   * Make query to the data source
+   * @param {object} params - The query parameters
+   * @return {QueryResult}
+   */
+  query(params) {
+    return this._dataSource.query(params);
+  }
+
+  /**
    * The array data items.
    * @type {Object[]}
    */
@@ -451,7 +473,7 @@ export class GridView extends Backbone.View {
    * @type {string}
    */
   get primaryKey() {
-    return _.result(this._chainData.state, 'primaryKey');
+    return this._dataSource.primaryKey;
   }
 
   /**
@@ -459,7 +481,7 @@ export class GridView extends Backbone.View {
    * @type {number}
    */
   getItemCount() {
-    return _.result(this._chainData.state, 'itemCount', 0);
+    return _.result(this._chainData.state, 'totalCount', 0);
   }
 
   /**
