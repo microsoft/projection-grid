@@ -2,7 +2,7 @@ import _ from 'underscore';
 import { GridView } from '../grid-view.js';
 
 const CONSTRUCTOR_OPTIONS = ['el', 'scrolling', 'tableClasses'];
-const NONE_PROJECTION_OPTIONS = CONSTRUCTOR_OPTIONS.concat(['plugins']);
+const NONE_PROJECTION_OPTIONS = CONSTRUCTOR_OPTIONS.concat(['plugins', 'dataSource']);
 
 /**
  * @typedef GridViewConfig
@@ -22,8 +22,10 @@ const NONE_PROJECTION_OPTIONS = CONSTRUCTOR_OPTIONS.concat(['plugins']);
  *    The structure of the head/body/foot rows.
  * @property {ColumnConfig[]} columns
  *    Array of the columns configurations.
- * @property {DataSourceConfig[]} dataSource
+ * @property {DataSourceConfig} dataSource
  *    The data source configurations. Tells the grid how to fetch data.
+ * @property {QueryConfig} query
+ *    The query parameters for data fetch.
  * @property {SelectionConfig} selection
  *    Config the behavior for row selection.
  * @property {SortableHeaderConfig} sortableHeader
@@ -35,8 +37,15 @@ const NONE_PROJECTION_OPTIONS = CONSTRUCTOR_OPTIONS.concat(['plugins']);
  *    * The `GridView` events, e.g. {@link GridView#willUpdate},
  *      {@link GridView#didUpdate}.
  */
-export default definePlugin => definePlugin('gridView', ['config'], config => {
-  const gridView = new GridView(_.pick(config, CONSTRUCTOR_OPTIONS));
+export default definePlugin => definePlugin('gridView', [
+  'config',
+  'dataSource',
+], (config, dataSource) => {
+  const options = _.chain(config)
+    .pick(CONSTRUCTOR_OPTIONS)
+    .extend({ dataSource })
+    .value();
+  const gridView = new GridView(options);
 
   gridView.set(_.omit(config, NONE_PROJECTION_OPTIONS));
 
