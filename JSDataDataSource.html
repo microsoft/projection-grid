@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation External: events</title>
+	<title>Documentation Class: JSDataDataSource</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -33,7 +33,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="ColumnGroup.html">ColumnGroup</a></li><li><a href="GridView.html">GridView</a></li><li><a href="TableView.html">TableView</a></li>
+					<li><a href="ColumnGroup.html">ColumnGroup</a></li><li><a href="DataSource.html">DataSource</a></li><li><a href="GridView.html">GridView</a></li><li><a href="JSDataDataSource.html">JSDataDataSource</a></li><li><a href="MemoryDataSource.html">MemoryDataSource</a></li><li><a href="ODataDataSource.html">ODataDataSource</a></li><li><a href="TableView.html">TableView</a></li>
 				</ul>
 			</li>
 			
@@ -47,14 +47,14 @@
 			<li class="dropdown">
 				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="global.html#cellsProjectionHandler">cellsProjectionHandler</a></li><li><a href="global.html#columnGroupProjectionHandler">columnGroupProjectionHandler</a></li><li><a href="global.html#columnsProjectionHandler">columnsProjectionHandler</a></li><li><a href="global.html#dataSourceProjectionHandler">dataSourceProjectionHandler</a></li><li><a href="global.html#eventsProjectionHandler">eventsProjectionHandler</a></li><li><a href="global.html#normalizeClasses">normalizeClasses</a></li><li><a href="global.html#normalizeOrderBy">normalizeOrderBy</a></li><li><a href="global.html#normalizeSelectionConfig">normalizeSelectionConfig</a></li><li><a href="global.html#rowsProjectionHandler">rowsProjectionHandler</a></li><li><a href="global.html#selectionProjectionHandler">selectionProjectionHandler</a></li><li><a href="global.html#sortableHeaderProjectionHandler">sortableHeaderProjectionHandler</a></li><li><a href="global.html#translateRow">translateRow</a></li>
+					<li><a href="global.html#cellsProjectionHandler">cellsProjectionHandler</a></li><li><a href="global.html#columnGroupProjectionHandler">columnGroupProjectionHandler</a></li><li><a href="global.html#columnsProjectionHandler">columnsProjectionHandler</a></li><li><a href="global.html#eventsProjectionHandler">eventsProjectionHandler</a></li><li><a href="global.html#normalizeClasses">normalizeClasses</a></li><li><a href="global.html#normalizeSelectionConfig">normalizeSelectionConfig</a></li><li><a href="global.html#queryProjectionHandler">queryProjectionHandler</a></li><li><a href="global.html#rowsProjectionHandler">rowsProjectionHandler</a></li><li><a href="global.html#selectionProjectionHandler">selectionProjectionHandler</a></li><li><a href="global.html#sortableHeaderProjectionHandler">sortableHeaderProjectionHandler</a></li><li><a href="global.html#translateRow">translateRow</a></li>
 				</ul>
 			</li>
 			
 			<li class="dropdown">
 				<a href="externals.list.html" class="dropdown-toggle" data-toggle="dropdown">Externals<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="Backbone.View_external_events.html">events</a></li><li><a href="GridView_external_events.html">events</a></li><li><a href="TableView_external_events.html">events</a></li>
+					<li><a href="external-BackboneViewEventHash.html">BackboneViewEventHash</a></li>
 				</ul>
 			</li>
 			
@@ -84,13 +84,13 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">External: events</h1>
+	<h1 class="page-title">Class: JSDataDataSource</h1>
 <section>
 
 <header>
     
         <h2>
-        events
+        JSDataDataSource
         </h2>
         
     
@@ -101,8 +101,102 @@
     <div class="container-overview">
     
         
+<hr>
+<dt>
+    <h4 class="name" id="JSDataDataSource"><span class="type-signature"></span>new JSDataDataSource(resource, options)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Data source from a JSData resource</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
 
         
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>resource</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">JSDataResource</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The JSData resource representing the entity set.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The query options. You can use it add JSData life cycle hooks.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
 <dl class="details">
     
 
@@ -137,19 +231,26 @@
 	
 
 	
-	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
-	<dd class="tag-see">
-		<ul>
-			<li><a href="http://backbonejs.org/#View-events">http://backbonejs.org/#View-events</a></li>
-			</ul>
-	</dd>
-	
 
 	
 </dl>
 
 
-        
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
     
     </div>
 
@@ -212,7 +313,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-09-20T02:44:31+08:00
+		on 2016-09-28T21:05:29+08:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

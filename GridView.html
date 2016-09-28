@@ -33,7 +33,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="ColumnGroup.html">ColumnGroup</a></li><li><a href="GridView.html">GridView</a></li><li><a href="TableView.html">TableView</a></li>
+					<li><a href="ColumnGroup.html">ColumnGroup</a></li><li><a href="DataSource.html">DataSource</a></li><li><a href="GridView.html">GridView</a></li><li><a href="JSDataDataSource.html">JSDataDataSource</a></li><li><a href="MemoryDataSource.html">MemoryDataSource</a></li><li><a href="ODataDataSource.html">ODataDataSource</a></li><li><a href="TableView.html">TableView</a></li>
 				</ul>
 			</li>
 			
@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="global.html#cellsProjectionHandler">cellsProjectionHandler</a></li><li><a href="global.html#columnGroupProjectionHandler">columnGroupProjectionHandler</a></li><li><a href="global.html#columnsProjectionHandler">columnsProjectionHandler</a></li><li><a href="global.html#dataSourceProjectionHandler">dataSourceProjectionHandler</a></li><li><a href="global.html#eventsProjectionHandler">eventsProjectionHandler</a></li><li><a href="global.html#normalizeClasses">normalizeClasses</a></li><li><a href="global.html#normalizeOrderBy">normalizeOrderBy</a></li><li><a href="global.html#normalizeSelectionConfig">normalizeSelectionConfig</a></li><li><a href="global.html#rowsProjectionHandler">rowsProjectionHandler</a></li><li><a href="global.html#selectionProjectionHandler">selectionProjectionHandler</a></li><li><a href="global.html#sortableHeaderProjectionHandler">sortableHeaderProjectionHandler</a></li><li><a href="global.html#translateRow">translateRow</a></li>
+					<li><a href="global.html#cellsProjectionHandler">cellsProjectionHandler</a></li><li><a href="global.html#columnGroupProjectionHandler">columnGroupProjectionHandler</a></li><li><a href="global.html#columnsProjectionHandler">columnsProjectionHandler</a></li><li><a href="global.html#eventsProjectionHandler">eventsProjectionHandler</a></li><li><a href="global.html#normalizeClasses">normalizeClasses</a></li><li><a href="global.html#normalizeSelectionConfig">normalizeSelectionConfig</a></li><li><a href="global.html#queryProjectionHandler">queryProjectionHandler</a></li><li><a href="global.html#rowsProjectionHandler">rowsProjectionHandler</a></li><li><a href="global.html#selectionProjectionHandler">selectionProjectionHandler</a></li><li><a href="global.html#sortableHeaderProjectionHandler">sortableHeaderProjectionHandler</a></li><li><a href="global.html#translateRow">translateRow</a></li>
 				</ul>
 			</li>
 			
@@ -601,6 +601,77 @@
             <li>
                 
 <span class="param-type">string</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="totalCountRows">
+    <h4><span class="type-signature"></span>totalCountRows<span class="type-signature"> :number</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The total count of data items. This represents the server side state.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">number</span>
 
 
 
@@ -1833,84 +1904,6 @@
 
 
         
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="getItemCount"><span class="type-signature"></span>getItemCount()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>The total count of data items. This represents the server side state.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
 </dd>
@@ -3603,6 +3596,302 @@ projection configurations, <code>patch</code> do deep object merge.</p>
             
 <hr>
 <dt>
+    <h4 class="name" id="query"><span class="type-signature"></span>query(params)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Make query to the data source</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>params</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The query parameters</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">QueryResult</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="refresh"><span class="type-signature"></span>refresh( [force])</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Refresh the GridView</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>force</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>True for force refresh ignoring the cached states.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
     <h4 class="name" id="remove"><span class="type-signature"></span>remove()</h4>
     
     
@@ -3681,7 +3970,7 @@ projection configurations, <code>patch</code> do deep object merge.</p>
             
 <hr>
 <dt>
-    <h4 class="name" id="render"><span class="type-signature"></span>render(callback)</h4>
+    <h4 class="name" id="render"><span class="type-signature"></span>render( [callback])</h4>
     
     
 </dt>
@@ -3712,6 +4001,8 @@ projection configurations, <code>patch</code> do deep object merge.</p>
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
         
 
@@ -3737,6 +4028,16 @@ projection configurations, <code>patch</code> do deep object merge.</p>
             
             </td>
 
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -4247,7 +4548,7 @@ projection configurations, <code>patch</code> do deep object merge.</p>
             
 <hr>
 <dt>
-    <h4 class="name" id="set"><span class="type-signature"></span>set(config, callback)</h4>
+    <h4 class="name" id="set"><span class="type-signature"></span>set(config [, callback])</h4>
     
     
 </dt>
@@ -4278,6 +4579,8 @@ projection configurations, <code>patch</code> do deep object merge.</p>
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
         
 
@@ -4304,6 +4607,14 @@ projection configurations, <code>patch</code> do deep object merge.</p>
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -4328,6 +4639,16 @@ projection configurations, <code>patch</code> do deep object merge.</p>
             
             </td>
 
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -5335,7 +5656,7 @@ when virtualization is enabled.</p>
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-09-20T02:56:00+08:00
+		on 2016-09-28T21:05:29+08:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

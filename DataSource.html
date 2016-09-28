@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Classes</title>
+	<title>Documentation Class: DataSource</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -84,13 +84,13 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Classes</h1>
+	<h1 class="page-title">Class: DataSource</h1>
 <section>
 
 <header>
     
         <h2>
-        
+        DataSource
         </h2>
         
     
@@ -101,8 +101,98 @@
     <div class="container-overview">
     
         
+<hr>
+<dt>
+    <h4 class="name" id="DataSource"><span class="type-signature"></span>new DataSource( [primaryKey])</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>The base class for all data sources.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
 
         
+        <th>Argument</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>primaryKey</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    '__primary_key__'
+                
+                </td>
+            
+
+            <td class="description last"><p>The primary key of the entity set.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
 <dl class="details">
     
 
@@ -142,7 +232,21 @@
 </dl>
 
 
-        
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
     
     </div>
 
@@ -151,50 +255,96 @@
     
 
     
-        <h3 class="subsection-title">Classes</h3>
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
 
         <dl>
-            <dt><a href="ColumnGroup.html">ColumnGroup</a></dt>
-            <dd></dd>
-        
-            <dt><a href="DataSource.html">DataSource</a></dt>
-            <dd></dd>
-        
-            <dt><a href="GridView.html">GridView</a></dt>
-            <dd></dd>
-        
-            <dt><a href="JSDataDataSource.html">JSDataDataSource</a></dt>
-            <dd></dd>
-        
-            <dt><a href="MemoryDataSource.html">MemoryDataSource</a></dt>
-            <dd></dd>
-        
-            <dt><a href="ODataDataSource.html">ODataDataSource</a></dt>
-            <dd></dd>
-        
-            <dt><a href="TableView.html">TableView</a></dt>
-            <dd></dd>
+            
+<hr>
+<dt class="name" id="primaryKey">
+    <h4><span class="type-signature"></span>primaryKey<span class="type-signature"> :string</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The primary key of the data source.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
         </dl>
     
 
     
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Events</h3>
+        <h3 class="subsection-title">Methods</h3>
 
         <dl>
             
 <hr>
 <dt>
-    <h4 class="name" id="event:didRedraw">didRedraw</h4>
+    <h4 class="name" id="normalizeOrderBy"><span class="type-signature"></span>normalizeOrderBy(orderBy)</h4>
     
     
 </dt>
@@ -202,8 +352,7 @@
 
     
     <div class="description">
-        <p>The <code>GridView</code> did redraw the DOM. This event may trigger frequently
-when virtualization is enabled.</p>
+        <p>Normalize the orderby parameter for data source.</p>
     </div>
     
 
@@ -212,6 +361,56 @@ when virtualization is enabled.</p>
     
 
     
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>orderBy</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#OrderByConfig">OrderByConfig</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
     
 
     
@@ -265,84 +464,26 @@ when virtualization is enabled.</p>
     
 
     
-
+    <h5>Returns:</h5>
     
-</dd>
-
-        
             
-<hr>
-<dt>
-    <h4 class="name" id="event:didReload">didReload</h4>
-    
-    
-</dt>
-<dd>
 
-    
-    <div class="description">
-        <p>The <code>GridView</code> did reload data from the data source.</p>
-    </div>
-    
 
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;<a href="global.html#NormalizedOrderByPair">NormalizedOrderByPair</a>></span>
 
 
 
-	
-
-	
-
-	
-
-	
+    </dd>
 </dl>
 
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
+        
 
     
 </dd>
@@ -351,7 +492,7 @@ when virtualization is enabled.</p>
             
 <hr>
 <dt>
-    <h4 class="name" id="event:didUpdate">didUpdate</h4>
+    <h4 class="name" id="query"><span class="type-signature"></span>query(params)</h4>
     
     
 </dt>
@@ -359,7 +500,7 @@ when virtualization is enabled.</p>
 
     
     <div class="description">
-        <p>The <code>GridView</code> did update its configuration and redraw.</p>
+        <p>Query the data source with given parameters</p>
     </div>
     
 
@@ -369,240 +510,55 @@ when virtualization is enabled.</p>
 
     
     
+        <h5>Parameters:</h5>
+        
 
-    
-<dl class="details">
-    
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
+        <th>Type</th>
 
         
-            
-<hr>
-<dt>
-    <h4 class="name" id="event:willRedraw">willRedraw</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>The <code>GridView</code> will redraw the DOM. This event may trigger frequently
-when virtualization is enabled.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
 
         
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
             
-<hr>
-<dt>
-    <h4 class="name" id="event:willReload">willReload</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>The <code>GridView</code> will reload data from the data source.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
+                <td class="name"><code>params</code></td>
             
-<hr>
-<dt>
-    <h4 class="name" id="event:willUpdate">willUpdate</h4>
-    
-    
-</dt>
-<dd>
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The query parameters</p></td>
+        </tr>
 
     
-    <div class="description">
-        <p>The <code>GridView</code> will update its configuration and redraw.</p>
-    </div>
-    
+    </tbody>
+</table>
 
-    
-
-    
-
-    
     
 
     
@@ -661,6 +617,10 @@ when virtualization is enabled.</p>
 </dd>
 
         </dl>
+    
+
+    
+
     
 </article>
 
