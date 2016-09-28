@@ -232,6 +232,14 @@ export class GridView extends Backbone.View {
     };
 
     this._isRendered = false;
+    /**
+     * Refresh the GridView
+     * @function refresh
+     * @memberof GridView
+     * @instance
+     * @param {boolean} force
+     *    True for force refresh ignoring the cached states.
+     */
     const refresh = this.refresh = force => {
       const changes = refreshState.changes;
 
