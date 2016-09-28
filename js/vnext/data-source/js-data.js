@@ -43,7 +43,7 @@ export class JSDataDataSource extends DataSource {
     const options = _.defaults({}, params.options, this._options);
 
     return this._resource
-      .findAll(translateParams(this, params), options)
+      .findAll(translateParams(this, _.omit(params, 'options')), options)
       .then(data => ({
         items: data.slice(),
         totalCount: data.totalCount || 0,
