@@ -21,6 +21,7 @@ import Promise from 'bluebird';
  * @param {DataChainState} state
  * @param {QueryConfig} params 
  *    The data source configurations.
+ * @return {DataChainState}
  */
 function queryProjectionHandler(state, params) {
   const primaryKey = this.primaryKey;

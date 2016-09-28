@@ -23,6 +23,14 @@ function translateParams(dataSource, params) {
     .value();
 }
 
+/**
+ * Data source from an OData service.
+ * @class ODataDataSource
+ * @param {string} url
+ *    The root URL of the OData entity set.
+ * @param {string} primaryKey
+ *    The primary key of the entity set.
+ */
 export class ODataDataSource extends DataSource {
   constructor(url, primaryKey) {
     super(primaryKey);

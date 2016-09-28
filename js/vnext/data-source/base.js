@@ -5,6 +5,8 @@ const defaultPrimaryKey = '__primary_key__';
 /**
  * The base class for all data sources.
  * @class DataSource
+ * @param {string} [primaryKey='__primary_key__']
+ *    The primary key of the entity set.
  */
 export class DataSource {
 

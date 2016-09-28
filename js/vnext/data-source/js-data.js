@@ -24,6 +24,14 @@ function translateParams(dataSource, params) {
     .value();
 }
 
+/**
+ * Data source from a JSData resource
+ * @class JSDataDataSource
+ * @param {JSDataResource} resource
+ *    The JSData resource representing the entity set.
+ * @param {Object} options
+ *    The query options. You can use it add JSData life cycle hooks.
+ */
 export class JSDataDataSource extends DataSource {
   constructor(resource, options = {}) {
     super(resource.idAttribute);
@@ -32,7 +40,10 @@ export class JSDataDataSource extends DataSource {
   }
 
   query(params) {
-    return this._resource.findAll(translateParams(this, params), this._options)
+    const options = _.defaults({}, params.options, this._options);
+
+    return this._resource
+      .findAll(translateParams(this, params), options)
       .then(data => ({
         items: data.slice(),
         totalCount: data.totalCount || 0,

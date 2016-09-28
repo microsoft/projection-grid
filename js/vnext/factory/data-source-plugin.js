@@ -6,6 +6,30 @@ import {
   MemoryDataSource,
 } from '../data-source';
 
+/**
+ * @typedef DataSourceConfig
+ * @type {DataSource|BuiltinDataSourceConfig}
+ */
+
+/**
+ * @typedef BuiltinDataSourceConfig
+ * @type {Object}
+ * @property {string} type
+ *    The builtin data source type, available values are 'odata', 'js-data'
+ *    and 'memory'.
+ * @property {string?} primaryKey
+ *    The primaryKey for the data source. Required by 'odata' and 'memory'
+ *    data sources.
+ * @property {JSDataResource?} entity
+ *    The JSDataResource representing the entity set. Required by 'js-data'
+ *    data source.
+ * @property {string?} url
+ *    The URL for the entity set. Required by 'odata' data source.
+ * @property {Object[]} data
+ *    The in-memory data set. Required by 'memory' data source.
+ *
+ */
+
 export default definePlugin => definePlugin('dataSource', ['config'], config => {
   const dataSource = _.result(config, 'dataSource', {});
 

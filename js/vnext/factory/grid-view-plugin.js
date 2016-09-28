@@ -24,6 +24,8 @@ const NONE_PROJECTION_OPTIONS = CONSTRUCTOR_OPTIONS.concat(['plugins', 'dataSour
  *    Array of the columns configurations.
  * @property {DataSourceConfig} dataSource
  *    The data source configurations. Tells the grid how to fetch data.
+ * @property {QueryConfig} query
+ *    The query parameters for data fetch.
  * @property {SelectionConfig} selection
  *    Config the behavior for row selection.
  * @property {SortableHeaderConfig} sortableHeader

@@ -1,6 +1,14 @@
 import _ from 'underscore';
 import { DataSource } from './base.js';
 
+/**
+ * Data source from an in-memory array.
+ * @class MemoryDataSource
+ * @param {Object[]} data
+ *    The in-memory array for the data set.
+ * @param {string} primaryKey
+ *    The primary key of the data set.
+ */
 export class MemoryDataSource extends DataSource {
   constructor(data, primaryKey) {
     super(primaryKey);

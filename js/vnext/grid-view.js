@@ -363,6 +363,8 @@ export class GridView extends Backbone.View {
         'take',
         'orderby',
         'filter',
+        'options',
+        'params',
       ]));
       delete config.dataSource;
     }
