@@ -12,13 +12,13 @@ import { DataSource } from './base.js';
 export class MemoryDataSource extends DataSource {
   constructor(data, primaryKey) {
     super(primaryKey);
-    this._data = data;
+    this.data = data;
   }
 
   query(params) {
     const {
       skip = 0,
-      take = this._data.length - skip,
+      take = this.data.length - skip,
       filter = () => true,
       orderby = [],
     } = params || {};
@@ -33,7 +33,7 @@ export class MemoryDataSource extends DataSource {
       sortIteratee = item => _.reduce(segs, (memo, seg) => _.result(memo, seg), item);
     }
 
-    let data = _.filter(this._data, filter);
+    let data = _.filter(this.data, filter);
 
     if (sortIteratee) {
       data = _.sortBy(data, sortIteratee);

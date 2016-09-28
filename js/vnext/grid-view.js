@@ -18,6 +18,11 @@ import {
 } from './projection';
 
 import { TableView } from './layout';
+import {
+  MemoryDataSource,
+  JSDataDataSource,
+  ODataDataSource,
+} from './data-source';
 
 function defaultsDeep(dest, src) {
   if (_.isObject(dest) && !_.isArray(dest)) {
@@ -366,7 +371,9 @@ export class GridView extends Backbone.View {
   set(config = {}, callback = _.noop) {
     // backward compatibility
     if (_.has(config, 'dataSource')) {
-      config.query = _.defaults({}, config.query, _.pick(config.dataSource, [
+      const dataSource = config.dataSource;
+
+      config.query = _.defaults({}, config.query, _.pick(dataSource, [
         'skip',
         'take',
         'orderby',
@@ -374,6 +381,11 @@ export class GridView extends Backbone.View {
         'options',
         'query',
       ]));
+
+      if (dataSource.type === 'memory' && dataSource.data !== this._dataSource.data) {
+        this._dataSource.data = dataSource.data;
+        this.refresh(true);
+      }
       delete config.dataSource;
     }
 
@@ -394,7 +406,20 @@ export class GridView extends Backbone.View {
   get(name) {
     // backward compatibility
     if (name === 'dataSource') {
-      return _.defaults({}, this.model.get('dataSource'), this.model.get('query'));
+      const result = _.defaults({}, this.model.get('dataSource'), this.model.get('query'));
+
+      if (this._dataSource instanceof MemoryDataSource) {
+        result.type = 'memory';
+        result.data = this._dataSource.data;
+      } else if (this._dataSource instanceof JSDataDataSource) {
+        result.type = 'js-data';
+        result.entity = this._dataSource.resource;
+      } else if (this._dataSource instanceof ODataDataSource) {
+        result.type = 'odata';
+        result.url = this._dataSource.url;
+      }
+
+      return result;
     }
     return this.model.get(name);
   }
@@ -414,7 +439,7 @@ export class GridView extends Backbone.View {
   patch(state = {}, callback = _.noop) {
     this.set(_.reduce(_.keys(state), (memo, key) => {
       const value = state[key];
-      const valueCur = this.model.get(key);
+      const valueCur = this.get(key);
       
       memo[key] = defaultsDeep(value, valueCur);
       return memo;

@@ -49,5 +49,9 @@ export class ODataDataSource extends DataSource {
       totalCount: data['@odata.count'] || 0,
     }));
   }
+
+  get url() {
+    return this._url;
+  }
 }
 

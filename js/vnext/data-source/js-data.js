@@ -49,5 +49,9 @@ export class JSDataDataSource extends DataSource {
         totalCount: data.totalCount || 0,
       }));
   }
+
+  get resource() {
+    return this._resource;
+  }
 }
 
