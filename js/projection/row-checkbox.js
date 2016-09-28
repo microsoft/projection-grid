@@ -63,10 +63,8 @@ define([
             disabled = false;
             hasCheckboxable = true;
 
-            if (model.get('a11y.enabled')) {
-              var a11yPrefix = model.get('a11y.rowcheck.idPrefix');
-              var labelledId = (a11yPrefix || '').concat(ret[checkId]);
-            }
+            var a11yPrefix = model.get('a11y.rowcheck.idPrefix');
+            var labelledId = (a11yPrefix || '').concat(ret[checkId]);
 
             ret[col] = _.extend({}, ret[col], {
               $html: selectableTemplate(_.pick({
@@ -87,21 +85,24 @@ define([
             checkboxColumn.$html = '<span/>';
           } else {
             var disabled = _.size(ids) === 0;
+            var labelString = model.get('a11y.rowcheck.checkAllI18n');
             if (hasCheckboxable) {
-              checkboxColumn.$html = selectableTemplate({
+              checkboxColumn.$html = selectableTemplate(_.pick({
                 type: 'checkbox',
                 checked: checkedAll,
                 disabled: disabled,
-              });
+                labelString: labelString,
+              }, Boolean));
               if (!checkedAll) {
                 this.attributes['row.check.checked.all'] = false;
               }
             } else {
-              checkboxColumn.$html = selectableTemplate({
+              checkboxColumn.$html = selectableTemplate(_.pick({
                 type: 'checkbox',
                 checked: this.get('row.check.checked.all'),
                 disabled: disabled,
-              });
+                labelString: labelString,
+              }, Boolean));
             }
           }
         }
