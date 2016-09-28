@@ -15,9 +15,10 @@ function translateParams(dataSource, params) {
     .omit('skip', 'take', 'filter', 'orderby')
     .extend(_.pick({
       $skip: params.skip,
-      $take: params.take,
+      $top: params.take,
       $filter: params.filter,
       $orderby: translateOrderBy(dataSource, params.orderby),
+      $count: true,
     }, Boolean))
     .value();
 }

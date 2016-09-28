@@ -356,6 +356,17 @@ export class GridView extends Backbone.View {
    *    This grid view.
    */
   set(config = {}, callback = _.noop) {
+    // backward compatibility
+    if (_.has(config, 'dataSource')) {
+      config.query = _.defaults({}, config.query, _.pick(config.dataSource, [
+        'skip',
+        'take',
+        'orderby',
+        'filter',
+      ]));
+      delete config.dataSource;
+    }
+
     this.model.set(_.mapObject(config, (value, key) => {
       const projection = this._projections[key];
 
@@ -371,6 +382,10 @@ export class GridView extends Backbone.View {
    * @return {object}
    */
   get(name) {
+    // backward compatibility
+    if (name === 'dataSource') {
+      return _.defaults({}, this.model.get('dataSource'), this.model.get('query'));
+    }
     return this.model.get(name);
   }
 
