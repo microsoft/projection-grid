@@ -60,7 +60,7 @@ mixin td(row, column)
     else
       = res
 
-table.table.table-hover.grid&attributes($metadata || {})
+table.table.table-hover.grid(role='grid')&attributes($metadata || {})
   if !hideHeaders
     thead
       if isApplyGroup && subSelect.length === 0
