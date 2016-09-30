@@ -25,29 +25,29 @@ define([
 
         _.each(rows, (row) => {
           var classArr = [];
+          var originClass = _.chain(row)
+            .result('$metadata')
+            .result('attr')
+            .result('class')
+            .value();
+
+          if (originClass) {
+            classArr.push(originClass);
+          }
+
           var classesRule = this.get('row.classes');
 
           var checkId = this.get('row.check.id');
           var checkboxAllow = model.get('row.check.allow');
 
           _.each(classesRule, (func, key) => {
-            var originClass = _.chain(row)
-              .result('$metadate')
-              .result('attr')
-              .result('class')
-              .value();
-
-            if (originClass) {
-              classArr.push(originClass);
-            }
-
             var type = _.chain(row).result('$metadata').result('type').value();
 
             if (_.isFunction(func) && func(row, type)) {
               classArr.push(key);
             }
           });
-          
+
           //attr info from meta 
           var originId = _.chain(row)
             .result('$metadate')
