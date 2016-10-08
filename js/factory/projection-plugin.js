@@ -156,6 +156,8 @@ const projectionConfigs = {
     };
   },
 
+  ColumnHoverText() {},
+
   Editable(config) {
     const editableOptions = {};
 
@@ -322,6 +324,7 @@ export default definePlugin => definePlugin('projection', [
     pipeProjection('ColumnShifter');
   }
   pipeProjection('ColumnTemplate');
+  pipeProjection('ColumnHoverText');
   pipeProjection('PropertyTemplate');
   if (config.selectable) {
     pipeProjection('RowIndex');
