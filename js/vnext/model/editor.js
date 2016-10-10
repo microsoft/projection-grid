@@ -157,12 +157,12 @@ export class Editor {
 
   read(options = {}) {
     if(options.serverEditID == this._serverEditID) {
-      return Promise.resolve(this._orignal);
+      return Promise.resolve(this._original);
     }
     const p$state = this._storage.read(options);
     return p$state.then((data) => {
       const primaryKey = this.primaryKey;
-      this._orignal = data;
+      this._original = data;
       this._data = $.extend(true, {}, data.itemIndex);
 
       const query = _.defaults({ serverEditID: _.uniqueId('serverEditID') }, this.model.get('query'));

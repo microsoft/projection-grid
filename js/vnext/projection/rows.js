@@ -1,12 +1,6 @@
 import _ from 'underscore';
 import { normalizeClasses } from './common.js';
 
-const editStateClasses = {
-  'CREATED': ['row-buffer-created'],
-  'UPDATED': ['row-buffer-updated'],
-  'REMOVED': ['row-buffer-removed'],
-  'COMMITTED': ['row-buffer-committed'],
-};
 
 /**
  * Configuration for a row. It can be an object or a special
@@ -64,12 +58,14 @@ function rowsProjectionHandler(state, {
       if (row === 'data-rows' || row.name === 'data-rows'){
         _.each(items, item => {
           const key = item[primaryKey];
+          /*
           const editState = editor.getItemEditState(key);
           const classes = _.union(
             normalizeClasses(item.classes, item), 
             _.result(editStateClasses, editState, [])
           );
-
+          */
+          const classes = normalizeClasses(item.classes, item);
           if (item.html) {
             memo.push({ html: item.html, classes, type: 'error' });
           } else {
