@@ -4,6 +4,7 @@ import Backbone from 'backbone';
 import Promise from 'bluebird';
 import {
   query,
+  buffer,
   patchChange,
   selection,
   setSelectAll,

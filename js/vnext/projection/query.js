@@ -4,8 +4,8 @@ export function query(state, options) {
   const read = dataSource.read;
   return read(options);
 }
-
 */
+
 import _ from 'underscore';
 import $ from 'jquery';
 import Promise from 'bluebird';
@@ -31,6 +31,7 @@ import Promise from 'bluebird';
  *    The data source configurations.
  * @return {DataChainState}
  */
+
 function queryProjectionHandler(state, params) {
   const primaryKey = this.primaryKey;
 
