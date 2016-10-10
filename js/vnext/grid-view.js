@@ -20,6 +20,11 @@ import {
 
 import { TableView } from './layout';
 import { Editor } from './model';
+import {
+  MemoryDataSource,
+  JSDataDataSource,
+  ODataDataSource,
+} from './data-source';
 
 function defaultsDeep(dest, src) {
   if (_.isObject(dest) && !_.isArray(dest)) {
@@ -48,8 +53,8 @@ class ProjectionChain {
   /*
    * When updating, execute each function in projections successively
    */
-  update(input) {
-    const updated = input !== this.input;
+  update(input, force = false) {
+    const updated = force || input !== this.input;
 
     this.input = input;
 
@@ -116,6 +121,8 @@ export class GridView extends Backbone.View {
     });
     this.model = new Backbone.Model();
 
+    this._dataSource = dataSource;
+
     const projections = this._projections = {};
 
     this._registerProjection = proj => {
@@ -166,7 +173,7 @@ export class GridView extends Backbone.View {
      *    The primary key of the data items.
      * @property {(Object[]|FakeArray)} items
      *    An array or a fake array of data items.
-     * @property {number} itemCount
+     * @property {number} totalCount
      *    The total item count on the server.
      * @property {Object.<string, Object>} itemIndex
      *    The items indexed by primary key.
@@ -224,15 +231,24 @@ export class GridView extends Backbone.View {
     const patchEvents = state => _.extend(state, {
       events: _.mapObject(state.events, handler => handler.bind(this)),
     });
-    const updateState = {
+    const refreshState = {
       changes: null,
       promise: null,
     };
 
-    const update = () => {
-      const changes = updateState.changes;
+    this._isRendered = false;
+    /**
+     * Refresh the GridView
+     * @function refresh
+     * @memberof GridView
+     * @instance
+     * @param {boolean} [force=false]
+     *    True for force refresh ignoring the cached states.
+     */
+    const refresh = this.refresh = force => {
+      const changes = refreshState.changes;
 
-      updateState.changes = null;
+      refreshState.changes = null;
 
       /**
        * The `GridView` will update its configuration and redraw.
@@ -240,11 +256,17 @@ export class GridView extends Backbone.View {
        */
       this.trigger('willUpdate', changes);
 
+      // Don't refresh before the view is rendered
+      if (!this._isRendered) {
+        this.trigger('didUpdate', changes);
+        return;
+      }
+
       _.reduce([
         this._chainData,
         this._chainStructure,
         this._chainContent,
-      ], (memo, chain) => chain.update(memo), null)
+      ], (memo, chain) => chain.update(memo, force), null)
         .then(patchEvents)
         .then(state => new Promise((resolve, reject) => {
           this._tableView.set(state, resolve);
@@ -260,15 +282,15 @@ export class GridView extends Backbone.View {
     };
 
     const scheduleUpdate = () => {
-      if (updateState.changes) {
-        _.extend(updateState.changes, this.model.changedAttributes());
+      if (refreshState.changes) {
+        _.extend(refreshState.changes, this.model.changedAttributes());
       } else {
-        updateState.changes = this.model.changedAttributes();
+        refreshState.changes = this.model.changedAttributes();
 
-        if (updateState.promise) {
-          updateState.promise = updateState.promise.then(update);
+        if (refreshState.promise) {
+          refreshState.promise = refreshState.promise.then(refresh);
         } else {
-          updateState.promise = update();
+          refreshState.promise = refresh();
         }
       }
     };
@@ -341,12 +363,32 @@ export class GridView extends Backbone.View {
    * @param {Object.<string, Object>} config
    *    A hash of configurations to change. The keys are projection names while
    *    the values are the projection configurations
-   * @param {function} callback
+   * @param {function} [callback]
    *    A callback to notify the update is completed
    * @return {GridView}
    *    This grid view.
    */
   set(config = {}, callback = _.noop) {
+    // backward compatibility
+    if (_.has(config, 'dataSource')) {
+      const dataSource = config.dataSource;
+
+      config.query = _.defaults({}, config.query, _.pick(dataSource, [
+        'skip',
+        'take',
+        'orderby',
+        'filter',
+        'options',
+        'query',
+      ]));
+
+      if (dataSource.type === 'memory' && dataSource.data !== this._dataSource.data) {
+        this._dataSource.data = dataSource.data;
+        this.refresh(true);
+      }
+      delete config.dataSource;
+    }
+
     this.model.set(_.mapObject(config, (value, key) => {
       const projection = this._projections[key];
 
@@ -362,6 +404,23 @@ export class GridView extends Backbone.View {
    * @return {object}
    */
   get(name) {
+    // backward compatibility
+    if (name === 'dataSource') {
+      const result = _.defaults({}, this.model.get('dataSource'), this.model.get('query'));
+
+      if (this._dataSource instanceof MemoryDataSource) {
+        result.type = 'memory';
+        result.data = this._dataSource.data;
+      } else if (this._dataSource instanceof JSDataDataSource) {
+        result.type = 'js-data';
+        result.entity = this._dataSource.resource;
+      } else if (this._dataSource instanceof ODataDataSource) {
+        result.type = 'odata';
+        result.url = this._dataSource.url;
+      }
+
+      return result;
+    }
     return this.model.get(name);
   }
 
@@ -380,7 +439,7 @@ export class GridView extends Backbone.View {
   patch(state = {}, callback = _.noop) {
     this.set(_.reduce(_.keys(state), (memo, key) => {
       const value = state[key];
-      const valueCur = this.model.get(key);
+      const valueCur = this.get(key);
       
       memo[key] = defaultsDeep(value, valueCur);
       return memo;
@@ -399,13 +458,17 @@ export class GridView extends Backbone.View {
 
   /**
    * Render the grid view.
-   * @param {function} callback
+   * @param {function} [callback]
    *    A callback to notify the render is completed.
    * @return {GridView}
    *    This grid view.
    */
   render(callback) {
-    this._tableView.render(callback);
+    this._tableView.render(() => {
+      this._isRendered = true;
+      this.refresh(true);
+      this.once('didRedraw', callback);
+    });
     return this;
   }
 
@@ -441,6 +504,15 @@ export class GridView extends Backbone.View {
   }
 
   /**
+   * Make query to the data source
+   * @param {object} params - The query parameters
+   * @return {QueryResult}
+   */
+  query(params) {
+    return this._dataSource.query(params);
+  }
+
+  /**
    * The array data items.
    * @type {Object[]}
    */
@@ -461,15 +533,20 @@ export class GridView extends Backbone.View {
    * @type {string}
    */
   get primaryKey() {
-    return _.result(this._chainData.state, 'primaryKey');
+    return this._dataSource.primaryKey;
   }
 
   /**
    * The total count of data items. This represents the server side state.
    * @type {number}
    */
+  get totalCountRows() {
+    return _.result(this._chainData.state, 'totalCount', 0);
+  }
+
+  // Backward compatibility
   getItemCount() {
-    return _.result(this._chainData.state, 'itemCount', 0);
+    return this.totalCountRows;
   }
 
   /**

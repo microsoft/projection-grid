@@ -3,6 +3,7 @@ import renderersPlugin from './renderers-plugin';
 import projectionPlugin from './projection-plugin';
 import gridViewPlugin from './grid-view-plugin';
 
+import dataSourceVNextPlugin from '../vnext/factory/data-source-plugin.js';
 import gridViewVNextPlugin from '../vnext/factory/grid-view-plugin.js';
 
 const configPlugin = definePlugin => definePlugin('config', [], function () {
@@ -18,6 +19,7 @@ class GridFactory {
     if (vnext) {
       this
         .use(configPlugin)
+        .use(dataSourceVNextPlugin)
         .use(gridViewVNextPlugin);
     } else {
       this

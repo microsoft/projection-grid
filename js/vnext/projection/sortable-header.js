@@ -18,14 +18,15 @@ function reorder(e) {
     }
     const sortableHeader = { name, direction };
 
-    const query = _.defaults({
-      orderBy: [{
-        key: sortable.key,
-        direction,
-      }],
-    }, this.get('query'));
-
-    this.set({ query, sortableHeader });
+    this.patch({
+      query: {
+        orderby: [{
+          key: sortable.key,
+          direction,
+        }],
+      },
+      sortableHeader: { name, direction },
+    });
   }
 }
 

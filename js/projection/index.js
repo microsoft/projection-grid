@@ -1,4 +1,5 @@
 module.exports = {
+  A11y: require('./a11y'),
   AggregateRow: require('./aggregate-row'),
   Base: require('./base'),
   ColumnI18n: require('./column-i18n'),
@@ -21,5 +22,6 @@ module.exports = {
   RowIndex: require('./row-index'),
   Sink: require('./sink'),
   ColumnGroup: require('./column-group'),
+  ColumnHoverText: require('./column-hovertext'),
   Columns: require('./columns').default,
 };

@@ -23,32 +23,53 @@ define([
           }
         });
 
-        _.each(rows, row => {
+        _.each(rows, (row) => {
           var classArr = [];
+          var originClass = _.chain(row)
+            .result('$metadata')
+            .result('attr')
+            .result('class')
+            .value();
+
+          if (originClass) {
+            classArr.push(originClass);
+          }
+
           var classesRule = this.get('row.classes');
+
+          var checkId = this.get('row.check.id');
+          var checkboxAllow = model.get('row.check.allow');
+
           _.each(classesRule, (func, key) => {
-            var originClass = _.chain(row)
-              .result('$metadate')
-              .result('attr')
-              .result('class')
-              .value();
-
-            if (originClass) {
-              classArr.push(originClass);
-            }
-
             var type = _.chain(row).result('$metadata').result('type').value();
 
             if (_.isFunction(func) && func(row, type)) {
               classArr.push(key);
             }
-            _.extend(row, {
-              $metadata: {
-                attr: {
-                  class: _.flatten(classArr).join(' '),
-                },
-              },
-            });
+          });
+
+          //attr info from meta 
+          var originId = _.chain(row)
+            .result('$metadate')
+            .result('attr')
+            .result('id')
+            .value();
+
+          if (_.isFunction(checkboxAllow) ? checkboxAllow(row) : checkboxAllow) {
+            var uniqueId = model.get('a11y.selection.uniqueId');
+            var id = row[checkId] || originId;
+            var a11yId = uniqueId.concat(id);
+            var role = 'row';
+          }
+
+          _.extend(row, {
+            $metadata: {
+              attr: _.pick({
+                class: _.flatten(classArr).join(' '),
+                id: a11yId,
+                role: role,
+              }, Boolean),
+            },
           });
         });
 

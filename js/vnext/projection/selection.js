@@ -168,6 +168,6 @@ export const selection = {
   name: 'selection',
   handler: selectionProjectionHandler,
   normalize: normalizeSelectionConfig,
-  defaults: {},
+  defaults: false,
 };
 
