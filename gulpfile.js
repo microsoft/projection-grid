@@ -14,9 +14,18 @@ var resolve = require('resolve');
 var coveralls = require('gulp-coveralls');
 // coveralls-end
 var jsdoc = require('gulp-jsdoc3');
+var Server = require('karma').Server;
 
 var childProcess = require('child_process');
 var spawn = childProcess.spawn;
+
+var unitFilePath = ['./spec/unit/$speclist.js'];
+var unitPreprocessor = {};
+unitPreprocessor[unitFilePath] = ['webpack', 'sourcemap'];
+
+var integratedFilePath = ['./spec/integrated/$speclist.js'];
+var integratedPreprocessor = {};
+integratedPreprocessor[integratedFilePath] = ['webpack', 'sourcemap'];
 
 function webpackBuild(configFilePath) {
   return function (cb) {
@@ -56,15 +65,6 @@ function startSeleniumServer() {
   return childProcess.spawn('java', ['-jar', filePath], { stdio: 'inherit' });
 }
 
-//
-// Don't use Karma API for now
-// For karma version 0.13.19 - 0.13.22, there's issue 1788
-// -- Karma 0.13.19 taking long time to complete when run via gulp
-// https://github.com/karma-runner/karma/issues/1788
-// We should switch back to Karma API when the issue is fixed
-//
-// var Server = require('karma').Server;
-//
 // coveralls
 gulp.task('coveralls', ['test'], function () {
   if (!process.env.CI) {
@@ -73,35 +73,46 @@ gulp.task('coveralls', ['test'], function () {
   return gulp.src(path.join(__dirname, 'coverage/report-lcov/lcov.info')).pipe(coveralls());
 });
 // coveralls-end
-gulp.task('test:unit', function (cb) {
-  var handler = function (code) {
-    if (code) {
-      cb(new Error('test failure'));
-    } else {
-      cb();
-    }
-  };
 
-  //
-  // Don't use Karma API for now
-  //
-  // new Server({
-  //   configFile: path.join(__dirname, 'karma.conf.js'),
-  //   singleRun: true,
-  // }, handler).start();
-  //
+gulp.task('test:unit', function(done) {
+  new Server({
+    configFile: path.join(__dirname, './spec/unit/conf/karma.conf.js'),
+    files: unitFilePath,
+    preprocessors: unitPreprocessor,
+    singleRun: true,
+  }, done).start();
+})
 
-  var karmaCmd = path.resolve('./node_modules/.bin/karma');
+// debug in chrome by default
+// Todo: envole yargs to config in cmd
+gulp.task('test-debug:unit', function(done) {
+  new Server({
+    configFile: path.join(__dirname, './spec/unit/conf/karma.debug.conf.js'),
+    files: unitFilePath,
+    preprocessors: unitPreprocessor,
+    singleRun: false,
+  }, done).start();
+})
 
-  if (process.platform === 'win32') {
-    karmaCmd += '.cmd';
-  }
+gulp.task('test:integrated', function(done) {
+  new Server({
+    configFile: path.join(__dirname, './spec/integrated/conf/karma.conf.js'),
+    files: integratedFilePath,
+    preprocessors: integratedPreprocessor,
+    singleRun: true,
+  }, done).start();
+})
 
-  spawn(karmaCmd, [
-    'start',
-    '--single-run',
-  ], { stdio: 'inherit' }).on('close', handler);
-});
+// debug in chrome by default
+// Todo: envole yargs to config in cmd
+gulp.task('test-debug:integrated', function(done) {
+  new Server({
+    configFile: path.join(__dirname, './spec/integrated/conf/karma.debug.conf.js'),
+    files: integratedFilePath,
+    preprocessors: integratedPreprocessor,
+    singleRun: false,
+  }, done).start();
+})
 
 gulp.task('static', function () {
   return gulp.src('**/*.js')
@@ -147,15 +158,14 @@ gulp.task('test:demos', ['download-selenium'], function (done) {
   });
 });
 
-gulp.task('test', ['test:unit']);
-// gulp.task('test', ['test:unit', 'test:demos']);
+gulp.task('test', ['test:unit', 'test:integrated']);
 
 gulp.task('prepublish', ['webpack']);
 
 gulp.task('clean:test', function () {
   return del([
-    'test-results',
-    'coverage',
+    './spec/*/test-results',
+    './spec/*/coverage',
     'errorShots',
   ]);
 });
