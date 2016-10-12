@@ -10,10 +10,12 @@ const editStateClasses = {
 function addRowClassHandler(state) {
   const primaryKey = state.primaryKey;
   _.each(state.bodyRows, row => {
-    const key = row.item[primaryKey];
-    if (key) {
-      const editState = editor.getItemEditState(key);
-      row.classes = _.union(row.classes, _.result(editStateClasses, editState, []));
+    if (row.item) {
+      const key = row.item[primaryKey];
+      if (key) {
+        const editState = editor.getItemEditState(key);
+        row.classes = _.union(row.classes, _.result(editStateClasses, editState, []));
+      }
     }
   });
 
