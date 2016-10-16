@@ -1,6 +1,18 @@
 var _ = require('underscore');
 var path = require('path');
-var webpackConfig = require('./webpack.config');
+
+function getWebpackConfig() {
+  var webpackConfig = require('./webpack.config');
+
+  webpackConfig.module.preLoaders = [
+    {
+      test: /\.js$/,
+      include: path.resolve('./js/'),
+      loader: 'isparta',
+    },
+  ].concat(webpackConfig.module.preLoaders || []);
+  return webpackConfig;
+}
 
 module.exports = function (config) {
   //files fild set in gulpfile.js in the root folder.
@@ -14,11 +26,8 @@ module.exports = function (config) {
         reporter: 'html', // change Karma's debug.html to the mocha web reporter
       },
     },
-    preprocessors: {
-      '/js/**/*.js': ['coverage'],
-    },
     reporters: ['mocha', 'coverage', 'junit'],
-    webpack: webpackConfig,
+    webpack: getWebpackConfig(),
     coverageReporter: {
       dir: './spec/integrated/coverage',
       reporters: [
