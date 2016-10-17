@@ -1,129 +1,102 @@
-define([
-  'lib/jquery',
-  'lib/underscore',
-  'component/grid/layout/measure',
-  'component/grid/layout/px',
-], function ($, _, measure, px) {
-  var state = 'normal';
+import $ from 'jquery';
+import _ from 'underscore';
+import measure from '../measure';
+import px from '../px';
 
-  function Renderer(options) {
-    this.options = options || {};
-
+class FixedHeaderRenderer {
+  constructor(options = {}) {
     this.name = 'fixed-header';
+    this.state = 'normal';
+
+    this.options = options;
     this.layout = this.options.layout;
-    this.adjustColumnWidth = () => {
-      if (_.isFunction(this.freezeColumnWidth)) {
-        this.freezeColumnWidth();
-      }
-    };
-    $(window).on('resize', this.adjustColumnWidth);
+    this.columnWidth = null;
+    this.windowWidth = $(window).width();
   }
 
-  Renderer.prototype.draw = function (data, cb) {
-    var newState = 'normal';
-
+  draw(data, cb) {
     data.vpMeasures = measure.viewport.call(this.layout);
 
-    // TODO [wewei] this is a hack to temporarily solve the sticky header doesn't
-    // respect the navbar problem.
-    // We need a better solution on this.
-    if (data.vpMeasures.viewportTop + (this.layout.top || 0) > data.vpMeasures.boundsTop) {
-      var $el = this.layout.$el;
+    const $el = this.layout.$el;
+    const offset = _.result(this.layout, 'top', 0);
+    const isSticky = (data.vpMeasures.viewportTop + offset) > data.vpMeasures.boundsTop;
+    const newState = isSticky ? 'sticky' : 'normal';
 
-      newState = 'sticky';
-      // todo [akamel] assumes we have table rendered; measure/estimate otherwise
+    data.canSkipDraw = newState === this.state;
+    data.isSticky = isSticky;
 
-      // a. compensate for header displacement
-      // .. as we set 'thead > tr' css position 'absolute'
-      var displacement = $el.find('thead tr').outerHeight();
-      _.extend(data.css, {
-        'padding-top': px.pixelify(px.parse(data.css['padding-top']) + displacement),
-      });
+    cb(undefined, data);
 
-      data.canSkipDraw = true;
+    $el.find('table.grid').css({ tableLayout: 'fixed' });
 
-      // b. yield to render
-      cb(undefined, data);
+    if (isSticky) {
+      const $tableStickyHeader = $el.find('table.grid-sticky-header');
+      const $tableContent = $el.find('table.grid-content');
+      const $thLastRow = $tableStickyHeader.find('thead > tr:last-child').children();
+      const $tdFirstRow = $tableContent.find('tbody > tr:first-child').children();
 
-      // c. get newly rendered header
-      var $thead = $el.find('thead');
-      var $headTR = $el.find('thead > tr');
-      var $headTD = $headTR.first().children();
-      var $secondHeadTD = $headTR.eq(1).children();
-      var $bodyTD = $el.find('tbody > tr:first-child').children();
-
-      var $ref = $bodyTD;
-      var $target = $headTD;
-
-      this.freezeColumnWidth = () => {
-        // d. capture header col computed width
-        // todo [akamel] [perf] 16%
-        this.colWidth = this.colWidth || _.map($ref, function (td) {
-          return $(td).width();
+      if (this.state === 'normal') {
+        const $stickyHeaderFiller = $el.find('.sticky-header-filler');
+        $stickyHeaderFiller.css({
+          height: $tableStickyHeader.outerHeight(),
         });
+      }
 
-        // todo [akamel] [perf] 12% -- consider replacing with css rule generation
-        // e. freeze column width
-        // e.1 freeze col width
-        var colIndex = 0;
-        var secondHeadTDIndex = 0;
-        _.each($target, function (td) {
-          var colspan = parseInt($(td).attr('colspan'), 10);
-          var rowspan = parseInt($(td).attr('rowspan'), 10);
-          var width = 0;
-          for (var i = 0; i < colspan; ++i) {
-            var colWidth = px.pixelify(this.colWidth[colIndex + i]);
-            width += colWidth;
-            if (rowspan === 1) {
-              $secondHeadTD.eq(secondHeadTDIndex + i).width(colWidth);
-            }
-          }
-          $(td).width(width);
-          colIndex += colspan;
-          if (rowspan === 1) {
-            secondHeadTDIndex += colspan;
-          }
-        }.bind(this));
+      const setColumnWidth = (tableWidth, columnWidth) => {
+        _.each([
+          $thLastRow,
+          $tdFirstRow,
+        ], ($elems) => _.each($elems, (el, index) => {
+          $(el).css({
+            width: _.result(columnWidth, index, ''),
+          });
+        }));
 
-        _.each($ref, function (td, index) {
-          $(td).width(px.pixelify(this.colWidth[index]));
-        }.bind(this));
+        $el.find('table.grid').css({
+          width: tableWidth,
+        });
       };
 
-      this.freezeColumnWidth();
+      const unfreezeColumnWidth = () => {
+        setColumnWidth('', null);
+      };
 
-      // f. set position 'fixed' and lock header at top of table
-      $thead.css({
-        'position': this.layout.container.el === window ? 'fixed' : 'absolute',
-        'top': px.pixelify(this.layout.container.el === window ? 0 : this.layout.container.$el.scrollTop()),
-        'margin-left': px.pixelify(-data.vpMeasures.offsetLeft),
-        'z-index': 1000,
+      const updateColumnWidth = () => {
+        unfreezeColumnWidth();
+        this.windowWidth = $(window).width();
+        this.tableWidth = $tableContent.outerWidth();
+        this.columnWidth = _.map($tdFirstRow, (td) => $(td).outerWidth());
+      };
+
+      const freezeColumnWidth = this.freezeColumnWidth = () => {
+        if (!this.columnWidth || Math.abs($(window).width() - this.windowWidth) >= 1) {
+          updateColumnWidth();
+        }
+
+        setColumnWidth(this.tableWidth, this.columnWidth);
+      };
+
+      freezeColumnWidth();
+      $tableStickyHeader.css({
+        top: offset,
+        left: $tableContent.offset().left - window.scrollX,
+        position: 'fixed',
       });
     } else {
-      newState = 'normal';
-
-      _.extend(data.css, {
-        'padding-top': px.pixelify(px.parse(data.css['padding-top'])),
-      });
-
-      cb(undefined, data);
+      this.freezeColumnWidth = null;
     }
 
-    if (state !== newState) {
+    if (this.state !== newState) {
       this.layout.grid.trigger('change:header-state', newState);
-      state = newState;
+      this.state = newState;
     }
-  };
+  }
 
-  Renderer.prototype.remove = function () {
-    $(window).off('resize', this.adjustColumnWidth);
-  };
-
-  Renderer.partial = function (options) {
+  static partial(options) {
     return function (o) {
       return new Renderer(_.defaults({}, o, options));
     };
   };
+}
 
-  return Renderer;
-});
+export default FixedHeaderRenderer;

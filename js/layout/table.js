@@ -134,7 +134,10 @@ define([
 
     // TODO [akamel] [perf] 8.5%
     toHTML: function (value) {
-      var data = _.defaults({ value: value }, this.data);
+      var data = _.defaults({
+        value: value.rows,
+        isHeaderFixed: value.isSticky,
+      }, this.data);
 
       _.each(data.columns, function (col) {
         if (_.isObject(col.$metadata)) {
@@ -273,7 +276,7 @@ define([
         this.removeSubviews();
 
         if (res.canSkipDraw !== true) {
-          this.el.innerHTML = this.toHTML(res.rows);
+          this.el.innerHTML = this.toHTML(res);
         }
 
         _.each(this.data.columns, function (column) {

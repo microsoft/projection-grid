@@ -60,24 +60,32 @@ mixin td(row, column)
     else
       = res
 
-table.table.table-hover.grid(role='grid')&attributes($metadata || {})
-  if !hideHeaders
-    thead
-      if isApplyGroup && subSelect.length === 0
-        tr.table__row--header
-          each columnName in locals['select'] || []
-            +th(columns[columnName], true)
-      else if isApplyGroup
-        tr.table__row--header
-          each columnName in locals['select'] || []
-            +th(columns[columnName], true)
-        tr.table__row--header.table__row--sub-header
-          each columnName in locals['subSelect']
-            +th(columns[columnName], true, true)
-      else
-        tr.table__row--header
-          each columnName in locals['select'] || []
-            +th(columns[columnName])
+mixin thead(isApplyGroup, subSelect, locals, columns)
+  thead
+    if isApplyGroup && subSelect.length === 0
+      tr.table__row--header
+        each columnName in locals['select'] || []
+          +th(columns[columnName], true)
+    else if isApplyGroup
+      tr.table__row--header
+        each columnName in locals['select'] || []
+          +th(columns[columnName], true)
+      tr.table__row--header.table__row--sub-header
+        each columnName in locals['subSelect']
+          +th(columns[columnName], true, true)
+    else
+      tr.table__row--header
+        each columnName in locals['select'] || []
+          +th(columns[columnName])
+
+if isHeaderFixed
+  table.table.table-hover.grid.grid-sticky-header&attributes($metadata || {})
+    +thead(isApplyGroup, subSelect, locals, columns)
+  .sticky-header-filler
+
+table.table.table-hover.grid.grid-content(role='grid')&attributes($metadata || {})
+  if !hideHeaders && !isHeaderFixed
+    +thead(isApplyGroup, subSelect, locals, columns)
   tbody
     each row, i in value
       - var attr = (row.$metadata || {}).attr || {}

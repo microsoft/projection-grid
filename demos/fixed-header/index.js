@@ -1,6 +1,6 @@
 import pgrid from 'projection-grid';
 import 'bootstrap-webpack';
-import './index.css';
+import './index.less';
 
 const grid = pgrid.factory().create({
   el: '.grid-root',
