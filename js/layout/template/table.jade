@@ -78,13 +78,13 @@ mixin thead(isApplyGroup, subSelect, locals, columns)
         each columnName in locals['select'] || []
           +th(columns[columnName])
 
-if isHeaderFixed
+if isSticky
   table.table.table-hover.grid.grid-sticky-header&attributes($metadata || {})
     +thead(isApplyGroup, subSelect, locals, columns)
   .sticky-header-filler
 
 table.table.table-hover.grid.grid-content(role='grid')&attributes($metadata || {})
-  if !hideHeaders && !isHeaderFixed
+  if !hideHeaders && !isSticky
     +thead(isApplyGroup, subSelect, locals, columns)
   tbody
     each row, i in value

@@ -136,7 +136,7 @@ define([
     toHTML: function (value) {
       var data = _.defaults({
         value: value.rows,
-        isHeaderFixed: value.isSticky,
+        isSticky: value.isSticky,
       }, this.data);
 
       _.each(data.columns, function (col) {
