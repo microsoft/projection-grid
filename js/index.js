@@ -7,7 +7,7 @@ import {
 } from './vnext/data-source';
 
 module.exports = {
-  version: '0.1.0-42',
+  version: '0.1.0-43',
   GridView: require('./grid-view'),
   projections: require('./projection/index'),
   layout: require('./layout/index'),

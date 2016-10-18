@@ -12,6 +12,14 @@ class FixedHeaderRenderer {
     this.layout = this.options.layout;
     this.columnWidth = null;
     this.windowWidth = $(window).width();
+
+    this.onWindowResize = () => {
+      if (_.isFunction(this.freezeColumnWidth)) {
+        this.freezeColumnWidth();
+      }
+    };
+
+    $(window).on('resize', this.onWindowResize);
   }
 
   draw(data, cb) {
@@ -61,16 +69,12 @@ class FixedHeaderRenderer {
         setColumnWidth('', null);
       };
 
-      const updateColumnWidth = () => {
-        unfreezeColumnWidth();
-        this.windowWidth = $(window).width();
-        this.tableWidth = $tableContent.outerWidth();
-        this.columnWidth = _.map($tdFirstRow, (td) => $(td).outerWidth());
-      };
-
       const freezeColumnWidth = this.freezeColumnWidth = () => {
         if (!this.columnWidth || Math.abs($(window).width() - this.windowWidth) >= 1) {
-          updateColumnWidth();
+          unfreezeColumnWidth();
+          this.windowWidth = $(window).width();
+          this.tableWidth = $tableContent.outerWidth();
+          this.columnWidth = _.map($tdFirstRow, (td) => $(td).outerWidth());
         }
 
         setColumnWidth(this.tableWidth, this.columnWidth);
@@ -92,6 +96,10 @@ class FixedHeaderRenderer {
     }
   }
 
+  remove() {
+    $(window).off('resize', this.onWindowResize);
+  }
+
   static partial(options) {
     return function (o) {
       return new Renderer(_.defaults({}, o, options));
@@ -100,3 +108,4 @@ class FixedHeaderRenderer {
 }
 
 export default FixedHeaderRenderer;
+
