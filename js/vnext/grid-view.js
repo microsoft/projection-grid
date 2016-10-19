@@ -272,6 +272,11 @@ export class GridView extends Backbone.View {
           this._tableView.set(state, resolve);
         }))
         .then(nextTick)
+        .catch(error => {
+          if (error) {
+            console.warn(error.stack || error);
+          }
+        })
         .finally(() => {
           /**
            * The `GridView` did update its configuration and redraw.
