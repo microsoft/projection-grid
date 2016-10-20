@@ -38,7 +38,10 @@ var gridConfig = {
   }, {
     name: 'Concurrency',
     hidden: true,
-  }]
+  }],
+  selection: {
+    enabled: true,
+  },
 };
 
 var pgrid = pGrid

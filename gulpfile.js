@@ -19,13 +19,15 @@ var Server = require('karma').Server;
 var childProcess = require('child_process');
 var spawn = childProcess.spawn;
 
-var unitFilePath = ['./spec/unit/$speclist.js'];
+var specUnit = './spec/unit/$speclist.js';
+var unitFilePath = [specUnit];
 var unitPreprocessor = {};
-unitPreprocessor[unitFilePath] = ['webpack', 'sourcemap'];
+unitPreprocessor[specUnit] = ['webpack', 'sourcemap'];
 
-var integratedFilePath = ['./spec/integrated/$speclist.js'];
+var specIntegrated = './spec/integrated/$speclist.js';
+var integratedFilePath = ['./node_modules/babel-polyfill/dist/polyfill.js', specIntegrated];
 var integratedPreprocessor = {};
-integratedPreprocessor[integratedFilePath] = ['webpack', 'sourcemap'];
+integratedPreprocessor[specIntegrated] = ['webpack', 'sourcemap'];
 
 function webpackBuild(configFilePath) {
   return function (cb) {

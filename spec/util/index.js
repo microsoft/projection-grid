@@ -15,6 +15,10 @@ function cleanup() {
   $container.empty();
 }
 
+function createGrid(pgridFactory, config, extendedConfig) {
+  
+}
+
 function validateElementArray(elementArray, expectedData) {
   let actualArray = _.map(elementArray, (element) => {
     return element.textContent;
@@ -47,9 +51,19 @@ function getExpectedGridData(data, columnKeys) {
   });
 }
 
+function validateClassesForElements(elArray, classes) {
+  let assertion = elArray.every((el) => {
+    return classes.every((clazz) => {
+      return el.hasClass(clazz);
+    })
+  });
+  return assertion;
+}
+
 export default {
   renderTestContainer,
   cleanup,
   validateElementMatrix,
   getExpectedGridData,
+  validateClassesForElements,
 };

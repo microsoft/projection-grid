@@ -8,8 +8,6 @@ import Promise from 'bluebird'
 import driver from './driver';
 
 let expect = chai.expect;
-Promise.promisifyAll(driver);
-
 let memoryData = _.map(rawData.value, (row) => {
   return _.pick(row, 'UserName', 'FirstName', 'LastName', 'Gender', 'Concurrency');
 });
@@ -29,6 +27,7 @@ let pgrid;
 let gridView;
 
 describe('minimize config', function () {
+  this.timeout(100000000);
   beforeEach(function () {
     util.renderTestContainer();
     pgrid = pGrid 
@@ -43,27 +42,30 @@ describe('minimize config', function () {
   });
 
   it('should render header correctly', function (done) {
-    gridView.on('didUpdate', () => {
-      driver.elementAsync('#container > .table-container .header th')
-        .then((result) => {
-          let header = _.map(result, (item) => {
-            return item.textContent;
-          });
-          expect(header).to.eql(expectedHeader);
-          console.log(header);
-        })
-        .nodeify(done);
-    });
+    driver.once(gridView, 'didUpdate')
+      .then(() => {
+        return driver.element('#container > .table-container .header th');
+      })
+      .then((result) => {
+        let header = _.map(result, (item) => {
+          return item.textContent;
+        });
+        expect(header).to.eql(expectedHeader);
+      })
+      .then(done)
+      .catch(console.log);
   });
   
   it('should render data correctly', function (done) {
-    gridView.on('didUpdate', () => {
-      driver.elementAsync('#container > .table-container tbody tr[data-key]')
-        .then((result) => {
-          let assertion = util.validateElementMatrix(result, expectedData);
-          expect(assertion).to.be.true;
-        })
-        .nodeify(done);
-    });
+    driver.once(gridView, 'didUpdate')
+      .then(() => {
+        return driver.element('#container > .table-container tbody tr[data-key]')
+      })
+      .then((result) => {
+        let assertion = util.validateElementMatrix(result, expectedData);
+        expect(assertion).to.be.true;
+      })
+      .then(done)
+      .catch(console.log);
   });
 });

@@ -1,17 +1,15 @@
 import $ from 'jquery';
 import _ from 'underscore';
 
-function element(selector, cb) {
-  let find = _.isFunction(this.find) ? this.find.bind(this) : $;
-  let $element = _.isString(selector) ? find(selector) : selector;
-  cb = _.isFunction(cb) ? cb : () => {};
-  if($element.length > 0) {
-    cb(null, $element);
-  }
-  else {
-    cb(new Error('Element '.concat(selector).concat(' not found or not currently visible')));
-  }
-  return this;
+function element(el) {
+  return new Promise((resolve, reject) => {
+    let $el = el instanceof $ ? el : $(el);
+    if ($el.length > 0) {
+      resolve($el);
+    } else {
+      reject(new Error('Element '.concat(el).concat(' not found or not exists')));
+    }
+  });
 }
 
 export default {
