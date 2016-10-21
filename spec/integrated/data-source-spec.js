@@ -3,33 +3,23 @@ import _ from 'underscore';
 import pGrid from 'component/grid';
 import chai from 'chai';
 import util from 'util';
-import rawData from './data/people.json';
 import driver from './driver';
+import jsDataSource from './data/js-data-source';
 
 let expect = chai.expect;
 let selectedKeys = ['UserName', 'FirstName', 'LastName', 'Gender', 'Concurrency'];
-let memoryData = _.map(rawData.value, (row) => {
-  return _.pick(row, selectedKeys);
-});
-
 let gridConfig = {
   el: '#container',
   dataSource: {
-    type: 'memory',
-    data: memoryData,
-    primaryKey: 'UserName',
-  },
-  scrolling: {
-    virtualized: true,
-    viewport: window,
-    header: 'sticky',
+    type: 'js-data',
+    entity: jsDataSource,
   },
 };
 
 let pgrid;
 let gridView;
 
-describe('scrolling config', function () {
+describe('data source config', function () {
   this.timeout(100000000);
   beforeEach(function () {
     util.renderTestContainer();
@@ -44,10 +34,10 @@ describe('scrolling config', function () {
     util.cleanup();
   });
 
-  it('sticky header should works as expected', function (done) {
+  it('js-data should works as expected', function (done) {
     driver.once(gridView, 'didUpdate')
       .then(() => {
-        // console.log('test');
+        console.log('test');
       })
       .then(done)
       .catch(console.log);

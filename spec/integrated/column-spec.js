@@ -3,7 +3,7 @@ import _ from 'underscore';
 import pGrid from 'component/grid';
 import chai from 'chai';
 import util from 'util';
-import rawData from 'data/people.json';
+import rawData from './data/people.json';
 import Promise from 'bluebird'
 import driver from './driver';
 import addressTmpl from './template/addressTmpl.jade';
