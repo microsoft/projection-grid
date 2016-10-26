@@ -4,7 +4,6 @@ import pGrid from 'component/grid';
 import chai from 'chai';
 import util from 'util';
 import rawData from './data/people.json';
-import Promise from 'bluebird'
 import driver from './driver';
 import addressTmpl from './template/addressTmpl.jade';
 
@@ -13,6 +12,11 @@ let selectedKeys = ['UserName', 'FirstName', 'LastName', 'AddressInfo', 'Gender'
 let memoryData = _.map(rawData.value, (row) => {
   return _.pick(row, selectedKeys);
 });
+
+let bodyClassObject = {
+  nameBodyClass3: true,
+  nameBodyClass4: true,
+};
 
 let gridConfig = {
   el: '#container',
@@ -31,14 +35,14 @@ let gridConfig = {
     editable: true,
     colClasses: ['nameClass1', 'nameClass2'],
     headClasses: ['nameHeadClass1', 'nameHeadClass2'],
-    bodyClasses: ['nameBodyClass1', 'nameBodyClass2'],
+    bodyClasses: bodyClassGenerator,
   }, {
     name: 'LastName',
     title: 'Last Name',
     editable: true,
     colClasses: ['nameClass3', 'nameClass4'],
     headClasses: ['nameHeadClass3', 'nameHeadClass4'],
-    bodyClasses: ['nameBodyClass3', 'nameBodyClass4'],
+    bodyClasses: bodyClassObject,
   }, {
     name: 'Address',
     property: 'AddressInfo/0/Address',
@@ -59,6 +63,10 @@ _.each(expectedData, (dataItem) => {
   let addressInfo = dataItem.AddressInfo[0] ? dataItem.AddressInfo[0].Address : '';
   dataItem.AddressInfo = addressInfo;
 });
+
+function bodyClassGenerator() {
+  return ['nameBodyClass1', 'nameBodyClass2'];
+}
 
 describe('columns config', function () {
   this.timeout(100000000);
@@ -92,7 +100,7 @@ describe('columns config', function () {
         // validate header classes
         let firstNameEl = result.eq(1);
         let lastNameEl = result.eq(2);
-        let classAssertion = util.validateClassesForElements([firstNameEl], ['nameHeadClass1', 'nameHeadClass2']) && util.validateClassesForElements([lastNameEl], ['nameHeadClass3', 'nameHeadClass4']);
+        let classAssertion = util.validateClassesForElement(firstNameEl, ['nameHeadClass1', 'nameHeadClass2']) && util.validateClassesForElement(lastNameEl, ['nameHeadClass3', 'nameHeadClass4']);
         expect(classAssertion).to.be.true;
       })
       .then(done)
@@ -116,7 +124,7 @@ describe('columns config', function () {
           // validate classes
           let firstNameEl = $(rowItem).find('td').eq(1);
           let lastNameEl = $(rowItem).find('td').eq(2);
-          let classAssertion = util.validateClassesForElements([firstNameEl], ['nameBodyClass1', 'nameBodyClass2']) && util.validateClassesForElements([lastNameEl], ['nameBodyClass3', 'nameBodyClass4']);
+          let classAssertion = util.validateClassesForElement(firstNameEl, ['nameBodyClass1', 'nameBodyClass2']) && util.validateClassesForElement(lastNameEl, ['nameBodyClass3', 'nameBodyClass4']);
           expect(classAssertion).to.be.true;
         });
       })
@@ -132,8 +140,8 @@ describe('columns config', function () {
       .then((result) => {
         let firstNameCol = result.find('col').eq(1);
         let lastNameCol = result.find('col').eq(2);
-        let classAssertion = util.validateClassesForElements([firstNameCol], ['nameClass1', 'nameClass2']) 
-          && util.validateClassesForElements([lastNameCol], ['nameClass3', 'nameClass4']);
+        let classAssertion = util.validateClassesForElement(firstNameCol, ['nameClass1', 'nameClass2']) 
+          && util.validateClassesForElement(lastNameCol, ['nameClass3', 'nameClass4']);
         expect(classAssertion).to.be.true;
       })
       .then(done)
@@ -214,7 +222,6 @@ describe('columns config', function () {
       .catch(console.log);
   });
 
-  // it('sub colums should works as expected', function (done) {
-
+  // it(sub colums should works as expected', function () {
   // });
 });
