@@ -29,7 +29,7 @@ let expectedData = util.getExpectedGridData(memoryData);
 let pgridFactory;
 let gridView;
 
-describe('grid view API config', function () {
+describe('grid view API verification', function () {
   this.timeout(100000000);
   beforeEach(function () {
     util.renderTestContainer();
