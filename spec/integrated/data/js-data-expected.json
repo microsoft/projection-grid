@@ -1,0 +1,44 @@
+
+{
+  "value": [
+    {
+      "CustomerID": "ALFKI",
+      "CompanyName": "Alfreds Futterkiste",
+      "ContactName": "Maria Anders",
+      "ContactTitle": "Sales Representative",
+      "Address": "Obere Str. 57",
+      "City": "Berlin",
+      "Region": "",
+      "PostalCode": "12209",
+      "Country": "Germany",
+      "Phone": "030-0074321",
+      "Fax": "030-0076545"
+    },
+    {
+      "CustomerID": "BOTTM",
+      "CompanyName": "Bottom-Dollar Markets",
+      "ContactName": "Elizabeth Lincoln",
+      "ContactTitle": "Accounting Manager",
+      "Address": "23 Tsawassen Blvd.",
+      "City": "Tsawassen",
+      "Region": "BC",
+      "PostalCode": "T2F 8M4",
+      "Country": "Canada",
+      "Phone": "(604) 555-4729",
+      "Fax": "(604) 555-3745"
+    },
+    {
+      "CustomerID": "ERNSH",
+      "CompanyName": "Ernst Handel",
+      "ContactName": "Roland Mendel",
+      "ContactTitle": "Sales Manager",
+      "Address": "Kirchgasse 6",
+      "City": "Graz",
+      "Region": "",
+      "PostalCode": "8010",
+      "Country": "Austria",
+      "Phone": "7675-3425",
+      "Fax": "7675-3426"
+    }
+  ]
+}

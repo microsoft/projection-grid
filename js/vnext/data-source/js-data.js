@@ -54,4 +54,3 @@ export class JSDataDataSource extends DataSource {
     return this._resource;
   }
 }
-

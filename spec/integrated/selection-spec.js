@@ -19,14 +19,15 @@ let gridConfig = {
     data: memoryData,
     primaryKey: 'UserName',
   },
+  query: () => {},
 };
 
 let pgrid;
 let pgridFactory;
 let gridView;
 
+
 describe('selection config', function () {
-  this.timeout(100000000);
   beforeEach(function () {
     util.renderTestContainer();
     pgridFactory = pGrid 
@@ -53,29 +54,134 @@ describe('selection config', function () {
         return driver.element('#container > .table-container tbody tr[data-key]');
       })
       .then((result) => {
-        let firstCheckbox = result.eq(0).find('td').eq(0).find('input');
-        return driver.click(firstCheckbox);
+        return driver.click(util.getCheckboxElFromTbody(result, 0, 0));
       })
       .then(() => {
+        let expectedSelectedKey = 'russellwhyte';
+        expect(gridView.selectedKeys()[0]).to.be.equal(expectedSelectedKey);
+        let selectedItems = gridView.selectedItems();
+        expect(selectedItems.length).to.be.equal(1);
+        expect(selectedItems[0].UserName).to.be.equal(expectedSelectedKey);
         return driver.element('#container > .table-container tbody tr[data-key]');
       })
       .then((result) => {
-        let firstCheckbox = result.eq(0).find('td').eq(0).find('input');
-        let assertion = firstCheckbox.is(':checked');
+        let checkboxEl = util.getCheckboxElFromTbody(result, 0, 0);
+        let assertion = checkboxEl.is(':checked');
         expect(assertion).to.be.true;
       })
       .then(() => {
         return driver.element('#container > .table-container tbody tr[data-key]');
       })
       .then((result) => {
-        let firstCheckbox = result.eq(0).find('td').eq(0).find('input');
-        return driver.click(firstCheckbox);
+        return driver.click(util.getCheckboxElFromTbody(result, 0, 0));
+      })
+      .then(() => {
+        return driver.element('#container > .table-container tbody tr[data-key]');
+      })
+      .then((result) => {
+        let checkboxEl = util.getCheckboxElFromTbody(result, 0, 0);
+        let assertion = checkboxEl.is(':checked');
+        expect(assertion).to.be.false;
       })
       .then(done)
       .catch(console.log);
   });
 
-  // it('sub colums should works as expected', function (done) {
+  it('select all should works as expected', function (done) {
+    let baseSelectionConfig = {
+      selection: {
+        enabled: true,
+      },
+    };
+    gridView = pgridFactory
+      .create(_.extend(baseSelectionConfig, gridConfig))
+      .gridView
+      .render();
+    driver.once(gridView, 'didUpdate')
+      .then(() => {
+        return driver.element('#container > .table-container .header tr');
+      })
+      .then((result) => {
+        driver.click(util.getCheckboxElFromThead(result, 0, 0));
+        return driver.once(gridView, 'didUpdate');
+      })
+      .then(() => {
+        return Promise.all([
+          driver.element('#container > .table-container .header tr'),
+          driver.element('#container > .table-container tbody tr[data-key]'),
+        ]);
+      })
+      .then((result) => {
+        let checkboxHeaderEl = util.getCheckboxElFromThead(result[0], 0, 0);
+        let checkboxbodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
+        let assertion = checkboxHeaderEl.is(':checked') && checkboxbodyEl.is(':checked');
+        expect(assertion).to.be.true;
+      })
+      .then(() => {
+        return driver.element('#container > .table-container .header tr');
+      })
+      .then((result) => {
+        driver.click(util.getCheckboxElFromThead(result, 0, 0));
+        return driver.once(gridView, 'didUpdate');
+      })
+      .then(() => {
+        return Promise.all([
+          driver.element('#container > .table-container .header tr'),
+          driver.element('#container > .table-container tbody tr[data-key]'),
+        ]);
+      })
+      .then((result) => {
+        let checkboxHeaderEl = util.getCheckboxElFromThead(result[0], 0, 0);
+        let checkboxbodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
+        let assertion = checkboxHeaderEl.is(':checked') || checkboxbodyEl.is(':checked');
+        expect(assertion).to.be.false;
+      })
+      .then(done)
+      .catch(console.log);
+  });
 
-  // });
+  it('single selection should works as expected', function (done) {
+    let baseSelectionConfig = {
+      selection: {
+        enabled: true,
+        single: true,
+      },
+    };
+    gridView = pgridFactory
+      .create(_.extend(baseSelectionConfig, gridConfig))
+      .gridView
+      .render();
+    driver.once(gridView, 'didUpdate')
+      .then(() => {
+        return driver.element('#container > .table-container tbody tr[data-key]');
+      })
+      .then((result) => {
+        return driver.click(util.getCheckboxElFromTbody(result, 0, 0));
+      })
+      .then(() => {
+        return driver.element('#container > .table-container tbody tr[data-key]');
+      })
+      .then((result) => {
+        let checkboxEl = util.getCheckboxElFromTbody(result, 0, 0);
+        let assertion = checkboxEl.is(':checked');
+        expect(assertion).to.be.true;
+      })
+      .then(() => {
+        return driver.element('#container > .table-container tbody tr[data-key]');
+      })
+      .then((result) => {
+        driver.click(util.getCheckboxElFromTbody(result, 1, 0));
+        return driver.once(gridView, 'didUpdate');
+      })
+      .then(() => {
+        return driver.element('#container > .table-container tbody tr[data-key]');
+      })
+      .then((result) => {
+        let checkboxEl = util.getCheckboxElFromTbody(result, 0, 0);
+        let assertion = checkboxEl.is(':checked');
+        expect(assertion).to.be.false;
+      })
+      .then(done)
+      .catch(console.log);
+  });
 });

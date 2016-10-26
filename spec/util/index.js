@@ -51,13 +51,31 @@ function getExpectedGridData(data, columnKeys) {
   });
 }
 
-function validateClassesForElements(elArray, classes) {
-  let assertion = elArray.every((el) => {
-    return classes.every((clazz) => {
-      return el.hasClass(clazz);
-    })
+function validateClassesForElement(el, classes) {
+  let assertion = classes.every((clazz) => {
+    return el.hasClass(clazz);
   });
   return assertion;
+}
+
+function validateClassesForElementArray(elArray, classes) {
+  let assertion = elArray.every((el) => {
+    return validateClassesForElement(el, classes);
+  });
+  return assertion;
+}
+
+function getCheckboxElFromTable($el, selector, xindex, yindex) {
+  let $checkbox = $el.eq(xindex).find(selector).eq(yindex).find('input');
+  return $checkbox;
+}
+
+function getCheckboxElFromThead($el, xindex, yindex) {
+  return getCheckboxElFromTable($el, 'th', xindex, yindex);
+}
+
+function getCheckboxElFromTbody($el, xindex, yindex) {
+  return getCheckboxElFromTable($el, 'td', xindex, yindex);
 }
 
 export default {
@@ -65,5 +83,8 @@ export default {
   cleanup,
   validateElementMatrix,
   getExpectedGridData,
-  validateClassesForElements,
+  validateClassesForElement,
+  validateClassesForElementArray,
+  getCheckboxElFromThead,
+  getCheckboxElFromTbody,
 };

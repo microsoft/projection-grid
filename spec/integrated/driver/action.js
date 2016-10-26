@@ -1,5 +1,3 @@
-import $ from 'jquery';
-import _ from 'underscore';
 import protocol from './protocol';
 
 function click(selector) {
