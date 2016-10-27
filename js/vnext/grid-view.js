@@ -768,5 +768,4 @@ export class GridView extends Backbone.View {
   appendFootRows(rows) {
     this.setFootRows(footRows => footRows.concat(rows));
   }
-
 }

@@ -1,6 +1,4 @@
-import $ from 'jquery';
 import _ from 'underscore';
-import protocol from './protocol';
 
 function once(target, event) {
   return new Promise((resolve, reject) => {
