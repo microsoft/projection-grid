@@ -3,7 +3,8 @@ sudo: true
 node_js:
   - v5
 before_script:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-  
+  - npm install -g gulp
+  - npm install
+script:
+  gulp test
 
