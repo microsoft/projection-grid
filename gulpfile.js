@@ -67,12 +67,13 @@ function startSeleniumServer() {
   return childProcess.spawn('java', ['-jar', filePath], { stdio: 'inherit' });
 }
 
+
 // coveralls
 gulp.task('coveralls', ['test'], function () {
   if (!process.env.CI) {
     return;
   }
-  return gulp.src(path.join(__dirname, 'coverage/report-lcov/lcov.info')).pipe(coveralls());
+  return gulp.src(path.join(__dirname, './spec/*/coverage/report-lcov/lcov.info')).pipe(coveralls());
 });
 // coveralls-end
 
