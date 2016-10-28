@@ -10,9 +10,6 @@ var http = require('http');
 var fs = require('fs');
 var os = require('os');
 var resolve = require('resolve');
-// coveralls
-var coveralls = require('gulp-coveralls');
-// coveralls-end
 var jsdoc = require('gulp-jsdoc3');
 var Server = require('karma').Server;
 
@@ -66,17 +63,6 @@ function startSeleniumServer() {
   var filePath = getSeleniumFilePath();
   return childProcess.spawn('java', ['-jar', filePath], { stdio: 'inherit' });
 }
-
-
-// coveralls
-gulp.task('coveralls', ['test'], function () {
-  if (!process.env.CI) {
-    return;
-  }
-  console.log(path.join(__dirname, './spec/*/coverage/report-lcov/lcov.info'));
-  return gulp.src(path.join(__dirname, './spec/*/coverage/report-lcov/lcov.info')).pipe(coveralls());
-});
-// coveralls-end
 
 gulp.task('test:unit', function(done) {
   new Server({
@@ -179,5 +165,4 @@ gulp.task('clean:build', function () {
 });
 
 gulp.task('clean', ['clean:build', 'clean:test']);
-
-gulp.task('default', ['webpack', 'coveralls']);
+gulp.task('default', ['webpack']);
