@@ -3,9 +3,9 @@ import _ from 'underscore';
 import pGrid from 'component/grid';
 import chai from 'chai';
 import util from 'util';
-import rawData from './data/people.json';
-import driver from './driver';
-import addressTmpl from './template/addressTmpl.jade';
+import rawData from 'data/people.json';
+import driver from 'driver';
+import addressTmpl from 'template/addressTmpl.jade';
 
 let expect = chai.expect;
 let selectedKeys = ['UserName', 'FirstName', 'LastName', 'Gender', 'Concurrency'];

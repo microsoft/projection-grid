@@ -3,7 +3,9 @@ var _ = require('underscore');
 var webpackAlias = require('../../../webpack.alias');
 _.extend(webpackAlias, {
   'sinon': 'sinon/pkg/sinon.js',
-  'data' : path.resolve('./spec/data/'),
+  'data' : path.resolve('./spec/integrated/data/'),
+  'driver' : path.resolve('./spec/integrated/driver/'),
+  'template' : path.resolve('./spec/integrated/template/'),
   'util' : path.resolve('./spec/util/'),
 });
 
