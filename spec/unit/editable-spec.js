@@ -98,7 +98,10 @@ describe('projection editable', function () {
           },
         };
         this.schema = {};
-        this.position = 42;
+        this.position = {
+          left: 10,
+          right: 10,
+        };
       }
 
       withModel(model) {

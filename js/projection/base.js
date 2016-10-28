@@ -48,6 +48,10 @@ define([
       var src = this.src ? this.src.data.toJSON() : {};
       delta = _.isObject(delta) ? delta : {};
 
+      if (delta.error) {
+        console.warn(delta.error.stack || delta.error);
+      }
+
       this.data.set(_.defaults(delta, this.attributes, src));
     },
 

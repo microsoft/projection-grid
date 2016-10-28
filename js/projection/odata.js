@@ -53,7 +53,7 @@ define([
       var p$fetchData = this.p$fetchData = new Promise(function (resolve, reject) {
         $.getJSON(op.url, _.omit(op, 'url'))
           .success(resolve)
-          .fail(function (jqXHR, textStatus, errorThrown) {
+          .error(function (jqXHR, textStatus, errorThrown) {
             reject(new Error(errorThrown));
           });
       }).then(function (data) {
