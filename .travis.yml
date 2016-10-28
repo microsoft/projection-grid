@@ -1,9 +1,15 @@
 language: node_js
+env:
+  - CXX=g++-4.8
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.8
 sudo: true
 node_js:
   - v5
-before_script:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-  
-
+script:
+  - gulp test
+  - "cat ./spec/*/coverage/report-lcov/lcov.info | ./node_modules/coveralls/bin/coveralls.js"

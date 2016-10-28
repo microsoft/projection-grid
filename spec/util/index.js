@@ -1,4 +1,4 @@
-import _ from 'underScore';
+import _ from 'underscore';
 import $ from 'jquery';
 
 let $container;
