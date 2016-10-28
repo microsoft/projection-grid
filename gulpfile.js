@@ -73,6 +73,7 @@ gulp.task('coveralls', ['test'], function () {
   if (!process.env.CI) {
     return;
   }
+  console.log(path.join(__dirname, './spec/*/coverage/report-lcov/lcov.info'));
   return gulp.src(path.join(__dirname, './spec/*/coverage/report-lcov/lcov.info')).pipe(coveralls());
 });
 // coveralls-end
