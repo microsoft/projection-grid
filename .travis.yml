@@ -1,4 +1,6 @@
 language: node_js
+env:
+  - CXX=g++-4.8
 sudo: true
 node_js:
   - v5
@@ -7,4 +9,3 @@ before_script:
   - npm install
 script:
   gulp test
-
