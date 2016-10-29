@@ -13,13 +13,13 @@ class FixedHeaderRenderer {
     this.columnWidth = null;
     this.windowWidth = $(window).width();
 
-    this.onWindowResize = () => {
+    this.onViewPortChange = () => {
       if (_.isFunction(this.freezeColumnWidth)) {
         this.freezeColumnWidth();
       }
     };
 
-    $(window).on('resize', this.onWindowResize);
+    this.layout.on('change:viewport', this.onViewPortChange);
   }
 
   draw(data, cb) {
@@ -94,10 +94,6 @@ class FixedHeaderRenderer {
       this.layout.grid.trigger('change:header-state', newState);
       this.state = newState;
     }
-  }
-
-  remove() {
-    $(window).off('resize', this.onWindowResize);
   }
 
   static partial(options) {

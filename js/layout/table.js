@@ -27,7 +27,7 @@ define([
 
       this.subviews = [];
 
-      this.onViewPortChange = this.onViewPortChange.bind(this);
+      this.onChange = this.onViewPortChange.bind(this);
       
       if (!_.isEmpty(this.renderers)) {
       	this.listenTo(this.container, 'scroll:container', this.onViewPortChange);
@@ -37,6 +37,27 @@ define([
 
     onViewPortChange: function () {
       this.scheduleDraw();
+      this.trigger('change:viewport');
+    },
+
+    monitorViewportChange: function (timeout, interval) {
+      timeout = timeout || 1000;
+      interval = interval || 100;
+
+      var rect = this.el.getBoundingClientRect();
+      var id = window.setInterval(function () {
+        var rectNew = this.el.getBoundingClientRect();
+
+        if (_.some(['left', 'top', 'width', 'height'], function(key) {
+          return Math.abs(rectNew[key] - rect[key]) > 0.5;
+        })) {
+          this.onViewPortChange();
+        }
+      }.bind(this), interval);
+
+      window.setTimeout(function () {
+        window.clearInterval(id);
+      }, timeout);
     },
 
     removeSubviews: function () {
