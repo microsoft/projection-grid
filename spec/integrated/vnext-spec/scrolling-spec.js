@@ -107,6 +107,7 @@ describe('scrolling config', function () {
       .create(_.extend(scorllingConfig, gridConfig))
       .gridView
       .render();
+
     driver.once(gridView, 'didUpdate')
       .then(() => {
         return driver.scroll(0, document.body.scrollHeight);

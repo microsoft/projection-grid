@@ -113,8 +113,8 @@ describe('selection config', function () {
       })
       .then((result) => {
         let checkboxHeaderEl = util.getCheckboxElFromThead(result[0], 0, 0);
-        let checkboxbodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
-        let assertion = checkboxHeaderEl.is(':checked') && checkboxbodyEl.is(':checked');
+        let checkboxBodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
+        let assertion = checkboxHeaderEl.is(':checked') && checkboxBodyEl.is(':checked');
         expect(assertion).to.be.true;
       })
       .then(() => {
@@ -132,8 +132,8 @@ describe('selection config', function () {
       })
       .then((result) => {
         let checkboxHeaderEl = util.getCheckboxElFromThead(result[0], 0, 0);
-        let checkboxbodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
-        let assertion = checkboxHeaderEl.is(':checked') || checkboxbodyEl.is(':checked');
+        let checkboxBodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
+        let assertion = checkboxHeaderEl.is(':checked') || checkboxBodyEl.is(':checked');
         expect(assertion).to.be.false;
       })
       .then(done)
