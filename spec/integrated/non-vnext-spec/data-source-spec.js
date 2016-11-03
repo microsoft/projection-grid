@@ -133,8 +133,6 @@ describe('data source config for non-vnext', function () {
       columns: columnsForOdataService,
     };
 
-    console.log(jsDataSource);
-
     gridView = pgridFactory
       .create(_.extend(jsDataConfig, gridConfig))
       .gridView

@@ -63,7 +63,6 @@ describe('selectable for non-vnext', function () {
       .create(_.extend(selectableConfig, gridConfig))
       .gridView
       .render({fetch: true});
-    console.log('test');
     driver.element(bodyRowSelector)
       .then((result) => {
         return driver.click(util.getCheckboxElFromTbody(result, 0, 0));
@@ -103,7 +102,6 @@ describe('selectable for non-vnext', function () {
       .create(_.extend(selectableConfig, gridConfig))
       .gridView
       .render({fetch: true});
-    console.log('test');
     driver.element(headRowSelector)
       .then((result) => {
         return driver.click(util.getCheckboxElFromThead(result, 0, 0));

@@ -252,36 +252,4 @@ describe('unencapsulating projection test for non-vnext', function () {
       .then(done)
       .catch(console.log);
   });
-
-  // it('column group string should works as expected for non-vnext', function (done) {
-  //   var group = new pGrid.projections.ColumnGroup({
-  //     "column.group": {
-  //       UserName: ['FirstName', 'LastName'],
-  //     },
-  //     'column.groupExpansion': ['UserName'],
-  //   });
-  //   let dataSource = new pGrid.projections.Memory({
-  //     seed: peopleData.value,
-  //   });
-
-  //   let projectionSetting = dataSource
-  //     .pipe(map).pipe(columns).pipe(coli18n)
-  //     .pipe(group);
-
-  //   let grid = new Grid({
-  //     el: '#container',
-  //     projection: projectionSetting,
-  //     Layout: TableLayout.partial({
-  //       template: tmplJade,
-  //       renderers: [],
-  //     }),
-  //   });
-  //   gridView = grid.render({ fetch: true });
-  //   driver.element(bodyRowSelector)
-  //     .then((result) => {
-  //       console.log('test');
-  //     })
-  //     .then(done)
-  //     .catch(console.log);
-  // });
 });

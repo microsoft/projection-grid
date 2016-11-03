@@ -27,7 +27,10 @@ define([
     // TODO [wewei] this is a hack to temporarily solve the sticky header doesn't
     // respect the navbar problem.
     // We need a better solution on this.
-    if (data.vpMeasures.viewportTop + (this.layout.top || 0) > data.vpMeasures.boundsTop) {
+    var tmp = this.layout.top || 0;
+    var dataHeight = data.vpMeasures.viewportTop + tmp;
+    if (dataHeight > data.vpMeasures.boundsTop) {
+    // if (data.vpMeasures.viewportTop + (this.layout.top || 0) > data.vpMeasures.boundsTop) {
       var $el = this.layout.$el;
 
       newState = 'sticky';

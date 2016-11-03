@@ -118,25 +118,4 @@ describe('columns config for non-vnext', function () {
       .then(done)
       .catch(console.log);
   });
-
-  // need jsdata support
-  // it('pop should works as expected for non-vnext', function (done) {
-  //   let popConfig = {
-  //     columnGroup: {
-  //       ConcatName: ['FirstName', 'LastName'],
-  //     },
-  //     enablePoP: true,
-  //   };
-
-  //   gridView = pgridFactory
-  //     .create(_.extend(popConfig, gridConfig))
-  //     .gridView
-  //     .render({fetch: true});
-  //   driver.element(headRowSelector)
-  //     .then((result) => {
-  //       console.log('test');
-  //     })
-  //     .then(done)
-  //     .catch(console.log);
-  // });
 });
