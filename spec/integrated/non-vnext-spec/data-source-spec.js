@@ -26,6 +26,7 @@ let columnsForMemory = [
     name: 'Gender',
   },
 ];
+
 let columnsForOdataService = [
   {
     name: 'CustomerID',
@@ -77,6 +78,9 @@ let pgridFactory;
 let gridView;
 
 describe('data source config for non-vnext', function () {
+  let headRowSelector = '#container .grid thead .table__row--header';
+  let bodyRowSelector = '#container .grid tbody .table__row--body';
+
   this.timeout(100000);
   beforeEach(function () {
     util.renderTestContainer();
@@ -102,13 +106,11 @@ describe('data source config for non-vnext', function () {
       .create(_.extend(memoryConfig, gridConfig))
       .gridView
       .render({fetch: true});
-    driver.element('#container .grid thead .table__row--header th')
+    driver.element(headRowSelector)
       .then((result) => {
-        let header = _.map(result, (item) => {
-          return item.textContent;
-        })
-        expect(header).to.eql(['UserName', 'FirstName', 'LastName', 'Gender']);
-        return driver.element('#container .grid tbody .table__row--body');
+        let assertion = util.validateElementMatrix(result, [['UserName', 'FirstName', 'LastName', 'Gender']]);
+        expect(assertion).to.be.true;
+        return driver.element(bodyRowSelector);
       })
       .then((result) => {
         let expectData = _.map(memoryData, (item) => {
@@ -154,9 +156,6 @@ describe('data source config for non-vnext', function () {
         let actualData = [result[0], result[9], result[19]];
         let assertion = util.validateElementMatrix(actualData, odataAdnJsdataData);
         expect(assertion).to.be.true;
-      })
-      .then(() => {
-        console.log('test');
       })
       .then(done)
       .catch(console.log);

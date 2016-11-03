@@ -34,12 +34,11 @@ let gridConfig = {
   ],
 };
 
-
 let pgrid;
 let pgridFactory;
 let gridView;
 
-describe('projection plugins for non-vnext', function () {
+describe('selectable for non-vnext', function () {
   let headRowSelector = '#container .grid thead .table__row--header';
   let bodyRowSelector = '#container .grid tbody .table__row--body';
 
@@ -56,14 +55,15 @@ describe('projection plugins for non-vnext', function () {
   });
 
   it('selectable should works as expected for non-vnext', function (done) {
-    let selectionConfig = {
+    let selectableConfig= {
       selectable: true,
     };
 
     gridView = pgridFactory
-      .create(_.extend(selectionConfig, gridConfig))
+      .create(_.extend(selectableConfig, gridConfig))
       .gridView
       .render({fetch: true});
+    console.log('test');
     driver.element(bodyRowSelector)
       .then((result) => {
         return driver.click(util.getCheckboxElFromTbody(result, 0, 0));
@@ -95,28 +95,25 @@ describe('projection plugins for non-vnext', function () {
   });
 
   it('select all should works as expected for non-vnext', function (done) {
-    let selectionConfig = {
+    let selectableConfig= {
       selectable: true,
     };
 
     gridView = pgridFactory
-      .create(_.extend(selectionConfig, gridConfig))
+      .create(_.extend(selectableConfig, gridConfig))
       .gridView
-      .render({ fetch: true }); 
+      .render({fetch: true});
+    console.log('test');
     driver.element(headRowSelector)
       .then((result) => {
         return driver.click(util.getCheckboxElFromThead(result, 0, 0));
       })
       .then(() => {
-        return Promise.all([
-          driver.element(headRowSelector),
-          driver.element(bodyRowSelector),
-        ]);
+        return driver.element(headRowSelector);
       })
       .then((result) => {
-        let checkboxHeaderEl = util.getCheckboxElFromThead(result[0], 0, 0);
-        let checkboxBodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
-        let assertion = checkboxHeaderEl.is(':checked') && checkboxBodyEl.is(':checked');
+        let checkboxEl = util.getCheckboxElFromThead(result, 0, 0);
+        let assertion = checkboxEl.is(':checked');
         expect(assertion).to.be.true;
       })
       .then(() => {
@@ -126,15 +123,11 @@ describe('projection plugins for non-vnext', function () {
         return driver.click(util.getCheckboxElFromThead(result, 0, 0));
       })
       .then(() => {
-        return Promise.all([
-          driver.element('#container > .table-container .header tr'),
-          driver.element('#container > .table-container tbody tr[data-key]'),
-        ]);
+        return driver.element(headRowSelector);
       })
       .then((result) => {
-        let checkboxHeaderEl = util.getCheckboxElFromThead(result[0], 0, 0);
-        let checkboxBodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
-        let assertion = checkboxHeaderEl.is(':checked') || checkboxBodyEl.is(':checked');
+        let checkboxEl = util.getCheckboxElFromThead(result, 0, 0);
+        let assertion = checkboxEl.is(':checked');
         expect(assertion).to.be.false;
       })
       .then(done)

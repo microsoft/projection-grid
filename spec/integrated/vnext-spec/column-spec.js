@@ -197,9 +197,9 @@ describe('columns config', function () {
         ]);
       })
       .then((result) => {
-        expect(result[0].val()).to.be.equal('Whyte');
-        expect(result[1].text()).to.be.equal('Save');
-        expect(result[2].text()).to.be.equal('Cancel');
+        expect(result[0].val()).to.equal('Whyte');
+        expect(result[1].text()).to.equal('Save');
+        expect(result[2].text()).to.equal('Cancel');
       })
       .then(() => {
         return driver.setValue('form.form-inline > .form-control', 'Conan');

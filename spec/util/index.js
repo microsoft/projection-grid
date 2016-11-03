@@ -9,6 +9,7 @@ function renderTestContainer(id) {
   if ($container.length === 0) {
     $container = $('<div id="'.concat(id).concat('"/>')).appendTo('body');
   }
+  return $container;
 }
 
 function cleanup() {
