@@ -77,32 +77,6 @@ describe('scrollable for non-vnext', function () {
       .catch(console.log);
   });
 
-  // it('fixed header should works as expected for non-vnext', function (done) {
-  //   let scrollalbeConfig = {
-  //     scrollable: {
-  //       fixedHeader: true,
-  //     },
-  //   };
-
-  //   gridView = pgridFactory
-  //     .create(_.extend(scrollalbeConfig, gridConfig))
-  //     .gridView
-  //     .render({fetch: true});
-
-  //   driver.scroll(0, document.body.scrollHeight)
-  //     .then(() => {
-  //       return driver.pause(50);
-  //     })
-  //     .then(() => {
-  //       return driver.element('table.grid thead');
-  //     })
-  //     .then((result) => {
-  //       expect(result.position().top).to.be.equal(0);
-  //     })
-  //     .then(done)
-  //     .catch(console.log);
-  // });
-
   it('virtualization should works as expected for non-vnext', function (done) {
     let scrollalbeConfig = {
       scrollable: {
