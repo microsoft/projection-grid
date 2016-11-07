@@ -28,9 +28,17 @@ let gridConfig = {
     },
     {
       name: 'LastName',
+      editable: (item) => {
+        return item.LastName === 'Ketchum';
+      },
     },
     {
       name: 'Gender',
+      editable: {
+        condition: (item) => {
+          return item.Gender === 'Male';
+        },
+      },
     },
   ],
 };
@@ -102,6 +110,41 @@ describe('editable for non-vnext', function () {
       //   let editedName = result.eq(0).find('td').eq(2).text();
       //   expect(editedName).to.be.equal('Conan');
       // })
+      .then(done)
+      .catch(console.log);
+  });
+
+  it('editable config with function or object should works as expected for non-vnext', function (done) {
+    let editableConfig= {
+      editable: {
+        tooltipText: 'edit me!',
+        iconClasses: 'edit-icon-class',
+      },
+    };
+
+    gridView = pgridFactory
+      .create(_.extend(editableConfig, gridConfig))
+      .gridView
+      .render({ fetch: true });
+      let thirdColSelector = bodyRowSelector.concat(' td:nth-child(3)');
+    driver.element(thirdColSelector)
+      .then((result) => {
+        let editableLastNameEl = result.filter(':contains("Ketchum")');
+
+        expect(editableLastNameEl.length).to.equal(1);
+        expect(editableLastNameEl.text()).to.equal('Ketchum');
+        let fourthColSelecor = bodyRowSelector.concat(' td:nth-child(4)')
+        return driver.element(fourthColSelecor);
+      })
+      .then((result) => {
+        let editableGenderEL = result.filter(':contains("Male")');
+
+        expect(editableGenderEL.length).to.equal(10);
+        _.each(editableGenderEL, (item) => {
+          expect($(item).text()).to.equal('Male');
+        });
+        // expect(editableLastNameEl.text()).to.equal('Ketchum');
+      })
       .then(done)
       .catch(console.log);
   });
