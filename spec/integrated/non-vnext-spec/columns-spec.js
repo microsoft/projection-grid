@@ -5,6 +5,7 @@ import chai from 'chai';
 import util from 'util';
 import driver from 'driver';
 import peopleData from 'data/people.json';
+import colHeaderTemplate from 'template/column-header.jade';
 
 let expect = chai.expect;
 let memoryDataSource = _.map(peopleData.value, (row) => {
@@ -34,6 +35,7 @@ let gridConfig = {
     },
     {
       name: 'LastName',
+      headerTemplate: colHeaderTemplate,
     },
     {
       name: 'Gender',
@@ -49,7 +51,6 @@ describe('columns config for non-vnext', function () {
   let headRowSelector = '#container .grid thead .table__row--header';
   let bodyRowSelector = '#container .grid tbody .table__row--body';
 
-  this.timeout(100000);
   beforeEach(function () {
     util.renderTestContainer();
     pgridFactory = pGrid 
@@ -143,6 +144,28 @@ describe('columns config for non-vnext', function () {
       .then((result) => {
         let assertion = result.eq(0).find('td').eq(1).hasClass('first-name-body');
         expect(assertion).to.be.true;
+      })
+      .then(done)
+      .catch(console.log);
+  });
+
+  it('template for columns should works as expected for non-vnext', function (done) {
+    let expectData = _.map(memoryData, (item) => {
+      return _.pick(item, 'UserName', 'FirstName', 'LastName', 'Gender');
+    });
+
+    gridView = pgridFactory
+      .create(_.extend(gridConfig))
+      .gridView
+      .render({fetch: true});
+    driver.element(headRowSelector)
+      .then((result) => {
+        let templatedHeader = result.eq(0).find('th').eq(2).find('div');
+        let classAssertion = templatedHeader.hasClass('column-header');
+
+        expect(templatedHeader.length).to.equal(1);
+        expect(classAssertion).to.be.true;
+        expect(templatedHeader.text()).to.equal('LastName');
       })
       .then(done)
       .catch(console.log);

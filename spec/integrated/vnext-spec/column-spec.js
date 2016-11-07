@@ -5,7 +5,7 @@ import chai from 'chai';
 import util from 'util';
 import rawData from 'data/people.json';
 import driver from 'driver';
-import addressTmpl from 'template/addressTmpl.jade';
+import colAddressTemplate from 'template/column-address.jade';
 
 let expect = chai.expect;
 let selectedKeys = ['UserName', 'FirstName', 'LastName', 'AddressInfo', 'Gender', 'Concurrency'];
@@ -46,7 +46,7 @@ let gridConfig = {
   }, {
     name: 'Address',
     property: 'AddressInfo/0/Address',
-    template: addressTmpl,
+    template: colAddressTemplate,
   }, {
     name: 'Gender',
     html: '<i>Gender</i>',
@@ -118,7 +118,7 @@ describe('columns config', function () {
         // validate template & classes
         _.each(result, (rowItem, index) => {
           // validate template
-          let tmplAssertion = $(rowItem).find('td').eq(3).find('div').hasClass('addressTmpl');
+          let tmplAssertion = $(rowItem).find('td').eq(3).find('div').hasClass('column-address');
           expect(tmplAssertion).to.be.true;
           // validate classes
           let firstNameEl = $(rowItem).find('td').eq(1);

@@ -43,7 +43,6 @@ describe('editable for non-vnext', function () {
   let headRowSelector = '#container .grid thead .table__row--header';
   let bodyRowSelector = '#container .grid tbody .table__row--body';
 
-  this.timeout(100000);
   beforeEach(function () {
     util.renderTestContainer();
     pgridFactory = pGrid 
