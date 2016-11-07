@@ -39,7 +39,6 @@ let pgridFactory;
 let gridView;
 
 describe('scrollable for non-vnext', function () {
-  this.timeout(100000000);
   beforeEach(function () {
     util.renderTestContainer();
     pgridFactory = pGrid 

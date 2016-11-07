@@ -51,8 +51,6 @@ let pgridFactory;
 let gridView;
 
 describe('unencapsulating projection test for non-vnext', function () {
-  this.timeout(1000000);
-  let headRowSelector = '#container .grid thead .table__row--header';
   let bodyRowSelector = '#container .grid tbody .table__row--body';
 
   beforeEach(function () {

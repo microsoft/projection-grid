@@ -38,7 +38,7 @@ let pgrid;
 let pgridFactory;
 let gridView;
 
-describe('pageable config for non-vnext', function () {
+describe('grid api check for non-vnext', function () {
   let bodyRowSelector = '#container .grid tbody .table__row--body';
 
   beforeEach(function () {
@@ -52,21 +52,23 @@ describe('pageable config for non-vnext', function () {
     util.cleanup();
   });
 
-  it('pageable should works as expected for non-vnext', function (done) {
-    let pageableConfig = {
-      pageable: {
-        pageSize: 5,
-        pageSizes: [5, 10, 15, 20],
-      },
+  it('verify selection function for non-vnext', function (done) {
+    let selectionConfig = {
+      selectable: true,
     };
 
     gridView = pgridFactory
-      .create(_.extend(pageableConfig, gridConfig))
+      .create(_.extend(selectionConfig, gridConfig))
       .gridView
       .render({fetch: true});
     driver.element(bodyRowSelector)
       .then((result) => {
-        expect(result.length).to.equal(5);
+        return driver.click(util.getCheckboxElFromTbody(result, 0, 0));
+      })
+      .then(() => {
+        let selectedItem = gridView.getSelection();
+        expect(selectedItem.length).to.equal(1);
+        expect(selectedItem[0]).to.equal(1);
       })
       .then(done)
       .catch(console.log);

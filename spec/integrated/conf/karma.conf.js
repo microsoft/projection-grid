@@ -35,12 +35,6 @@ module.exports = function (config) {
         { type: 'lcov', subdir: 'report-lcov' },
       ],
     },
-    // customLaunchers: {
-    //   Chrome_travis_ci: {
-    //     base: 'Chrome',
-    //     flags: ['--no-sandbox'],
-    //   },
-    // },
     junitReporter: {
       outputDir: './spec/integrated/test-results/',
     },

@@ -25,6 +25,12 @@ let gridConfig = {
     },
     {
       name: 'FirstName',
+      attributes: {
+        class: 'first-name-body',
+      },
+      headerAttributes: {
+        class: 'first-name-head'
+      },
     },
     {
       name: 'LastName',
@@ -113,6 +119,29 @@ describe('columns config for non-vnext', function () {
       .then((result) => {
         let sortedData = _.sortBy(expectData, 'UserName');
         let assertion = util.validateElementMatrix(result, sortedData);
+        expect(assertion).to.be.true;
+      })
+      .then(done)
+      .catch(console.log);
+  });
+
+  it('attributes for columns should works as expected for non-vnext', function (done) {
+    let expectData = _.map(memoryData, (item) => {
+      return _.pick(item, 'UserName', 'FirstName', 'LastName', 'Gender');
+    });
+
+    gridView = pgridFactory
+      .create(_.extend(gridConfig))
+      .gridView
+      .render({fetch: true});
+    driver.element(headRowSelector)
+      .then((result) => {
+        let assertion = result.eq(0).find('th').eq(1).hasClass('first-name-head');
+        expect(assertion).to.be.true;
+        return driver.element(bodyRowSelector);
+      })
+      .then((result) => {
+        let assertion = result.eq(0).find('td').eq(1).hasClass('first-name-body');
         expect(assertion).to.be.true;
       })
       .then(done)
