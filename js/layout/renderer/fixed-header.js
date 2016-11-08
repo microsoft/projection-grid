@@ -96,6 +96,9 @@ class FixedHeaderRenderer {
     }
   }
 
+  remove() {
+  }
+
   static partial(options) {
     return function (o) {
       return new Renderer(_.defaults({}, o, options));
