@@ -3,8 +3,11 @@ var _ = require('underscore');
 var webpackAlias = require('../../../webpack.alias');
 _.extend(webpackAlias, {
   'sinon': 'sinon/pkg/sinon.js',
-  'data' : path.resolve('./spec/data/'),
+  'data' : path.resolve('./spec/integrated/data/'),
+  'driver' : path.resolve('./spec/integrated/driver/'),
+  'template' : path.resolve('./spec/integrated/template/'),
   'util' : path.resolve('./spec/util/'),
+  'styles' : path.resolve('./spec/integrated/styles/'),
 });
 
 module.exports = {
@@ -34,6 +37,7 @@ module.exports = {
       { test: /\.js$/, exclude: /\bnode_modules\b/, loader: 'babel-loader' },
       // es2015-end
       { test: /\.less$/, loader: 'style!css!less' },
+      { test: /\.css$/, loader: 'style!css!less' },
       { test: /\.json$/, loader: 'json' },
     ],
 

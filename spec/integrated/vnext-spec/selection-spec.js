@@ -3,8 +3,8 @@ import _ from 'underscore';
 import pGrid from 'component/grid';
 import chai from 'chai';
 import util from 'util';
-import rawData from './data/people.json';
-import driver from './driver';
+import rawData from 'data/people.json';
+import driver from 'driver';
 
 let expect = chai.expect;
 let selectedKeys = ['UserName', 'FirstName', 'LastName', 'Gender', 'Concurrency'];
@@ -113,8 +113,8 @@ describe('selection config', function () {
       })
       .then((result) => {
         let checkboxHeaderEl = util.getCheckboxElFromThead(result[0], 0, 0);
-        let checkboxbodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
-        let assertion = checkboxHeaderEl.is(':checked') && checkboxbodyEl.is(':checked');
+        let checkboxBodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
+        let assertion = checkboxHeaderEl.is(':checked') && checkboxBodyEl.is(':checked');
         expect(assertion).to.be.true;
       })
       .then(() => {
@@ -132,8 +132,8 @@ describe('selection config', function () {
       })
       .then((result) => {
         let checkboxHeaderEl = util.getCheckboxElFromThead(result[0], 0, 0);
-        let checkboxbodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
-        let assertion = checkboxHeaderEl.is(':checked') || checkboxbodyEl.is(':checked');
+        let checkboxBodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
+        let assertion = checkboxHeaderEl.is(':checked') || checkboxBodyEl.is(':checked');
         expect(assertion).to.be.false;
       })
       .then(done)

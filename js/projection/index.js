@@ -21,7 +21,8 @@ module.exports = {
   RowTriStateCheckboxProjection: require('./row-tri-state-checkbox'),
   RowIndex: require('./row-index'),
   Sink: require('./sink'),
-  ColumnGroup: require('./column-group'),
+  // Todo[hezhan]: deprecated?
+  // ColumnGroup: require('./column-group'),
   ColumnHoverText: require('./column-hovertext'),
   Columns: require('./columns').default,
 };

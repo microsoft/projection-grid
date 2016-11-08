@@ -39,7 +39,8 @@ module.exports = function (config) {
       outputDir: './spec/integrated/test-results/',
     },
     browsers: [
-      'PhantomJS',
+      'Chrome',
+      // 'PhantomJS',
     ],
   });
 };

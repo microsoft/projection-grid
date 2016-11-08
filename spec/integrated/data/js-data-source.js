@@ -2,6 +2,7 @@ import _ from 'underscore';
 import JSData from 'js-data';
 import DSHttpAdapter from 'js-data-http';
 
+JSData.DSUtils.Promise = require('bluebird');
 let store = new JSData.DS();
 
 store.registerAdapter('http', new DSHttpAdapter({

@@ -24,7 +24,7 @@ require([
   var RowTriStateCheckboxProjection = pgrid.projections.RowTriStateCheckboxProjection;
   var RowIndexProjection = pgrid.projections.RowIndex;
   var AggregateRow = pgrid.projections.AggregateRow;
-  var ColumnGroup = pgrid.projections.ColumnGroup;
+  // var ColumnGroup = pgrid.projections.ColumnGroup;
   var EditableProjection = pgrid.projections.Editable;
   var ColumnTemplate = pgrid.projections.ColumnTemplate;
   var Columns = pgrid.projections.Columns;
@@ -210,12 +210,12 @@ require([
       },
     });
 
-    var group = new ColumnGroup({
-      "column.group": {
-        OrderDate: ['RequiredDate', 'ShippedDate'],
-      },
-      'column.groupExpansion': ['OrderDate'],
-    });
+    // var group = new ColumnGroup({
+    //   "column.group": {
+    //     OrderDate: ['RequiredDate', 'ShippedDate'],
+    //   },
+    //   'column.groupExpansion': ['OrderDate'],
+    // });
 
     var colshifter = new ColumnShifterProjection();
     var proptmpl = new PropertyTemplateProjection({
@@ -322,7 +322,9 @@ require([
     src = odata.pipe(map)
       .pipe(columns)
       .pipe(coli18n).pipe(page).pipe(colq).pipe(proptmpl)
-      .pipe(colshifter).pipe(group).pipe(checkbox).pipe(rowindex)
+      .pipe(colshifter)
+      // .pipe(group)
+      .pipe(checkbox).pipe(rowindex)
       .pipe(aggregateRow).pipe(editable).pipe(columnTmpl);
 
     return src;
@@ -393,5 +395,5 @@ require([
     createGrid(createDataSource(checkboxMode), container, $('#grid_host_a')).render({ fetch: true });
   }
 
-  setGridViewStyle('window', 'tri-state');
+  setGridViewStyle('div', 'tri-state');
 });

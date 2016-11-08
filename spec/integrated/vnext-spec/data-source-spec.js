@@ -3,10 +3,10 @@ import _ from 'underscore';
 import pGrid from 'component/grid';
 import chai from 'chai';
 import util from 'util';
-import driver from './driver';
-import peopleData from './data/people.json';
-import jsDataSource from './data/js-data-source';
-import jsDataExpected from './data/js-data-expected.json';
+import driver from 'driver';
+import peopleData from 'data/people.json';
+import jsDataSource from 'data/js-data-source';
+import jsDataExpected from 'data/js-data-expected.json';
 
 let expect = chai.expect;
 let gridConfig = {
@@ -49,7 +49,6 @@ class CustomDataSource extends pGrid.dataSource.JSData {
 }
 
 describe('data source config', function () {
-  this.timeout(100000000);
   beforeEach(function () {
     util.renderTestContainer();
     pgridFactory = pGrid 
