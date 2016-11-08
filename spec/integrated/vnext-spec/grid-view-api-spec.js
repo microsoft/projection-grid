@@ -3,9 +3,9 @@ import _ from 'underscore';
 import pGrid from 'component/grid';
 import chai from 'chai';
 import util from 'util';
-import rawData from './data/people.json';
-import oldData from './data/scrolling.json';
-import driver from './driver';
+import rawData from 'data/people.json';
+import oldData from 'data/scrolling.json';
+import driver from 'driver';
 
 let expect = chai.expect;
 let memoryData = _.map(rawData.value, (row) => {
@@ -30,7 +30,6 @@ let pgridFactory;
 let gridView;
 
 describe('grid view API verification', function () {
-  this.timeout(100000000);
   beforeEach(function () {
     util.renderTestContainer();
     pgridFactory = pGrid 

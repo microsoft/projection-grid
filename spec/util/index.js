@@ -1,4 +1,4 @@
-import _ from 'underScore';
+import _ from 'underscore';
 import $ from 'jquery';
 
 let $container;
@@ -9,6 +9,7 @@ function renderTestContainer(id) {
   if ($container.length === 0) {
     $container = $('<div id="'.concat(id).concat('"/>')).appendTo('body');
   }
+  return $container;
 }
 
 function cleanup() {

@@ -137,11 +137,12 @@ const projectionConfigs = {
     return colqConfig;
   },
 
-  ColumnGroup(config) {
-    return {
-      'column.group': config.columnGroup,
-    };
-  },
+  // Todo[hezhan]: deprecated?
+  // ColumnGroup(config) {
+  //   return {
+  //     'column.group': config.columnGroup,
+  //   };
+  // },
 
   ColumnShifter() {},
 
@@ -317,9 +318,10 @@ export default definePlugin => definePlugin('projection', [
   }
   pipeProjection('ColumnQueryable');
   pipeProjection('ColumnI18n');
-  if (config.enablePoP) {
-    pipeProjection('ColumnGroup');
-  }
+  // Todo[hezhan]: deprecated?
+  // if (config.enablePoP) {
+  //   pipeProjection('ColumnGroup');
+  // }
   if (_.has(config.columnShifter, 'totalColumns')) {
     pipeProjection('ColumnShifter');
   }
