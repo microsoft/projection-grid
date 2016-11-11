@@ -92,6 +92,10 @@ define([
       return this.projection.get('row.check.list') || [];
     },
 
+    monitorViewportChange: function (timeout, interval) {
+      this.layout.monitorViewportChange(timeout, interval);
+    },
+
   });
 
   function selectContainer(userContainer) {

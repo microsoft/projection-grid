@@ -1,4 +1,8 @@
+import FixedHeaderRenderer from './fixed-header';
+import VirtualizationRenderer from './virtualization';
+
 module.exports = {
-  FixedHeader: require('./fixed-header'),
-  Virtualization: require('./virtualization'),
+  FixedHeader: FixedHeaderRenderer,
+  Virtualization: VirtualizationRenderer,
 };
+

@@ -279,10 +279,11 @@ export class TableView extends Backbone.View {
         });
       }
     };
+    listView.viewport.on('resize', () => this.trigger('didChangeBound'));
+    listView.viewport.on('scroll', () => this.trigger('didChangeBound'));
 
-    listView.viewport.on('resize', _.partial(adjustStickyHeader, true));
-    listView.viewport.on('scroll', _.partial(adjustStickyHeader, false));
-    listView.on('didRedraw', _.partial(adjustStickyHeader, true));
+    this.on('didChangeBound', adjustStickyHeader);
+    listView.on('didRedraw', adjustStickyHeader);
   }
 
   _renderStatic(callback) {

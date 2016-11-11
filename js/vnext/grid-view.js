@@ -768,4 +768,26 @@ export class GridView extends Backbone.View {
   appendFootRows(rows) {
     this.setFootRows(footRows => footRows.concat(rows));
   }
+
+  /**
+   * Monitor the viewport change during a certain period and adjust the sticky
+   * headers if necessary.
+   * @param {number} [timeout=1000]
+   *    The period of monitoring in milliseconds
+   * @param {number} [interval=100]
+   *    The interval of sampling in milliseconds
+   */
+  monitorViewportChange(timeout = 1000, interval = 100) {
+    const rect = this.el.getBoundingClientRect();
+    const keys = ['left', 'top', 'width', 'height'];
+    const id = window.setInterval(() => {
+      const rectNew = this.el.getBoundingClientRect();
+
+      if (_.some(keys, (key) => Math.abs(rectNew[key] - rect[key]) > 0.5)) {
+        this._tableView.trigger('didChangeBound');
+      }
+    }, interval);
+
+    window.setTimeout(() => window.clearInterval(id), timeout);
+  }
 }
