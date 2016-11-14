@@ -33,10 +33,15 @@ define([
       	this.listenTo(this.container, 'scroll:container', this.onViewPortChange);
       	this.listenTo(this.container, 'resize:container', this.onViewPortChange);
       }
+
+      this.on('change:viewport', function () {
+        if (this.$el.is(':visible')) {
+          this.scheduleDraw();
+        }
+      });
     },
 
     onViewPortChange: function () {
-      this.scheduleDraw();
       this.trigger('change:viewport');
     },
 
