@@ -36,7 +36,6 @@ window.gridView = pgrid.factory({ vnext: true }).use(pagerViewPlugin).create({
     columns: [{
       name: 'CustomerID',
       sortable: true,
-      editable: true,
     },{
       name: 'OrderID',
       sortable: -1,
@@ -44,7 +43,7 @@ window.gridView = pgrid.factory({ vnext: true }).use(pagerViewPlugin).create({
       name: 'ShipAddress',
       property: 'ShipAddress/length',
       title: 'Ship Address Length',
-      width: 150, 
+      width: 150,
       sortable: 'length(ShipAddress)',
     }, {
       name: 'Destination',
@@ -56,9 +55,9 @@ window.gridView = pgrid.factory({ vnext: true }).use(pagerViewPlugin).create({
   }],
   events: {
     'click th.column-header': (e) => console.log(e.target),
-  }, 
+  },
   pagerView: {
-    el: '.container-window-pagination', 
+    el: '.container-window-pagination',
     availablePageSizes: [5,10,20],
     pageSize: 20,
   },

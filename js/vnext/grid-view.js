@@ -12,7 +12,6 @@ import {
   rows,
   columnGroup,
   cells,
-  editable,
   sortableHeader,
   events,
 } from './projection';
@@ -223,7 +222,6 @@ export class GridView extends Backbone.View {
     this.pipeContentProjections([
       columnGroup,
       cells,
-      editable,
       sortableHeader,
       events,
     ]);
@@ -445,7 +443,7 @@ export class GridView extends Backbone.View {
     this.set(_.reduce(_.keys(state), (memo, key) => {
       const value = state[key];
       const valueCur = this.get(key);
-      
+
       memo[key] = defaultsDeep(value, valueCur);
       return memo;
     }, {}), callback);
