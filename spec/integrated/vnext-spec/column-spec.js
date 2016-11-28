@@ -101,6 +101,7 @@ describe('columns config', function () {
         let lastNameEl = result.eq(2);
         let classAssertion = util.validateClassesForElement(firstNameEl, ['nameHeadClass1', 'nameHeadClass2']) && util.validateClassesForElement(lastNameEl, ['nameHeadClass3', 'nameHeadClass4']);
         expect(classAssertion).to.be.true;
+        return null;
       })
       .then(done)
       .catch(console.log);
@@ -125,6 +126,7 @@ describe('columns config', function () {
           let lastNameEl = $(rowItem).find('td').eq(2);
           let classAssertion = util.validateClassesForElement(firstNameEl, ['nameBodyClass1', 'nameBodyClass2']) && util.validateClassesForElement(lastNameEl, ['nameBodyClass3', 'nameBodyClass4']);
           expect(classAssertion).to.be.true;
+          return null;
         });
       })
       .then(done)
@@ -142,6 +144,7 @@ describe('columns config', function () {
         let classAssertion = util.validateClassesForElement(firstNameCol, ['nameClass1', 'nameClass2']) 
           && util.validateClassesForElement(lastNameCol, ['nameClass3', 'nameClass4']);
         expect(classAssertion).to.be.true;
+        return null;
       })
       .then(done)
       .catch(console.log);
@@ -162,6 +165,7 @@ describe('columns config', function () {
         let sortedData = _.sortBy(expectedData, 'UserName');
         let assertion = util.validateElementMatrix(result, sortedData);
         expect(assertion).to.be.true;
+        return null;
       })
       .then(() => {
         return driver.click('th');
@@ -176,6 +180,7 @@ describe('columns config', function () {
         let sortedData = _.sortBy(expectedData, 'UserName').reverse();
         let assertion = util.validateElementMatrix(result, sortedData);
         expect(assertion).to.be.true;
+        return null;
       })
       .then(done)
       .catch(console.log);
@@ -188,6 +193,7 @@ describe('columns config', function () {
       })
       .then((result) => {
         driver.click(result.eq(0).find('td').eq(2));
+        return null;
       })
       .then(() => {
         return Promise.all([
@@ -200,6 +206,7 @@ describe('columns config', function () {
         expect(result[0].val()).to.equal('Whyte');
         expect(result[1].text()).to.equal('Save');
         expect(result[2].text()).to.equal('Cancel');
+        return null;
       })
       .then(() => {
         return driver.setValue('form.form-inline > .form-control', 'Conan');
@@ -216,6 +223,8 @@ describe('columns config', function () {
       .then((result) => {
         let editedName = result.eq(0).find('td').eq(2).text();
         expect(editedName).to.be.equal('Conan');
+
+        return null;
       })
       .then(done)
       .catch(console.log);

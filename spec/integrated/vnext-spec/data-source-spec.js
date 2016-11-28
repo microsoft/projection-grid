@@ -7,8 +7,10 @@ import driver from 'driver';
 import peopleData from 'data/people.json';
 import jsDataSource from 'data/js-data-source';
 import jsDataExpected from 'data/js-data-expected.json';
+import Promise from 'bluebird';
 
-let expect = chai.expect;
+const expect = chai.expect;
+
 let gridConfig = {
   el: '#container',
 };
@@ -51,46 +53,81 @@ class CustomDataSource extends pGrid.dataSource.JSData {
 describe('data source config', function () {
   beforeEach(function () {
     util.renderTestContainer();
-    pgridFactory = pGrid 
-      .factory({ vnext: true });
+    pgridFactory = pGrid.factory({ vnext: true });
   });
-  
+
   afterEach(() => {
     gridView.remove();
     util.cleanup();
   });
 
-  it('memory should works as expected', function (done) {
-    let memoryConfig = {
-      dataSource: {
-        type: 'memory',
-        data: memoryData,
-        primaryKey: 'UserName',
-      },
-    };
-    gridView = pgridFactory
-      .create(_.extend(memoryConfig, gridConfig))
-      .gridView
-      .render();
-    driver.once(gridView, 'didUpdate')
-      .then(() => {
-        return driver.element('#container > .table-container .header th');
-      })
-      .then((result) => {
-        let header = _.map(result, (item) => {
-          return item.textContent;
-        });
-        expect(header).to.eql(memoryHeader);
-      })
-      .then(() => {
-        return driver.element('#container > .table-container tbody tr[data-key]');
-      })
-      .then((result) => {
-        let assertion = util.validateElementMatrix(result, memoryData);
-        expect(assertion).to.be.true;
-      })
-      .then(done)
-      .catch(console.log);
+  describe('memory data source', function () {
+    it('should render as expected', function (done) {
+      let memoryConfig = {
+        dataSource: {
+          type: 'memory',
+          data: memoryData,
+          primaryKey: 'UserName',
+        },
+      };
+      gridView = pgridFactory
+        .create(_.extend(memoryConfig, gridConfig))
+        .gridView
+        .render();
+      driver.once(gridView, 'didUpdate')
+        .then(() => {
+          return driver.element('#container > .table-container .header th');
+        })
+        .then((result) => {
+          let header = _.map(result, (item) => {
+            return item.textContent;
+          });
+          expect(header).to.eql(memoryHeader);
+        })
+        .then(() => {
+          return driver.element('#container > .table-container tbody tr[data-key]');
+        })
+        .then((result) => {
+          let assertion = util.validateElementMatrix(result, memoryData);
+          expect(assertion).to.be.true;
+        })
+        .then(done)
+        .catch(console.log);
+    });
+
+    it('should cache the sorting and filtering result', function (done) {
+      let memoryConfig = {
+        dataSource: {
+          type: 'memory',
+          data: memoryData,
+          primaryKey: 'UserName',
+        },
+      };
+
+      gridView = pgridFactory
+        .create(_.extend(memoryConfig, gridConfig))
+        .gridView.render();
+
+      let cachedItems = null;
+
+      driver.once(gridView, 'didUpdate')
+        .then(() => {
+          cachedItems = gridView.dataSource.cachedItems;
+          return driver.click('#container > .table-container .header th[data-name="FirstName"]');
+        })
+        .then(() => {
+          expect(cachedItems).to.not.equal(gridView.dataSource.cachedItems);
+
+          cachedItems = gridView.dataSource.cachedItems;
+          return new Promise(resolve => gridView.patch({
+            query: { skip: 1 },
+          }, resolve));
+        })
+        .then(() => {
+          expect(cachedItems).to.equal(gridView.dataSource.cachedItems);
+        })
+        .nodeify(done);
+    });
   });
 
   it('js-data should works as expected', function (done) {

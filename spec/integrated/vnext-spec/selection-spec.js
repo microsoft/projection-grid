@@ -68,6 +68,7 @@ describe('selection config', function () {
         let checkboxEl = util.getCheckboxElFromTbody(result, 0, 0);
         let assertion = checkboxEl.is(':checked');
         expect(assertion).to.be.true;
+        return null;
       })
       .then(() => {
         return driver.element('#container > .table-container tbody tr[data-key]');
@@ -82,6 +83,7 @@ describe('selection config', function () {
         let checkboxEl = util.getCheckboxElFromTbody(result, 0, 0);
         let assertion = checkboxEl.is(':checked');
         expect(assertion).to.be.false;
+        return null;
       })
       .then(done)
       .catch(console.log);
@@ -116,6 +118,7 @@ describe('selection config', function () {
         let checkboxBodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
         let assertion = checkboxHeaderEl.is(':checked') && checkboxBodyEl.is(':checked');
         expect(assertion).to.be.true;
+        return null;
       })
       .then(() => {
         return driver.element('#container > .table-container .header tr');
@@ -135,6 +138,7 @@ describe('selection config', function () {
         let checkboxBodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
         let assertion = checkboxHeaderEl.is(':checked') || checkboxBodyEl.is(':checked');
         expect(assertion).to.be.false;
+        return null;
       })
       .then(done)
       .catch(console.log);
@@ -165,12 +169,15 @@ describe('selection config', function () {
         let checkboxEl = util.getCheckboxElFromTbody(result, 0, 0);
         let assertion = checkboxEl.is(':checked');
         expect(assertion).to.be.true;
+        return null;
       })
       .then(() => {
         return driver.element('#container > .table-container tbody tr[data-key]');
       })
       .then((result) => {
-        driver.click(util.getCheckboxElFromTbody(result, 1, 0));
+        return driver.click(util.getCheckboxElFromTbody(result, 1, 0));
+      })
+      .then(() => {
         return driver.once(gridView, 'didUpdate');
       })
       .then(() => {
@@ -180,6 +187,7 @@ describe('selection config', function () {
         let checkboxEl = util.getCheckboxElFromTbody(result, 0, 0);
         let assertion = checkboxEl.is(':checked');
         expect(assertion).to.be.false;
+        return null;
       })
       .then(done)
       .catch(console.log);

@@ -6,6 +6,7 @@ import util from 'util';
 import rawData from 'data/people.json';
 import oldData from 'data/scrolling.json';
 import driver from 'driver';
+import Promise from 'bluebird';
 
 let expect = chai.expect;
 let memoryData = _.map(rawData.value, (row) => {
@@ -59,7 +60,8 @@ describe('grid view API verification', function () {
         return driver.element('#container > .table-container tbody tr[data-key]');
       })
       .then((result) => {
-        let assertion = util.validateElementMatrix(result, memoryData);
+        util.validateElementMatrix(result, memoryData);
+        return null;
       })
       .then(done)
       .catch(console.log);
@@ -86,6 +88,7 @@ describe('grid view API verification', function () {
         expect(gridView.getItemCount()).to.be.equal(16);
         expect(gridView.itemAt(1).UserName).to.be.equal('scottketchum');
         expect(gridView.indexOfElement('tr[data-key="javieralfred"]')).to.be.equal(3);
+        return null;
       })
       .then(done)
       .catch(console.log);
@@ -119,6 +122,7 @@ describe('grid view API verification', function () {
         let checkboxEl = util.getCheckboxElFromTbody(result, 1, 0);
         let assertion = checkboxEl.is(':checked');
         expect(assertion).to.be.true;
+        return null;
       })
       .then(() => {
         let expectedSelectedKey = 'scottketchum';
@@ -126,6 +130,7 @@ describe('grid view API verification', function () {
         let selectedItems = gridView.selectedItems();
         expect(selectedItems.length).to.be.equal(1);
         expect(selectedItems[0].UserName).to.be.equal(expectedSelectedKey);
+        return null;
       })
       .then(() => {
         gridView.deselectRow('scottketchum');
@@ -138,6 +143,7 @@ describe('grid view API verification', function () {
         let checkboxEl = util.getCheckboxElFromTbody(result, 1, 0);
         let assertion = checkboxEl.is(':checked');
         expect(assertion).to.be.false;
+        return null;
       })
       .then(() => {
         gridView.selectAll();
@@ -154,6 +160,7 @@ describe('grid view API verification', function () {
         let checkboxbodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
         let assertion = checkboxHeaderEl.is(':checked') && checkboxbodyEl.is(':checked');
         expect(assertion).to.be.true;
+        return null;
       })
       .then(() => {
         gridView.deselectAll();
@@ -170,6 +177,7 @@ describe('grid view API verification', function () {
         let checkboxbodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
         let assertion = checkboxHeaderEl.is(':checked') || checkboxbodyEl.is(':checked');
         expect(assertion).to.be.false;
+        return null;
       })
       .then(done)
       .catch(console.log);
@@ -191,6 +199,7 @@ describe('grid view API verification', function () {
     driver.once(gridView, 'didUpdate')
       .then(() => {
         expect(gridView.getHeadRows()[0]).to.be.equal('column-header-rows');
+        return null;
       })
       .then(() => {
         gridView.setHeadRows([
@@ -198,8 +207,6 @@ describe('grid view API verification', function () {
             html: '<div class="head-rows-html">head rows html</div>'
           },
         ]);
-      })
-      .then(() => {
         return driver.once(gridView, 'didUpdate');
       })
       .then(() => {
@@ -207,6 +214,7 @@ describe('grid view API verification', function () {
       })
       .then((result) => {
         expect(result.text()).to.be.equal('head rows html');
+        return null;
       })
       .then(() => {
         gridView.setHeadRows([
@@ -228,8 +236,6 @@ describe('grid view API verification', function () {
             html: '<div class="append-head-rows-2">append head rows 2</div>'
           },
         ]);
-      })
-      .then(() => {
         return driver.once(gridView, 'didUpdate');
       })
       .then(() => {
@@ -248,6 +254,7 @@ describe('grid view API verification', function () {
         expect(assertion).to.be.true;
         expect(result[3].text()).to.be.equal('append head rows 1');
         expect(result[4].text()).to.be.equal('append head rows 2');
+        return null;
       })
       .then(done)
       .catch(console.log);
@@ -269,6 +276,7 @@ describe('grid view API verification', function () {
     driver.once(gridView, 'didUpdate')
       .then(() => {
         expect(gridView.getBodyRows()[0]).to.be.equal('data-rows');
+        return null;
       })
       .then(() => {
         gridView.setBodyRows([
@@ -284,8 +292,6 @@ describe('grid view API verification', function () {
             },
           },
         ]);
-      })
-      .then(() => {
         return driver.once(gridView, 'didUpdate');
       })
       .then(() => {
@@ -294,6 +300,7 @@ describe('grid view API verification', function () {
       .then((result) => {
         util.validateClassesForElementArray([result.eq(0), result.eq(4), result.eq(9)], ['male']);
         util.validateClassesForElementArray([result.eq(10), result.eq(13), result.eq(15)], ['female']);
+        return null;
       })
       .then(() => {
         gridView.prependBodyRows([
@@ -312,8 +319,6 @@ describe('grid view API verification', function () {
             classes: ['append-body-row'],
           },
         ]);
-      })
-      .then(() => {
         return driver.once(gridView, 'didUpdate');
       })
       .then(() => {
@@ -325,6 +330,7 @@ describe('grid view API verification', function () {
       .then((result) => {
         expect(result[0].text()).to.be.equal('prepend item');
         expect(result[1].text()).to.be.equal('append item');
+        return null;
       })
       .then(() => {
         gridView.setFootRows([
@@ -333,8 +339,6 @@ describe('grid view API verification', function () {
             classes: ['foot-row'],
           },
         ]);
-      })
-      .then(() => {
         return driver.once(gridView, 'didUpdate');
       })
       .then(() => {
@@ -344,6 +348,7 @@ describe('grid view API verification', function () {
         expect(result.length).to.be.equal(1);
         expect(result.text()).to.be.equal('foot row html');
         expect(gridView.getFootRows()[0].html).to.be.equal('<div>foot row html</div>')
+        return null;
       })
       .then(() => {
         gridView.prependFootRows([
@@ -362,21 +367,79 @@ describe('grid view API verification', function () {
             classes: ['append-foot-row'],
           },
         ]);
-      })
-      .then(() => {
         return driver.once(gridView, 'didUpdate');
       })
       .then(() => {
         return Promise.all([
           driver.element('.footer > .prepend-foot-row > td > span'),
           driver.element('.footer > .append-foot-row > td > span'),
-        ])
+        ]);
       })
       .then((result) => {
         expect(result[0].text()).to.be.equal('prepend foot');
         expect(result[1].text()).to.be.equal('append foot');
+        return null;
       })
       .then(done)
       .catch(console.log);
+  });
+
+  describe('Access the data item', function () {
+    beforeEach(function (done) {
+      let gridConfig = {
+        el: '#container',
+        dataSource: {
+          type: 'memory',
+          data: memoryData,
+          primaryKey: 'UserName',
+        },
+      };
+      gridView = pgridFactory
+        .create(gridConfig)
+        .gridView
+        .render(done);
+    });
+
+    describe('keyOfElement()', function () {
+      it('should get the key of the row', function (done) {
+        Promise.all([
+          driver.element('#container > .table-container tbody > tr[data-key]:first'),
+          driver.element('#container > .table-container tbody > tr[data-key]:first td:first'),
+        ]).spread(($tr, $td) => {
+          const key = $tr.attr('data-key');
+
+          expect(gridView.keyOfElement($tr)).to.equal(key);
+          expect(gridView.keyOfElement($td)).to.equal(key);
+
+          return null;
+        }).asCallback(done);
+      });
+    });
+
+    describe('itemWithKey()', function () {
+      it('should get the item with the give key', function (done) {
+        driver
+          .element('#container > .table-container tbody > tr[data-key]:first')
+          .then($tr => {
+            const key = $tr.attr('data-key');
+
+            expect(gridView.itemWithKey(key)).to.equal(memoryData[0]);
+            return null;
+          })
+          .asCallback(done);
+      });
+    });
+
+    describe('itemOfElement()', function () {
+      it('should get the item from the DOM element', function (done) {
+        driver
+          .element('#container > .table-container tbody > tr[data-key]:first td:first')
+          .then($td => {
+            expect(gridView.itemOfElement($td)).to.equal(memoryData[0]);
+            return null;
+          })
+          .asCallback(done);
+      });
+    });
   });
 });
