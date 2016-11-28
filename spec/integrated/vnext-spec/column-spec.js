@@ -33,6 +33,7 @@ let gridConfig = {
     name: 'FirstName',
     title: 'First Name',
     editable: true,
+    sortable: [1, -1, 0],
     colClasses: ['nameClass1', 'nameClass2'],
     headClasses: ['nameHeadClass1', 'nameHeadClass2'],
     bodyClasses: bodyClassGenerator,
@@ -150,40 +151,74 @@ describe('columns config', function () {
       .catch(console.log);
   });
 
-  it('sortable should works as expected', function (done) {
-    driver.once(gridView, 'didUpdate')
-      .then(() => {
-        return driver.click('th');
-      })
-      .then(() => {
-        return driver.once(gridView, 'didUpdate');
-      })
-      .then(() => {
-        return driver.element('#container > .table-container tbody tr[data-key]');
-      })
-      .then((result) => {
-        let sortedData = _.sortBy(expectedData, 'UserName');
-        let assertion = util.validateElementMatrix(result, sortedData);
-        expect(assertion).to.be.true;
-        return null;
-      })
-      .then(() => {
-        return driver.click('th');
-      })
-      .then(() => {
-        return driver.once(gridView, 'didUpdate');
-      })
-      .then(() => {
-        return driver.element('#container > .table-container tbody tr[data-key]');
-      })
-      .then((result) => {
-        let sortedData = _.sortBy(expectedData, 'UserName').reverse();
-        let assertion = util.validateElementMatrix(result, sortedData);
-        expect(assertion).to.be.true;
-        return null;
-      })
-      .then(done)
-      .catch(console.log);
+  describe('sortable', function () {
+
+    it('should do 2 state sorting correctly', function (done) {
+      const sortAsc = _.sortBy(expectedData, 'UserName');
+      const sortDesc = _.sortBy(expectedData, 'UserName').reverse();
+
+      driver.once(gridView, 'didUpdate')
+        .then(() => driver.click('th[data-name="UserName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+        .then(result => {
+          expect(util.validateElementMatrix(result, sortAsc)).to.be.true;
+          return null;
+        })
+        .then(() => driver.click('th[data-name="UserName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+        .then(result => {
+          expect(util.validateElementMatrix(result, sortDesc)).to.be.true;
+          return null;
+        })
+        .then(() => driver.click('th[data-name="UserName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+        .then(result => {
+          expect(util.validateElementMatrix(result, sortAsc)).to.be.true;
+          return null;
+        })
+        .asCallback(done);
+ 
+    });
+
+    it('should do multiple state sorting correctly', function (done) {
+      const sortAsc = _.sortBy(expectedData, 'FirstName');
+      const sortDesc = _.sortBy(expectedData, 'FirstName').reverse();
+
+      driver.once(gridView, 'didUpdate')
+        .then(() => driver.click('th[data-name="FirstName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+        .then(result => {
+          expect(util.validateElementMatrix(result, sortAsc)).to.be.true;
+          return null;
+        })
+        .then(() => driver.click('th[data-name="FirstName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+        .then(result => {
+          expect(util.validateElementMatrix(result, sortDesc)).to.be.true;
+          return null;
+        })
+        .then(() => driver.click('th[data-name="FirstName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+        .then(result => {
+          expect(util.validateElementMatrix(result, expectedData)).to.be.true;
+          return null;
+        })
+        .then(() => driver.click('th[data-name="FirstName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+        .then(result => {
+          expect(util.validateElementMatrix(result, sortAsc)).to.be.true;
+          return null;
+        })
+        .asCallback(done);
+    });
+
   });
 
   it('editable should works as expected', function (done) {

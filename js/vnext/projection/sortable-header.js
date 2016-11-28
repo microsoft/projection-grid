@@ -11,20 +11,24 @@ function reorder(e) {
 
   if (sortable) {
     const sortableHeaderCur = this.get('sortableHeader') || {};
-    let direction = sortable.direction;
+    let directionIndex = sortableHeaderCur.directionIndex;
 
     if (sortableHeaderCur.name === name) {
-      direction = -sortableHeaderCur.direction;
+      directionIndex = (directionIndex + 1) % sortable.direction.length;
+    } else {
+      directionIndex = 0;
     }
+
+    const direction = sortable.direction[directionIndex];
 
     this.patch({
       query: {
-        orderby: [{
+        orderby: direction ? [{
           key: sortable.key,
           direction,
-        }],
+        }] : [],
       },
-      sortableHeader: { name, direction },
+      sortableHeader: { name, directionIndex },
     });
   }
 }
@@ -38,7 +42,7 @@ function reorder(e) {
  */
 function sortableHeaderProjectionHandler(state, {
   name,
-  direction,
+  directionIndex,
   template = sortableHeaderTemplate,
 } = {}) {
   /**
@@ -46,8 +50,8 @@ function sortableHeaderProjectionHandler(state, {
    * @type {Object}
    * @property {string} name
    *    The name of the ordered column.
-   * @property {number} direction
-   *    The order direction. Positive for ascending, otherwise descending.
+   * @property {number} directionIndex
+   *    The index of direction in the direction sequence.
    * @property {?SortableHeaderTemplate} template
    *    The template to render the sortable column headers.
    */
@@ -67,6 +71,7 @@ function sortableHeaderProjectionHandler(state, {
         patchCell.classes = cell.classes.concat('column-header-sortable');
 
         const decorationTemplate = column.sortable.template || template;
+        const direction = column.name === name ? column.sortable.direction[directionIndex] : 0;
 
         /**
          * @callback SortableHeaderTemplate
@@ -81,7 +86,7 @@ function sortableHeaderProjectionHandler(state, {
          */
         patchCell.html = decorationTemplate({
           html: cell.html,
-          direction: column.name === name ? direction : 0,
+          direction,
         });
       }
 
