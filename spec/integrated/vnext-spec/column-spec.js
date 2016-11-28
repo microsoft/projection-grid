@@ -180,7 +180,6 @@ describe('columns config', function () {
           return null;
         })
         .asCallback(done);
- 
     });
 
     it('should do multiple state sorting correctly', function (done) {

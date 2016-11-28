@@ -44,6 +44,7 @@ module.exports = {
       { test: /\.js$/, exclude: /\bnode_modules\b/, loader: 'babel-loader' },
       // es2015-end
       { test: /\.less$/, loader: 'style!css!less' },
+      { test: /\.json$/, loader: 'json' },
     ],
   },
   babel: { presets: ['es2015'] },
