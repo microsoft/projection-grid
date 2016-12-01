@@ -18,6 +18,7 @@ export class MemoryDataSource extends DataSource {
 
     // This caches the query result without skip and take
     this._cache = {
+      seed: this.data,
       query: null,
       data: this.data,
     };
@@ -40,7 +41,7 @@ export class MemoryDataSource extends DataSource {
       orderby = [],
     } = params || {};
 
-    if (!_.isEqual(this._cache.query, { filter, orderby })) {
+    if (this._cache.seed !== this.data || !_.isEqual(this._cache.query, { filter, orderby })) {
       const { key, direction } = _.first(orderby) || {};
       let sortIteratee = null;
 
@@ -62,6 +63,7 @@ export class MemoryDataSource extends DataSource {
       }
 
       this._cache = {
+        seed: this.data,
         query: { filter, orderby },
         data,
       };

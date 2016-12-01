@@ -116,7 +116,7 @@ describe('data source config', function () {
           return driver.click('#container > .table-container .header th[data-name="FirstName"]');
         })
         .then(() => {
-          expect(cachedItems).to.not.equal(gridView.dataSource.cachedItems);
+          expect(gridView.dataSource.cachedItems).to.not.equal(cachedItems);
 
           cachedItems = gridView.dataSource.cachedItems;
           return new Promise(resolve => gridView.patch({
@@ -125,6 +125,36 @@ describe('data source config', function () {
         })
         .then(() => {
           expect(cachedItems).to.equal(gridView.dataSource.cachedItems);
+        })
+        .nodeify(done);
+    });
+
+    it('should bust the cache on data set change', function (done) {
+      let memoryConfig = {
+        dataSource: {
+          type: 'memory',
+          data: [],
+          primaryKey: 'UserName',
+        },
+      };
+
+      gridView = pgridFactory
+        .create(_.extend(memoryConfig, gridConfig))
+        .gridView.render();
+
+      let cachedItems = null;
+
+      driver.once(gridView, 'didUpdate')
+        .then(() => {
+          cachedItems = gridView.dataSource.cachedItems;
+          return new Promise(resolve => gridView.patch({
+            dataSource: {
+              data: memoryData,
+            },
+          }, resolve));
+        })
+        .then(() => {
+          expect(gridView.dataSource.cachedItems).to.not.equal(cachedItems);
         })
         .nodeify(done);
     });
