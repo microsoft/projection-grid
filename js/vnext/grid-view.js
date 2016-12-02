@@ -445,7 +445,7 @@ export class GridView extends Backbone.View {
     this.set(_.reduce(_.keys(state), (memo, key) => {
       const value = state[key];
       const valueCur = this.get(key);
-      
+
       memo[key] = defaultsDeep(value, valueCur);
       return memo;
     }, {}), callback);
@@ -476,6 +476,14 @@ export class GridView extends Backbone.View {
   }
 
   /* Helper functions */
+
+  /**
+   * The data source of the grid
+   * @type {DataSource}
+   */
+  get dataSource() {
+    return this._dataSource;
+  }
 
   /**
    * A object implements a minimal interface of array to lazy fetch items.
@@ -571,6 +579,17 @@ export class GridView extends Backbone.View {
     }
 
     return null;
+  }
+
+  /**
+   * Get the data item from a DOM element in a certain row.
+   * @param {HTMLElement|jQuery|string} el
+   *    The DOM element. It can be an `HTMLElement`, a jQuery object or a
+   *    jQuery selector.
+   * @return {Object}
+   */
+  itemOfElement(el) {
+    return this.itemWithKey(this.keyOfElement(el));
   }
 
   /**

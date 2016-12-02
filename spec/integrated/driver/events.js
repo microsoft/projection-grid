@@ -1,3 +1,4 @@
+import Promise from 'bluebird';
 import _ from 'underscore';
 
 function once(target, event) {

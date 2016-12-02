@@ -33,6 +33,7 @@ let gridConfig = {
     name: 'FirstName',
     title: 'First Name',
     editable: true,
+    sortable: [1, -1, 0],
     colClasses: ['nameClass1', 'nameClass2'],
     headClasses: ['nameHeadClass1', 'nameHeadClass2'],
     bodyClasses: bodyClassGenerator,
@@ -101,6 +102,7 @@ describe('columns config', function () {
         let lastNameEl = result.eq(2);
         let classAssertion = util.validateClassesForElement(firstNameEl, ['nameHeadClass1', 'nameHeadClass2']) && util.validateClassesForElement(lastNameEl, ['nameHeadClass3', 'nameHeadClass4']);
         expect(classAssertion).to.be.true;
+        return null;
       })
       .then(done)
       .catch(console.log);
@@ -125,6 +127,7 @@ describe('columns config', function () {
           let lastNameEl = $(rowItem).find('td').eq(2);
           let classAssertion = util.validateClassesForElement(firstNameEl, ['nameBodyClass1', 'nameBodyClass2']) && util.validateClassesForElement(lastNameEl, ['nameBodyClass3', 'nameBodyClass4']);
           expect(classAssertion).to.be.true;
+          return null;
         });
       })
       .then(done)
@@ -142,43 +145,79 @@ describe('columns config', function () {
         let classAssertion = util.validateClassesForElement(firstNameCol, ['nameClass1', 'nameClass2']) 
           && util.validateClassesForElement(lastNameCol, ['nameClass3', 'nameClass4']);
         expect(classAssertion).to.be.true;
+        return null;
       })
       .then(done)
       .catch(console.log);
   });
 
-  it('sortable should works as expected', function (done) {
-    driver.once(gridView, 'didUpdate')
-      .then(() => {
-        return driver.click('th');
-      })
-      .then(() => {
-        return driver.once(gridView, 'didUpdate');
-      })
-      .then(() => {
-        return driver.element('#container > .table-container tbody tr[data-key]');
-      })
-      .then((result) => {
-        let sortedData = _.sortBy(expectedData, 'UserName');
-        let assertion = util.validateElementMatrix(result, sortedData);
-        expect(assertion).to.be.true;
-      })
-      .then(() => {
-        return driver.click('th');
-      })
-      .then(() => {
-        return driver.once(gridView, 'didUpdate');
-      })
-      .then(() => {
-        return driver.element('#container > .table-container tbody tr[data-key]');
-      })
-      .then((result) => {
-        let sortedData = _.sortBy(expectedData, 'UserName').reverse();
-        let assertion = util.validateElementMatrix(result, sortedData);
-        expect(assertion).to.be.true;
-      })
-      .then(done)
-      .catch(console.log);
+  describe('sortable', function () {
+
+    it('should do 2 state sorting correctly', function (done) {
+      const sortAsc = _.sortBy(expectedData, 'UserName');
+      const sortDesc = _.sortBy(expectedData, 'UserName').reverse();
+
+      driver.once(gridView, 'didUpdate')
+        .then(() => driver.click('th[data-name="UserName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+        .then(result => {
+          expect(util.validateElementMatrix(result, sortAsc)).to.be.true;
+          return null;
+        })
+        .then(() => driver.click('th[data-name="UserName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+        .then(result => {
+          expect(util.validateElementMatrix(result, sortDesc)).to.be.true;
+          return null;
+        })
+        .then(() => driver.click('th[data-name="UserName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+        .then(result => {
+          expect(util.validateElementMatrix(result, sortAsc)).to.be.true;
+          return null;
+        })
+        .asCallback(done);
+    });
+
+    it('should do multiple state sorting correctly', function (done) {
+      const sortAsc = _.sortBy(expectedData, 'FirstName');
+      const sortDesc = _.sortBy(expectedData, 'FirstName').reverse();
+
+      driver.once(gridView, 'didUpdate')
+        .then(() => driver.click('th[data-name="FirstName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+        .then(result => {
+          expect(util.validateElementMatrix(result, sortAsc)).to.be.true;
+          return null;
+        })
+        .then(() => driver.click('th[data-name="FirstName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+        .then(result => {
+          expect(util.validateElementMatrix(result, sortDesc)).to.be.true;
+          return null;
+        })
+        .then(() => driver.click('th[data-name="FirstName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+        .then(result => {
+          expect(util.validateElementMatrix(result, expectedData)).to.be.true;
+          return null;
+        })
+        .then(() => driver.click('th[data-name="FirstName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+        .then(result => {
+          expect(util.validateElementMatrix(result, sortAsc)).to.be.true;
+          return null;
+        })
+        .asCallback(done);
+    });
+
   });
 
   it('editable should works as expected', function (done) {
@@ -188,6 +227,7 @@ describe('columns config', function () {
       })
       .then((result) => {
         driver.click(result.eq(0).find('td').eq(2));
+        return null;
       })
       .then(() => {
         return Promise.all([
@@ -200,6 +240,7 @@ describe('columns config', function () {
         expect(result[0].val()).to.equal('Whyte');
         expect(result[1].text()).to.equal('Save');
         expect(result[2].text()).to.equal('Cancel');
+        return null;
       })
       .then(() => {
         return driver.setValue('form.form-inline > .form-control', 'Conan');
@@ -216,6 +257,8 @@ describe('columns config', function () {
       .then((result) => {
         let editedName = result.eq(0).find('td').eq(2).text();
         expect(editedName).to.be.equal('Conan');
+
+        return null;
       })
       .then(done)
       .catch(console.log);

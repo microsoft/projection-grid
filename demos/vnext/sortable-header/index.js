@@ -80,7 +80,7 @@ window.gridView = pgrid.factory({ vnext: true }).create({
       bodyClasses: 'Iambody',
       footClasses: 'Iamfoot',
       colClasses: 'Iamcol',
-    },{
+    }, {
       name: 'OrderID',
       sortable: -1,
     }, {
@@ -96,7 +96,7 @@ window.gridView = pgrid.factory({ vnext: true }).create({
       name: 'Destination',
       property: item => `${item.ShipCountry} / ${item.ShipCity}`,
     }],
-  },{
+  }, {
     name: 'ShipCity',
     sortable(direction) {
       return [{
@@ -107,6 +107,9 @@ window.gridView = pgrid.factory({ vnext: true }).create({
         direction: 1,
       }];
     },
+  }, {
+    name: 'Freight',
+    sortable: [1, -1, 0],
   }],
   events: {
     'click th.column-header': (e) => console.log(e.target),
