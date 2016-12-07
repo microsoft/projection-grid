@@ -3,6 +3,7 @@ define([
   'lib/backbone',
   'component/grid/projection/base',
   'component/grid/layout/template/selectable.jade',
+  '../../less/row-check.less',
 ], function (_, Backbone, BaseProjection, selectableTemplate) {
   'use strict';
 
