@@ -57,6 +57,11 @@ function rowsProjectionHandler(state, {
 
   const primaryKey = state.primaryKey;
   const changed = this.get('buffer').changed || {};
+  let selectedMap = {};
+
+  _.each(this.get('selection').selected, (selectedKey) => {
+    selectedMap[selectedKey] = true;
+  });
 
   // TODO [wewei], use Fake items for better performance.
   const items = state.items.slice(0, state.items.length);
@@ -65,11 +70,14 @@ function rowsProjectionHandler(state, {
     if (row === 'data-rows' || row.type === 'data-rows') {
       _.each(items, item => {
         const key = item[primaryKey];
+        const selectedClass = selectedMap[key] ? ['row-selected'] : [];
         const bufferState = _.chain(changed).result(key).result('state').value();
         const classes = _.union(
           normalizeClasses(row.classes, item),
-          _.result(bufferStateClasses, bufferState, [])
+          _.result(bufferStateClasses, bufferState, []),
+          selectedClass
         );
+
 
         memo.push({ item, classes, type: 'data' });
       });
