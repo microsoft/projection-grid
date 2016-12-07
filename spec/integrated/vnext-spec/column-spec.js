@@ -71,12 +71,12 @@ function bodyClassGenerator() {
 describe('columns config', function () {
   beforeEach(function () {
     util.renderTestContainer();
-    pgrid = pGrid 
+    pgrid = pGrid
       .factory({ vnext: true })
       .create(gridConfig)
     gridView = pgrid.gridView.render();
   });
-  
+
   afterEach(() => {
     gridView.remove();
     util.cleanup();
@@ -105,7 +105,7 @@ describe('columns config', function () {
       .then(done)
       .catch(console.log);
   });
-  
+
   it('property, template, and bodyClasses should works as expected in body', function (done) {
     driver.once(gridView, 'didUpdate')
       .then(() => {
@@ -139,7 +139,7 @@ describe('columns config', function () {
       .then((result) => {
         let firstNameCol = result.find('col').eq(1);
         let lastNameCol = result.find('col').eq(2);
-        let classAssertion = util.validateClassesForElement(firstNameCol, ['nameClass1', 'nameClass2']) 
+        let classAssertion = util.validateClassesForElement(firstNameCol, ['nameClass1', 'nameClass2'])
           && util.validateClassesForElement(lastNameCol, ['nameClass3', 'nameClass4']);
         expect(classAssertion).to.be.true;
       })
@@ -176,46 +176,6 @@ describe('columns config', function () {
         let sortedData = _.sortBy(expectedData, 'UserName').reverse();
         let assertion = util.validateElementMatrix(result, sortedData);
         expect(assertion).to.be.true;
-      })
-      .then(done)
-      .catch(console.log);
-  });
-
-  it('editable should works as expected', function (done) {
-    driver.once(gridView, 'didUpdate')
-      .then(() => {
-        return driver.element('#container > .table-container tbody tr[data-key]');
-      })
-      .then((result) => {
-        driver.click(result.eq(0).find('td').eq(2));
-      })
-      .then(() => {
-        return Promise.all([
-          driver.element('form.form-inline > .form-control'),
-          driver.element('form.form-inline > .save'),
-          driver.element('form.form-inline > .cancel'),
-        ]);
-      })
-      .then((result) => {
-        expect(result[0].val()).to.equal('Whyte');
-        expect(result[1].text()).to.equal('Save');
-        expect(result[2].text()).to.equal('Cancel');
-      })
-      .then(() => {
-        return driver.setValue('form.form-inline > .form-control', 'Conan');
-      })
-      .then(() => {
-        return driver.click('form.form-inline > .save');
-      })
-      .then(() => {
-        return driver.once(gridView, 'didUpdate');
-      })
-      .then(() => {
-        return driver.element('#container > .table-container tbody tr[data-key]');
-      })
-      .then((result) => {
-        let editedName = result.eq(0).find('td').eq(2).text();
-        expect(editedName).to.be.equal('Conan');
       })
       .then(done)
       .catch(console.log);
