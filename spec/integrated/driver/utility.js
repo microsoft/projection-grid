@@ -1,3 +1,4 @@
+import Promise from 'bluebird';
 import _ from 'underscore';
 import protocol from './protocol';
 

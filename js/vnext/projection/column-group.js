@@ -71,6 +71,18 @@ function normalizeProperty(property, column) {
   return property;
 }
 
+function normalizeDirection(direction) {
+  if (_.isArray(direction)) {
+    return direction;
+  }
+
+  if (_.isNumber(direction)) {
+    return direction > 0 ? [1, -1] : [-1, 1];
+  }
+
+  return [1, -1];
+}
+
 /**
  * @typedef SortableConfig
  * @type {Object}
@@ -80,9 +92,14 @@ function normalizeProperty(property, column) {
  *    * A {@link PropertyGetter} to get the sorting values from data items.
  *      Only available for memory data source.
  *
- * @property {number} direction
- *    A number indicating the order on first click. Positive for ascending,
- *    otherwise descending.
+ * @property {number|number[]} direction
+ *    The direction could be
+ *    * A number
+ *      A number indicating the order on first click. Positive for ascending,
+ *      otherwise descending.
+ *    * An array of numbers
+ *      Indicating the sequence of sorting orders.
+ * 
  * @property {SortableHeaderTemplate} template
  *    A customized template to render the sortable column header.
  */
@@ -93,29 +110,29 @@ function normalizeSortable(sortable, column) {
   if (sortable === true) {
     return {
       key: columnKey,
-      direction: 1,
+      direction: normalizeDirection(1),
     };
   }
 
   if (_.isString(sortable) || _.isFunction(sortable)) {
     return {
       key: sortable,
-      direction: 1,
+      direction: normalizeDirection(1),
     };
   }
 
-  if (_.isNumber(sortable) && sortable) {
+  if (_.isNumber(sortable) && sortable || _.isArray(sortable)) {
     return {
       key: columnKey,
-      direction: sortable > 0 ? 1 : -1,
+      direction: normalizeDirection(sortable),
     };
   }
 
   if (_.isObject(sortable)) {
-    return _.extend({
-      key: columnKey,
-      direction: 1,
-    }, sortable);
+    return {
+      key: _.result(sortable, 'key', columnKey),
+      direction: normalizeDirection(_.result(sortable, 'direction', 1)),
+    };
   }
 
   return null;

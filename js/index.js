@@ -1,4 +1,5 @@
 import factory from './factory/grid-factory';
+import pkg from '../package.json';
 import {
   DataSource,
   MemoryDataSource,
@@ -7,7 +8,7 @@ import {
 } from './vnext/data-source';
 
 module.exports = {
-  version: '0.1.0-46',
+  version: pkg.json,
   GridView: require('./grid-view'),
   projections: require('./projection/index'),
   layout: require('./layout/index'),

@@ -476,6 +476,14 @@ export class GridView extends Backbone.View {
   /* Helper functions */
 
   /**
+   * The data source of the grid
+   * @type {DataSource}
+   */
+  get dataSource() {
+    return this._dataSource;
+  }
+
+  /**
    * A object implements a minimal interface of array to lazy fetch items.
    * We use this structure a lot in projections, so that we don't need to
    * procceed all the rows when virtualization is on.
@@ -569,6 +577,17 @@ export class GridView extends Backbone.View {
     }
 
     return null;
+  }
+
+  /**
+   * Get the data item from a DOM element in a certain row.
+   * @param {HTMLElement|jQuery|string} el
+   *    The DOM element. It can be an `HTMLElement`, a jQuery object or a
+   *    jQuery selector.
+   * @return {Object}
+   */
+  itemOfElement(el) {
+    return this.itemWithKey(this.keyOfElement(el));
   }
 
   /**

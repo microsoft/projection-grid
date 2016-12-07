@@ -1,3 +1,4 @@
+import Promise from 'bluebird';
 import $ from 'jquery';
 
 function element(el) {

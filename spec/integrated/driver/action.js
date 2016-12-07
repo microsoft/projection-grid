@@ -1,29 +1,20 @@
+import Promise from 'bluebird';
 import protocol from './protocol';
 
 function click(selector) {
-  return new Promise((resolve, reject) => {
-    protocol.element.call(this, selector)
-      .then(($el) => {
-        $el.click();
-        resolve();
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+  return protocol.element.call(this, selector)
+    .then($el => {
+      $el.click();
+      return null;
+    });
 }
 
 function setValue(selector, value) {
-  return new Promise((resolve, reject) => {
-    protocol.element.call(this, selector)
-      .then(($el) => {
-        $el.val(value).change();
-        resolve();
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+  return protocol.element.call(this, selector)
+    .then(($el) => {
+      $el.val(value).change();
+      return null;
+    });
 }
 
 export default {
