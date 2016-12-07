@@ -57,7 +57,7 @@ window.gridView = pgrid.factory({ vnext: true }).create({
         type: 'data-rows',
         classes: {
           redColor: true,
-          longer: (row) => { return row.ShipAddress.length > 15; }, 
+          longer: (row) => { return row.ShipAddress.length > 15; },
         }
       }
     ],
@@ -75,7 +75,6 @@ window.gridView = pgrid.factory({ vnext: true }).create({
       sortable: {
         template: sortableHeaderAlphabetTemplate,
       },
-      editable: true,
       headClasses: 'Iamhead',
       bodyClasses: 'Iambody',
       footClasses: 'Iamfoot',
@@ -87,7 +86,7 @@ window.gridView = pgrid.factory({ vnext: true }).create({
       name: 'ShipAddress',
       property: 'ShipAddress/length',
       title: 'Ship Address Length',
-      width: 150, 
+      width: 150,
       sortable: {
         key: 'length(ShipAddress)',
         template: sortableHeaderNumberTemplate,
@@ -113,7 +112,7 @@ window.gridView = pgrid.factory({ vnext: true }).create({
   }],
   events: {
     'click th.column-header': (e) => console.log(e.target),
-  }, 
+  },
   sortableHeader: {
     template: sortableHeaderTemplate,
   },

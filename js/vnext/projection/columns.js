@@ -33,8 +33,6 @@ import _ from 'underscore';
  *      Only available for memory data source.
  *    * A detailed {@link SortableConfig} object.
  *
- * @property {bool} editable
- *    Indicates whether the column is editable.
  * @property {ClassesConfig} colClasses
  *    The classes for the `COL` element in `COLGROUP`.
  * @property {ClassesConfig} headClasses
@@ -70,4 +68,3 @@ export const columns = {
   handler: columnsProjectionHandler,
   defaults: null,
 };
-
