@@ -129,8 +129,9 @@ function normalizeSortable(sortable, column) {
   }
 
   if (_.isObject(sortable)) {
+    const sortableKey = _.result(sortable, 'key', columnKey);
     return {
-      key: _.result(sortable, 'key', columnKey),
+      key: _.isArray(sortableKey) ? _.result(sortableKey[0], 'key', columnKey) : sortableKey,
       direction: normalizeDirection(_.result(sortable, 'direction', 1)),
     };
   }
