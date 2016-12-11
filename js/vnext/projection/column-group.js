@@ -60,7 +60,7 @@ function normalizeProperty(property, column) {
   if (_.isString(property)) {
     return stringProperty(property);
   }
-  
+
   if (_.isFunction(property)) {
     return {
       get: property,
@@ -99,7 +99,7 @@ function normalizeDirection(direction) {
  *      otherwise descending.
  *    * An array of numbers
  *      Indicating the sequence of sorting orders.
- * 
+ *
  * @property {SortableHeaderTemplate} template
  *    A customized template to render the sortable column header.
  */
@@ -129,9 +129,8 @@ function normalizeSortable(sortable, column) {
   }
 
   if (_.isObject(sortable)) {
-    const sortableKey = _.result(sortable, 'key', columnKey);
     return {
-      key: _.isArray(sortableKey) ? _.result(sortableKey[0], 'key', columnKey) : sortableKey,
+      key: sortable.key || columnKey,
       direction: normalizeDirection(_.result(sortable, 'direction', 1)),
     };
   }
@@ -150,7 +149,7 @@ function normalizeSortable(sortable, column) {
  */
 class ColumnGroup {
   constructor(columns) {
-    
+
     /**
      * The column header rows
      * @type {RowContent[]}
@@ -195,7 +194,7 @@ class ColumnGroup {
       const { parent, columns, height, name, property, sortable } = col;
 
       this.columnIndex[name] = col;
-      
+
       col.property = normalizeProperty(property, col);
       col.sortable = normalizeSortable(sortable, col);
 
