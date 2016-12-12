@@ -73,7 +73,7 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
    * @callback SelectableCallback
    * @param {Object} item
    *    The data item of the row.
-   * @return {boolean} 
+   * @return {boolean}
    */
   if (!single) {
     const selectableCount = _.filter(state.items.slice(), selectable).length;
@@ -86,11 +86,11 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
     name: 'selection',
     html: selectionHeadTemplate({
       single,
-      checked: selectedAll
+      checked: selectedAll,
     }),
     template: selectionBodyTemplate,
     property: item => {
-      return { 
+      return {
         single,
         selectable: selectable(item),
         checked: selectedIndex[item[primaryKey]],
@@ -103,12 +103,23 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
     footClasses,
   }].concat(state.columns);
 
+  const bodyRows = _.map(state.bodyRows, row => {
+    let selectedClassArray = selectedIndex[row.item[primaryKey]] ? ['row-selected'] : [];
+
+    if (row && row.type && row.type === 'data') {
+      return _.defaults({
+        classes: _.union(selectedClassArray, row.classes),
+      }, _.isObject(row) ? row : {});
+    }
+    return row;
+  });
+
   const events = _.defaults({
     'change th input.select-all': changeSelectAll,
     'change td input.select-row': changeSelectRow,
   }, state.events);
 
-  return _.defaults({ columns, events }, state);
+  return _.defaults({ columns, events, bodyRows }, state);
 }
 
 /**
@@ -145,7 +156,7 @@ function normalizeSelectionConfig(selection) {
     enabled: true,
     single: false,
     selected: [],
-    selectable: (item) => _.has(item, this.primaryKey),
+    selectable: item => _.has(item, this.primaryKey),
     colClasses: [],
     headClasses: [],
     bodyClasses: [],

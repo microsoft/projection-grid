@@ -1,6 +1,4 @@
 import _ from 'underscore';
-import $ from 'jquery';
-import Promise from 'bluebird';
 
 function updateItemState(gridView, item, state) {
   const buffer = gridView.get('buffer');
@@ -40,13 +38,13 @@ export const buffer = {
           return item;
         });
       },
-    }
+    };
 
     const onCommit = item => {
       if (item) {
         updateItemState(this, item, 'committed');
       }
-    }
+    };
 
     const onEdit = item => {
       if (item) {
@@ -55,7 +53,7 @@ export const buffer = {
           update(item).then(onCommit);
         }
       }
-    }
+    };
 
     const events = _.defaults({ didEdit: onEdit }, state.events);
 
