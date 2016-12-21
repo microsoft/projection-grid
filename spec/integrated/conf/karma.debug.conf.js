@@ -18,7 +18,13 @@ module.exports = function (config) {
     },
     webpack: webpackConfig,
     browsers: [
-      'Chrome',
+      'ChromeNoSandbox',
     ],
+    customLaunchers: {
+      ChromeNoSandbox: {
+        base: 'Chrome',
+        flags: ['--no-sandbox'],
+      },
+    },
   });
 };
