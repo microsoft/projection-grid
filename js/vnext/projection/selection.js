@@ -20,7 +20,6 @@ export function setSelectAll(gridView, checked) {
 
 function changeSelectAll(e) {
   setSelectAll(this, e.target.checked);
-  e.preventDefault();
 }
 
 export function setSelectRow(gridView, key, checked) {
@@ -30,11 +29,20 @@ export function setSelectRow(gridView, key, checked) {
   updateSelection(gridView, selection);
 }
 
+function setMultiRow(gridView, key) {
+  const { resolver } = gridView.get('selection');
+  const selection = resolver.selectMultiRow(key);
+
+  updateSelection(gridView, selection);
+}
+
 function changeSelectRow(e) {
   const key = this.keyOfElement(e.target);
-
-  setSelectRow(this, key, e.target.checked);
-  e.preventDefault();
+  if (e.shiftKey) {
+    setMultiRow(this, key);
+  } else {
+    setSelectRow(this, key, e.target.checked);
+  }
 }
 
 /**
@@ -73,7 +81,7 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
    * @callback SelectableCallback
    * @param {Object} item
    *    The data item of the row.
-   * @return {boolean} 
+   * @return {boolean}
    */
   if (!single) {
     const selectableCount = _.filter(state.items.slice(), selectable).length;
@@ -86,11 +94,11 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
     name: 'selection',
     html: selectionHeadTemplate({
       single,
-      checked: selectedAll
+      checked: selectedAll,
     }),
     template: selectionBodyTemplate,
     property: item => {
-      return { 
+      return {
         single,
         selectable: selectable(item),
         checked: selectedIndex[item[primaryKey]],
@@ -104,8 +112,8 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
   }].concat(state.columns);
 
   const events = _.defaults({
-    'change th input.select-all': changeSelectAll,
-    'change td input.select-row': changeSelectRow,
+    'click th input.select-all': changeSelectAll,
+    'click td input.select-row': changeSelectRow,
   }, state.events);
 
   return _.defaults({ columns, events }, state);
@@ -145,7 +153,7 @@ function normalizeSelectionConfig(selection) {
     enabled: true,
     single: false,
     selected: [],
-    selectable: (item) => _.has(item, this.primaryKey),
+    selectable: item => _.has(item, this.primaryKey),
     colClasses: [],
     headClasses: [],
     bodyClasses: [],
@@ -163,11 +171,9 @@ function normalizeSelectionConfig(selection) {
   return config;
 }
 
-
 export const selection = {
   name: 'selection',
   handler: selectionProjectionHandler,
   normalize: normalizeSelectionConfig,
   defaults: false,
 };
-
