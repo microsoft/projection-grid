@@ -10,6 +10,12 @@ define([
     name: 'row',
     update: function (options) {
       if (Model.__super__.update.call(this, options)) {
+        var selectedMap = {};
+
+        _.each(this.get('row.check.list'), function(selectedIndex) {
+          selectedMap[selectedIndex] = true;
+        });
+
         var model = this.src.data;
         var rows = model.get('value');
 
@@ -24,7 +30,15 @@ define([
         });
 
         _.each(rows, (row) => {
+          var classesRule = this.get('row.classes');
+          var checkId = this.get('row.check.id');
+          var checkboxAllow = model.get('row.check.allow');
           var classArr = [];
+
+          if (selectedMap[row[checkId]]) {
+            classArr.push('row-selected');
+          }
+
           var originClass = _.chain(row)
             .result('$metadata')
             .result('attr')
@@ -35,10 +49,6 @@ define([
             classArr.push(originClass);
           }
 
-          var classesRule = this.get('row.classes');
-
-          var checkId = this.get('row.check.id');
-          var checkboxAllow = model.get('row.check.allow');
 
           _.each(classesRule, (func, key) => {
             var type = _.chain(row).result('$metadata').result('type').value();
@@ -48,7 +58,7 @@ define([
             }
           });
 
-          //attr info from meta 
+          //attr info from meta
           var originId = _.chain(row)
             .result('$metadate')
             .result('attr')
