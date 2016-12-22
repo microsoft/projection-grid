@@ -104,9 +104,9 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
   }].concat(state.columns);
 
   const bodyRows = _.map(state.bodyRows, row => {
-    let selectedClassArray = selectedIndex[row.item[primaryKey]] ? ['row-selected'] : [];
+    if (row && row.type === 'data' && row.item && selectable(row.item)) {
+      let selectedClassArray = selectedIndex[row.item[primaryKey]] ? ['row-selected'] : [];
 
-    if (row && row.type && row.type === 'data') {
       return _.defaults({
         classes: _.union(selectedClassArray, row.classes),
       }, _.isObject(row) ? row : {});
