@@ -30,10 +30,10 @@ let gridView;
 describe('selection config', function () {
   beforeEach(function () {
     util.renderTestContainer();
-    pgridFactory = pGrid 
+    pgridFactory = pGrid
       .factory({ vnext: true });
   });
-  
+
   afterEach(() => {
     gridView.remove();
     util.cleanup();
@@ -115,10 +115,15 @@ describe('selection config', function () {
       })
       .then((result) => {
         let checkboxHeaderEl = util.getCheckboxElFromThead(result[0], 0, 0);
-        let checkboxBodyEl = util.getCheckboxElFromTbody(result[1], 0, 0);
-        let assertion = checkboxHeaderEl.is(':checked') && checkboxBodyEl.is(':checked');
-        expect(assertion).to.be.true;
-        return null;
+        let headerAssertion = checkboxHeaderEl.is(':checked');
+
+        expect(headerAssertion).to.be.true;
+        _.each(result[1], (el, index) => {
+          let checkboxBodyEl = util.getCheckboxElFromTbody($(el), 0, 0);
+          let bodyAssertion = checkboxBodyEl.is(':checked');
+
+          expect(bodyAssertion).to.be.true;
+        })
       })
       .then(() => {
         return driver.element('#container > .table-container .header tr');
@@ -188,6 +193,44 @@ describe('selection config', function () {
         let assertion = checkboxEl.is(':checked');
         expect(assertion).to.be.false;
         return null;
+      })
+      .then(done)
+      .catch(console.log);
+  });
+
+  it('a11y for selection should works as expected', function (done) {
+    let baseSelectionConfig = {
+      a11y: {
+        selectAllLabel: 'select all label',
+      },
+      selection: {
+        enabled: true,
+      },
+    };
+    gridView = pgridFactory
+      .create(_.extend(baseSelectionConfig, gridConfig))
+      .gridView
+      .render();
+    driver.once(gridView, 'didUpdate')
+      .then(() => {
+        return driver.element('#container > .table-container thead .select-all');
+      })
+      .then((result) => {
+        const ariaLabel = result.attr('aria-label');
+        expect(ariaLabel).to.be.equal('select all label');
+      })
+      .then(() => {
+        return driver.element('#container > .table-container tbody tr[data-key]');
+      })
+      .then((result) => {
+        _.each(result, (el, index) => {
+          let ariaLableById = $(el).attr('id');
+
+          let checkboxBodyEl = util.getCheckboxElFromTbody($(el), 0, 0);
+          const ariaLabelBy = checkboxBodyEl.attr('aria-labelledby');
+
+          expect(ariaLabelBy).to.be.equal(ariaLableById);
+        })
       })
       .then(done)
       .catch(console.log);

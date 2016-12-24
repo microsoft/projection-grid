@@ -115,8 +115,9 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
         },
         classes: _.union(selectedClassArray, row.classes),
       }, _.isObject(row) ? row : {});
+    } else {
+      return row;
     }
-    return row;
   });
 
   const events = _.defaults({
