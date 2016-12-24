@@ -87,6 +87,7 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
     html: selectionHeadTemplate({
       single,
       checked: selectedAll,
+      checkAllLabel: state.a11y.selectAllLabel
     }),
     template: selectionBodyTemplate,
     property: item => {
@@ -94,6 +95,7 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
         single,
         selectable: selectable(item),
         checked: selectedIndex[item[primaryKey]],
+        labelbyId: item[primaryKey],
       };
     },
     sortable: false,
@@ -108,6 +110,9 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
       let selectedClassArray = selectedIndex[row.item[primaryKey]] ? ['row-selected'] : [];
 
       return _.defaults({
+        attributes: {
+          id: row.item[primaryKey],
+        },
         classes: _.union(selectedClassArray, row.classes),
       }, _.isObject(row) ? row : {});
     }
