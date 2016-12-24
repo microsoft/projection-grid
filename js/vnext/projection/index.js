@@ -7,3 +7,4 @@ export { columnGroup } from './column-group.js';
 export { cells } from './cells.js';
 export { sortableHeader } from './sortable-header.js';
 export { events } from './events.js';
+export { a11y } from './a11y.js';
