@@ -111,12 +111,23 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
     footClasses,
   }].concat(state.columns);
 
+  const bodyRows = _.map(state.bodyRows, row => {
+    if (row && row.type === 'data' && row.item && selectable(row.item)) {
+      let selectedClassArray = selectedIndex[row.item[primaryKey]] ? ['row-selected'] : [];
+
+      return _.defaults({
+        classes: _.union(selectedClassArray, row.classes),
+      }, _.isObject(row) ? row : {});
+    }
+    return row;
+  });
+
   const events = _.defaults({
     'click th input.select-all': changeSelectAll,
     'click td input.select-row': changeSelectRow,
   }, state.events);
 
-  return _.defaults({ columns, events }, state);
+  return _.defaults({ columns, events, bodyRows }, state);
 }
 
 /**

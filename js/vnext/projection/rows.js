@@ -2,8 +2,8 @@ import _ from 'underscore';
 import { normalizeClasses } from './common.js';
 
 const bufferStateClasses = {
-  'changed': ['row-buffer-changed'],
-  'committed': ['row-buffer-committed'],
+  changed: ['row-buffer-changed'],
+  committed: ['row-buffer-committed'],
 };
 
 /**
@@ -90,4 +90,3 @@ export const rows = {
   handler: rowsProjectionHandler,
   defaluts: {},
 };
-

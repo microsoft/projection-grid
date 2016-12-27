@@ -8,7 +8,7 @@ const projectionConfigs = {
   A11y(config) {
     const accConfig = {};
 
-    // temp config to fix a11y bug of latency projection grid, should not to reuse it. 
+    // temp config to fix a11y bug of latency projection grid, should not to reuse it.
     if (_.has(config.a11y, 'selection') && _.has(config.a11y.selection, 'selectAllLabel')) {
       accConfig['a11y.selection.selectAllLabel'] = config.a11y.selection.selectAllLabel;
     }
