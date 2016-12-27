@@ -200,13 +200,14 @@ describe('selection config', function () {
 
   it('a11y for selection should works as expected', function (done) {
     let baseSelectionConfig = {
-      a11y: {
-        selectAllLabel: 'select all label',
-      },
       selection: {
+        a11y: {
+          selectAllLabel: 'select all label',
+        },
         enabled: true,
       },
     };
+
     gridView = pgridFactory
       .create(_.extend(baseSelectionConfig, gridConfig))
       .gridView

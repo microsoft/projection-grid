@@ -22,10 +22,10 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Orders',
     primaryKey: 'OrderID',
   },
-  a11y: {
-    selectAllLabel: 'select all label',
-  },
   selection: {
+    a11y: {
+      selectAllLabel: 'select all label',
+    },
     selectable(item) {
       return item.OrderID && (item.OrderID % 2 === 0);
     },

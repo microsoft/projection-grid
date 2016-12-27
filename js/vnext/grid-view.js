@@ -14,7 +14,6 @@ import {
   cells,
   sortableHeader,
   events,
-  a11y,
 } from './projection';
 
 import { TableView } from './layout';
@@ -216,7 +215,6 @@ export class GridView extends Backbone.View {
 
     this.pipeDataProjections(query, buffer);
     this.pipeStructureProjections([
-      a11y,
       columns,
       rows,
       selection,

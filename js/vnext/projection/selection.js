@@ -46,7 +46,13 @@ function changeSelectRow(e) {
  *    * A boolean to indicate whether the grid has the selection column.
  *    * A detailed {@link SelectionConfig} object.
  */
-function selectionProjectionHandler(state, { enabled, resolver }) {
+function selectionProjectionHandler(state, selection) {
+  const enabled = selection.enabled;
+  const resolver = selection.resolver;
+  const a11y = _.extend({
+    selectAllLabel: 'Select All',
+  }, selection.a11y);
+
   if (!enabled) {
     return state;
   }
@@ -87,7 +93,7 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
     html: selectionHeadTemplate({
       single,
       checked: selectedAll,
-      checkAllLabel: state.a11y.selectAllLabel
+      checkAllLabel: a11y.selectAllLabel,
     }),
     template: selectionBodyTemplate,
     property: item => {
