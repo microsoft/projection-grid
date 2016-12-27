@@ -23,6 +23,9 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     primaryKey: 'OrderID',
   },
   selection: {
+    a11y: {
+      selectAllLabel: 'select all label',
+    },
     selectable(item) {
       return item.OrderID && (item.OrderID % 2 === 0);
     },

@@ -46,7 +46,13 @@ function changeSelectRow(e) {
  *    * A boolean to indicate whether the grid has the selection column.
  *    * A detailed {@link SelectionConfig} object.
  */
-function selectionProjectionHandler(state, { enabled, resolver }) {
+function selectionProjectionHandler(state, {
+  enabled,
+  resolver,
+  a11y: {
+    selectAllLabel = 'Select All',
+  } = {},
+}) {
   if (!enabled) {
     return state;
   }
@@ -87,6 +93,7 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
     html: selectionHeadTemplate({
       single,
       checked: selectedAll,
+      checkAllLabel: selectAllLabel,
     }),
     template: selectionBodyTemplate,
     property: item => {
@@ -94,6 +101,7 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
         single,
         selectable: selectable(item),
         checked: selectedIndex[item[primaryKey]],
+        labelbyId: item[primaryKey],
       };
     },
     sortable: false,
@@ -108,10 +116,14 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
       let selectedClassArray = selectedIndex[row.item[primaryKey]] ? ['row-selected'] : [];
 
       return _.defaults({
+        attributes: {
+          id: row.item[primaryKey],
+        },
         classes: _.union(selectedClassArray, row.classes),
       }, _.isObject(row) ? row : {});
+    } else {
+      return row;
     }
-    return row;
   });
 
   const events = _.defaults({
