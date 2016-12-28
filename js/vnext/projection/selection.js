@@ -85,7 +85,7 @@ function selectionProjectionHandler(state, {
     const selectableCount = _.filter(state.items.slice(), selectable).length;
     const selectedCount = _.filter(selected, key => selectable(this.itemWithKey(key))).length;
 
-    selectedAll = selectedCount === selectableCount;
+    selectedAll = selectableCount !== 0 && selectedCount === selectableCount;
   }
 
   const columns = [{
