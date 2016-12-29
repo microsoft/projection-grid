@@ -44,8 +44,6 @@ function changeSelectRow(e) {
   rangeSelection.preShiftSelect = key;
   this.set({
     selection: _.defaults({ selected: _.keys(selectObj) }, selection),
-  }, () => {
-    console.log('range: single shift select');
   });
 }
 
