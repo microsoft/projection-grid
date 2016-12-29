@@ -8,6 +8,7 @@ import {
   selection,
   setSelectAll,
   setSelectRow,
+  rangeSelection,
   columns,
   rows,
   columnGroup,
@@ -36,7 +37,7 @@ function defaultsDeep(dest, src) {
 }
 
 function nextTick() {
-  return new Promise((resolve, reject) => window.setTimeout(resolve, 0));
+  return new Promise(resolve => window.setTimeout(resolve, 0));
 }
 
 class ProjectionChain {
@@ -65,7 +66,7 @@ class ProjectionChain {
       if (updated || !p$output || _.has(this.model.changed, name)) {
         result.updated = true;
         result.p$state = proj.p$output = p$state.then(
-          state => handler(state, this.model.get(name))
+          state => handler(state, this.model.get(name), this.model.attributes)
         );
       } else {
         result.updated = false;
@@ -218,6 +219,7 @@ export class GridView extends Backbone.View {
       columns,
       rows,
       selection,
+      rangeSelection,
     ]);
     this.pipeContentProjections([
       columnGroup,
@@ -266,7 +268,7 @@ export class GridView extends Backbone.View {
         this._chainContent,
       ], (memo, chain) => chain.update(memo, force), null)
         .then(patchEvents)
-        .then(state => new Promise((resolve, reject) => {
+        .then(state => new Promise(resolve => {
           this._tableView.set(state, resolve);
         }))
         .then(nextTick)
@@ -800,7 +802,7 @@ export class GridView extends Backbone.View {
     const id = window.setInterval(() => {
       const rectNew = this.el.getBoundingClientRect();
 
-      if (_.some(keys, (key) => Math.abs(rectNew[key] - rect[key]) > 0.5)) {
+      if (_.some(keys, key => Math.abs(rectNew[key] - rect[key]) > 0.5)) {
         this._tableView.trigger('didChangeBound');
       }
     }, interval);

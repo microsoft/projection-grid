@@ -20,6 +20,7 @@ export function setSelectAll(gridView, checked) {
 
 function changeSelectAll(e) {
   setSelectAll(this, e.target.checked);
+  e.preventDefault();
 }
 
 export function setSelectRow(gridView, key, checked) {
@@ -29,20 +30,11 @@ export function setSelectRow(gridView, key, checked) {
   updateSelection(gridView, selection);
 }
 
-function setMultiRow(gridView, key) {
-  const { resolver } = gridView.get('selection');
-  const selection = resolver.selectMultiRow(key);
-
-  updateSelection(gridView, selection);
-}
-
 function changeSelectRow(e) {
   const key = this.keyOfElement(e.target);
-  if (e.shiftKey) {
-    setMultiRow(this, key);
-  } else {
-    setSelectRow(this, key, e.target.checked);
-  }
+
+  setSelectRow(this, key, e.target.checked);
+  e.preventDefault();
 }
 
 /**
@@ -54,7 +46,13 @@ function changeSelectRow(e) {
  *    * A boolean to indicate whether the grid has the selection column.
  *    * A detailed {@link SelectionConfig} object.
  */
-function selectionProjectionHandler(state, { enabled, resolver }) {
+function selectionProjectionHandler(state, {
+  enabled,
+  resolver,
+  a11y: {
+    selectAllLabel = 'Select All',
+  } = {},
+}) {
   if (!enabled) {
     return state;
   }
@@ -87,7 +85,7 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
     const selectableCount = _.filter(state.items.slice(), selectable).length;
     const selectedCount = _.filter(selected, key => selectable(this.itemWithKey(key))).length;
 
-    selectedAll = selectedCount === selectableCount;
+    selectedAll = selectableCount !== 0 && selectedCount === selectableCount;
   }
 
   const columns = [{
@@ -95,6 +93,7 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
     html: selectionHeadTemplate({
       single,
       checked: selectedAll,
+      checkAllLabel: selectAllLabel,
     }),
     template: selectionBodyTemplate,
     property: item => {
@@ -102,6 +101,7 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
         single,
         selectable: selectable(item),
         checked: selectedIndex[item[primaryKey]],
+        labelbyId: item[primaryKey],
       };
     },
     sortable: false,
@@ -116,15 +116,19 @@ function selectionProjectionHandler(state, { enabled, resolver }) {
       let selectedClassArray = selectedIndex[row.item[primaryKey]] ? ['row-selected'] : [];
 
       return _.defaults({
+        attributes: {
+          id: row.item[primaryKey],
+        },
         classes: _.union(selectedClassArray, row.classes),
       }, _.isObject(row) ? row : {});
+    } else {
+      return row;
     }
-    return row;
   });
 
   const events = _.defaults({
-    'click th input.select-all': changeSelectAll,
-    'click td input.select-row': changeSelectRow,
+    'change th input.select-all': changeSelectAll,
+    'change td input.select-row': changeSelectRow,
   }, state.events);
 
   return _.defaults({ columns, events, bodyRows }, state);
@@ -181,6 +185,7 @@ function normalizeSelectionConfig(selection) {
 
   return config;
 }
+
 
 export const selection = {
   name: 'selection',

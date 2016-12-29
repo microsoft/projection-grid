@@ -4,9 +4,6 @@ import protocol from './protocol';
 function click(selector) {
   return protocol.element.call(this, selector)
     .then($el => {
-      if ($el.is(':radio')) {
-        $el.prop('checked', true);
-      }
       $el.click();
       return null;
     });
