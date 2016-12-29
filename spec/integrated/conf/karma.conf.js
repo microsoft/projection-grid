@@ -39,8 +39,14 @@ module.exports = function (config) {
       outputDir: './spec/integrated/test-results/',
     },
     browsers: [
-      'Chrome',
-      // 'PhantomJS',
+      'ChromeNoSandbox',
     ],
+    customLaunchers: {
+      ChromeNoSandbox: {
+        base: 'Chrome',
+        flags: ['--no-sandbox'],
+      },
+    },
+
   });
 };

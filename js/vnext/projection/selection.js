@@ -193,4 +193,3 @@ export const selection = {
   normalize: normalizeSelectionConfig,
   defaults: false,
 };
-
