@@ -13,7 +13,7 @@
     "name": "Ahmed Kamel"
   },
   "main": "dist/projection-grid.js",
-  "version": "0.1.0-52",
+  "version": "0.1.0-53",
   "files": [
     "dist"
   ],
