@@ -27,16 +27,42 @@ define([
 
       this.subviews = [];
 
-      this.onViewPortChange = this.onViewPortChange.bind(this);
+      this.onChange = this.onViewPortChange.bind(this);
       
       if (!_.isEmpty(this.renderers)) {
       	this.listenTo(this.container, 'scroll:container', this.onViewPortChange);
       	this.listenTo(this.container, 'resize:container', this.onViewPortChange);
       }
+
+      this.on('change:viewport', function () {
+        if (this.$el.is(':visible')) {
+          this.scheduleDraw();
+        }
+      });
     },
 
     onViewPortChange: function () {
-      this.scheduleDraw();
+      this.trigger('change:viewport');
+    },
+
+    monitorViewportChange: function (timeout, interval) {
+      timeout = timeout || 1000;
+      interval = interval || 100;
+
+      var rect = this.el.getBoundingClientRect();
+      var id = window.setInterval(function () {
+        var rectNew = this.el.getBoundingClientRect();
+
+        if (_.some(['left', 'top', 'width', 'height'], function(key) {
+          return Math.abs(rectNew[key] - rect[key]) > 0.5;
+        })) {
+          this.onViewPortChange();
+        }
+      }.bind(this), interval);
+
+      window.setTimeout(function () {
+        window.clearInterval(id);
+      }, timeout);
     },
 
     removeSubviews: function () {
@@ -134,7 +160,10 @@ define([
 
     // TODO [akamel] [perf] 8.5%
     toHTML: function (value) {
-      var data = _.defaults({ value: value }, this.data);
+      var data = _.defaults({
+        value: value.rows,
+        isSticky: value.isSticky,
+      }, this.data);
 
       _.each(data.columns, function (col) {
         if (_.isObject(col.$metadata)) {
@@ -273,7 +302,7 @@ define([
         this.removeSubviews();
 
         if (res.canSkipDraw !== true) {
-          this.el.innerHTML = this.toHTML(res.rows);
+          this.el.innerHTML = this.toHTML(res);
         }
 
         _.each(this.data.columns, function (column) {

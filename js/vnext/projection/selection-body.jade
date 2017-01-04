@@ -1,0 +1,7 @@
+if value.selectable
+  if value.single
+    input.select-row(type='radio', checked=value.checked, aria-labelledby=value.labelbyId)
+  else
+    input.select-row(type='checkbox', checked=value.checked, aria-labelledby=value.labelbyId)
+else
+  span.unselectable

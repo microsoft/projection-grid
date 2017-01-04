@@ -62,7 +62,7 @@ define([
 
     this.$el.append($tmpEl);
 
-    $tmpEl[0].innerHTML = this.toHTML(sample);
+    $tmpEl[0].innerHTML = this.toHTML({ rows: sample });
 
     // b. take measures
     var ret = dimensions.call(this, $tmpEl);

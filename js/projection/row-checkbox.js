@@ -32,13 +32,14 @@ define([
       // Model.__super__.update.call(this, options);
 
       if (Model.__super__.update.call(this, options)) {
+        var model = this.src.data;
         var checkId = this.get('row.check.id');
-        var value = this.src.data.get('value');
+        var value = model.get('value');
         var ids = _.pluck(value, checkId);
         var checked = _.intersection(this.get('row.check.list'), ids);
         var checkedLookup = _.object(checked, []);
         var col = this.get('column.checked');
-        var columns = _.clone(this.src.data.get('columns'));
+        var columns = _.clone(model.get('columns'));
         var checkedAll = value.length > 0;
         var hasCheckboxable = false;
         var checkboxAllow = this.get('row.check.allow');
@@ -62,12 +63,16 @@ define([
             disabled = false;
             hasCheckboxable = true;
 
+            var uniqueId = model.get('a11y.selection.uniqueId');
+            var labelledId = (uniqueId || '').concat(ret[checkId]);
+
             ret[col] = _.extend({}, ret[col], {
-              $html: selectableTemplate({
+              $html: selectableTemplate(_.pick({
                 type: isSingle ? 'radio' : 'checkbox',
                 checked: checked,
                 disabled: disabled,
-              }),
+                labelledId: labelledId,
+              }, Boolean)),
             });
           }
 
@@ -80,21 +85,24 @@ define([
             checkboxColumn.$html = '<span/>';
           } else {
             var disabled = _.size(ids) === 0;
+            var labelString = model.get('a11y.selection.selectAllLabel');
             if (hasCheckboxable) {
-              checkboxColumn.$html = selectableTemplate({
+              checkboxColumn.$html = selectableTemplate(_.pick({
                 type: 'checkbox',
                 checked: checkedAll,
                 disabled: disabled,
-              });
+                labelString: labelString,
+              }, Boolean));
               if (!checkedAll) {
                 this.attributes['row.check.checked.all'] = false;
               }
             } else {
-              checkboxColumn.$html = selectableTemplate({
+              checkboxColumn.$html = selectableTemplate(_.pick({
                 type: 'checkbox',
                 checked: this.get('row.check.checked.all'),
                 disabled: disabled,
-              });
+                labelString: labelString,
+              }, Boolean));
             }
           }
         }
@@ -102,6 +110,7 @@ define([
         this.patch({
           value: value,
           columns: columns,
+          'row.check.allow': checkboxAllow,
         });
       } else {
         // todo [akamel] unset our properties only

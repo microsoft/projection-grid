@@ -3,19 +3,31 @@ import renderersPlugin from './renderers-plugin';
 import projectionPlugin from './projection-plugin';
 import gridViewPlugin from './grid-view-plugin';
 
+import dataSourceVNextPlugin from '../vnext/factory/data-source-plugin.js';
+import gridViewVNextPlugin from '../vnext/factory/grid-view-plugin.js';
+
 const configPlugin = definePlugin => definePlugin('config', [], function () {
   return this.config;
 });
 
 class GridFactory {
-  constructor() {
+  constructor({
+    vnext = false,
+  } = {}) {
     this.pluginIndex = {};
     this.plugins = [];
-    this
-      .use(configPlugin)
-      .use(projectionPlugin)
-      .use(renderersPlugin)
-      .use(gridViewPlugin);
+    if (vnext) {
+      this
+        .use(configPlugin)
+        .use(dataSourceVNextPlugin)
+        .use(gridViewVNextPlugin);
+    } else {
+      this
+        .use(configPlugin)
+        .use(projectionPlugin)
+        .use(renderersPlugin)
+        .use(gridViewPlugin);
+    }
   }
 
   definePlugin(name, deps, callback) {
@@ -48,6 +60,6 @@ class GridFactory {
 
 }
 
-export default function () {
-  return new GridFactory();
+export default function (options) {
+  return new GridFactory(options);
 }

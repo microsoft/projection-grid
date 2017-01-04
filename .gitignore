@@ -12,8 +12,10 @@ coverage
 node-debug.log
 npm-debug.log
 
-# dist
+# output folder
 dist
+docs
 
 # the npm settings
 .npmrc
+

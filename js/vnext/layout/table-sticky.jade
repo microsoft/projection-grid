@@ -1,0 +1,19 @@
+-
+  var tableStyle = {
+    'border-collapse': 'collapse',
+    'margin': 0,
+    'table-layout': 'fixed',
+  };
+
+.table-container
+  table.sticky-header(style=tableStyle, class=classes)
+    colgroup.column-group
+    thead.header
+  .sticky-header-filler
+  table(style=tableStyle, class=classes)
+    colgroup.column-group
+    tbody
+      tr.top-filler
+      tr.bottom-filler
+    tfoot.footer
+

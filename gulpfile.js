@@ -10,12 +10,21 @@ var http = require('http');
 var fs = require('fs');
 var os = require('os');
 var resolve = require('resolve');
-// coveralls
-var coveralls = require('gulp-coveralls');
-// coveralls-end
+var jsdoc = require('gulp-jsdoc3');
+var Server = require('karma').Server;
 
 var childProcess = require('child_process');
 var spawn = childProcess.spawn;
+
+var specUnit = './spec/unit/$speclist.js';
+var unitFilePath = [specUnit];
+var unitPreprocessor = {};
+unitPreprocessor[specUnit] = ['webpack', 'sourcemap'];
+
+var specIntegrated = './spec/integrated/$speclist.js';
+var integratedFilePath = ['./node_modules/babel-polyfill/dist/polyfill.js', specIntegrated];
+var integratedPreprocessor = {};
+integratedPreprocessor[specIntegrated] = ['webpack', 'sourcemap'];
 
 function webpackBuild(configFilePath) {
   return function (cb) {
@@ -55,52 +64,45 @@ function startSeleniumServer() {
   return childProcess.spawn('java', ['-jar', filePath], { stdio: 'inherit' });
 }
 
-//
-// Don't use Karma API for now
-// For karma version 0.13.19 - 0.13.22, there's issue 1788
-// -- Karma 0.13.19 taking long time to complete when run via gulp
-// https://github.com/karma-runner/karma/issues/1788
-// We should switch back to Karma API when the issue is fixed
-//
-// var Server = require('karma').Server;
-//
-// coveralls
-gulp.task('coveralls', ['test'], function () {
-  if (!process.env.CI) {
-    return;
-  }
-  return gulp.src(path.join(__dirname, 'coverage/report-lcov/lcov.info')).pipe(coveralls());
-});
-// coveralls-end
-gulp.task('test:unit', function (cb) {
-  var handler = function (code) {
-    if (code) {
-      cb(new Error('test failure'));
-    } else {
-      cb();
-    }
-  };
+gulp.task('test:unit', function(done) {
+  new Server({
+    configFile: path.join(__dirname, './spec/unit/conf/karma.conf.js'),
+    files: unitFilePath,
+    preprocessors: unitPreprocessor,
+    singleRun: true,
+  }, done).start();
+})
 
-  //
-  // Don't use Karma API for now
-  //
-  // new Server({
-  //   configFile: path.join(__dirname, 'karma.conf.js'),
-  //   singleRun: true,
-  // }, handler).start();
-  //
+// debug in chrome by default
+// Todo: envole yargs to config in cmd
+gulp.task('test-debug:unit', function(done) {
+  new Server({
+    configFile: path.join(__dirname, './spec/unit/conf/karma.debug.conf.js'),
+    files: unitFilePath,
+    preprocessors: unitPreprocessor,
+    singleRun: false,
+  }, done).start();
+})
 
-  var karmaCmd = path.resolve('./node_modules/.bin/karma');
+gulp.task('test:integrated', function(done) {
+  new Server({
+    configFile: path.join(__dirname, './spec/integrated/conf/karma.conf.js'),
+    files: integratedFilePath,
+    preprocessors: integratedPreprocessor,
+    singleRun: true,
+  }, done).start();
+})
 
-  if (process.platform === 'win32') {
-    karmaCmd += '.cmd';
-  }
-
-  spawn(karmaCmd, [
-    'start',
-    '--single-run',
-  ], { stdio: 'inherit' }).on('close', handler);
-});
+// debug in chrome by default
+// Todo: envole yargs to config in cmd
+gulp.task('test-debug:integrated', function(done) {
+  new Server({
+    configFile: path.join(__dirname, './spec/integrated/conf/karma.debug.conf.js'),
+    files: integratedFilePath,
+    preprocessors: integratedPreprocessor,
+    singleRun: false,
+  }, done).start();
+})
 
 gulp.task('static', function () {
   return gulp.src('**/*.js')
@@ -108,6 +110,11 @@ gulp.task('static', function () {
     .pipe(eslint())
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
+});
+
+gulp.task('jsdoc', function (cb) {
+  gulp.src(['README.md', './js/vnext/**/*.js'], { read: false })
+    .pipe(jsdoc(require('./jsdoc.json'), cb));
 });
 
 gulp.task('webpack', webpackBuild('./webpack.config'));
@@ -141,15 +148,14 @@ gulp.task('test:demos', ['download-selenium'], function (done) {
   });
 });
 
-gulp.task('test', ['test:unit']);
-// gulp.task('test', ['test:unit', 'test:demos']);
+gulp.task('test', ['test:unit', 'test:integrated']);
 
 gulp.task('prepublish', ['webpack']);
 
 gulp.task('clean:test', function () {
   return del([
-    'test-results',
-    'coverage',
+    './spec/*/test-results',
+    './spec/*/coverage',
     'errorShots',
   ]);
 });
@@ -159,5 +165,4 @@ gulp.task('clean:build', function () {
 });
 
 gulp.task('clean', ['clean:build', 'clean:test']);
-
-gulp.task('default', ['static', 'webpack', 'coveralls']);
+gulp.task('default', ['webpack']);
