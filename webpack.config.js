@@ -50,6 +50,6 @@ module.exports = {
   babel: { presets: ['es2015'] },
   externals: [getExternals()],
   resolve: { alias: webpackAlias },
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
 };
 
