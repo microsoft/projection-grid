@@ -12,6 +12,9 @@ coverage
 node-debug.log
 npm-debug.log
 
+# yarn logs
+yarn-error.log
+
 # output folder
 dist
 docs
