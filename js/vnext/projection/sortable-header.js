@@ -44,6 +44,11 @@ function sortableHeaderProjectionHandler(state, {
   name,
   directionIndex,
   template = sortableHeaderTemplate,
+  a11y: {
+    ascString = 'ascending',
+    desString = 'descending',
+    noneString = 'no sorting',
+  } = {},
 } = {}) {
   /**
    * @typedef SortableHeaderConfig
@@ -73,6 +78,16 @@ function sortableHeaderProjectionHandler(state, {
         const decorationTemplate = column.sortable.template || template;
         const direction = column.name === name ? column.sortable.direction[directionIndex] : 0;
 
+        let ariaSort = noneString;
+
+        if (direction < 0) {
+          ariaSort = desString;
+        } else if (direction > 0) {
+          ariaSort = ascString;
+        };
+
+        patchCell.attributes = _.defaults({ 'aria-sort': ariaSort }, cell.attributes);
+
         /**
          * @callback SortableHeaderTemplate
          * @param {Object} locals
@@ -91,7 +106,7 @@ function sortableHeaderProjectionHandler(state, {
       }
 
       return _.defaults(patchCell, cell);
-    }); 
+    });
 
     return _.defaults({ cells }, row);
   });
