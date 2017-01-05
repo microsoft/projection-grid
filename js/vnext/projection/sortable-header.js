@@ -123,4 +123,3 @@ export const sortableHeader = {
   handler: sortableHeaderProjectionHandler,
   defaults: {},
 };
-
