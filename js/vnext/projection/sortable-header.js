@@ -72,14 +72,7 @@ function sortableHeaderProjectionHandler(state, {
 
         const decorationTemplate = column.sortable.template || template;
         const direction = column.name === name ? column.sortable.direction[directionIndex] : 0;
-
-        let ariaSort = 'none';
-
-        if (direction < 0) {
-          ariaSort = 'descending';
-        } else if (direction > 0) {
-          ariaSort = 'ascending';
-        };
+        const ariaSort = direction > 0 ? 'ascending' : direction < 0 ? 'descending' : 'none';
 
         patchCell.attributes = _.defaults({ 'aria-sort': ariaSort, tabindex: 0 }, cell.attributes);
 
