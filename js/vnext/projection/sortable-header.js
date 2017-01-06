@@ -2,9 +2,6 @@ import _ from 'underscore';
 import sortableHeaderTemplate from './sortable-header.jade';
 
 const regexKey = /\s*(-)?\s*(\w+)/;
-const ascString = 'ascending';
-const desString = 'descending';
-const noneString = 'none';
 
 // Reorder column data referring to 'column.sortable'.
 // 'column.sortable' takes four types of values: boolean, number, string and function.
@@ -76,12 +73,12 @@ function sortableHeaderProjectionHandler(state, {
         const decorationTemplate = column.sortable.template || template;
         const direction = column.name === name ? column.sortable.direction[directionIndex] : 0;
 
-        let ariaSort = noneString;
+        let ariaSort = 'none';
 
         if (direction < 0) {
-          ariaSort = desString;
+          ariaSort = 'descending';
         } else if (direction > 0) {
-          ariaSort = ascString;
+          ariaSort = 'ascending';
         };
 
         patchCell.attributes = _.defaults({ 'aria-sort': ariaSort, tabindex: 0 }, cell.attributes);
