@@ -68,10 +68,13 @@ function sortableHeaderProjectionHandler(state, {
       const column = leafColumnIndex[cell.name];
 
       if (column && column.sortable) {
-        patchCell.classes = cell.classes.concat('column-header-sortable');
+        patchCell.classes = cell.classes.concat(['clickable', 'column-header-sortable']);
 
         const decorationTemplate = column.sortable.template || template;
         const direction = column.name === name ? column.sortable.direction[directionIndex] : 0;
+        const ariaSort = direction > 0 ? 'ascending' : direction < 0 ? 'descending' : 'none';
+
+        patchCell.attributes = _.defaults({ 'aria-sort': ariaSort, tabindex: 0 }, cell.attributes);
 
         /**
          * @callback SortableHeaderTemplate
@@ -91,7 +94,7 @@ function sortableHeaderProjectionHandler(state, {
       }
 
       return _.defaults(patchCell, cell);
-    }); 
+    });
 
     return _.defaults({ cells }, row);
   });
@@ -108,4 +111,3 @@ export const sortableHeader = {
   handler: sortableHeaderProjectionHandler,
   defaults: {},
 };
-
