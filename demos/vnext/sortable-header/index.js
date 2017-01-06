@@ -115,10 +115,5 @@ window.gridView = pgrid.factory({ vnext: true }).create({
   },
   sortableHeader: {
     template: sortableHeaderTemplate,
-    a11y: {
-      ascString: 'test ascending',
-      desString: 'test descending',
-      noneString: 'test no sorting',
-    },
   },
 }).gridView.render();

@@ -2,6 +2,9 @@ import _ from 'underscore';
 import sortableHeaderTemplate from './sortable-header.jade';
 
 const regexKey = /\s*(-)?\s*(\w+)/;
+const ascString = 'ascending';
+const desString = 'descending';
+const noneString = 'none';
 
 // Reorder column data referring to 'column.sortable'.
 // 'column.sortable' takes four types of values: boolean, number, string and function.
@@ -44,11 +47,6 @@ function sortableHeaderProjectionHandler(state, {
   name,
   directionIndex,
   template = sortableHeaderTemplate,
-  a11y: {
-    ascString = 'ascending',
-    desString = 'descending',
-    noneString = 'no sorting',
-  } = {},
 } = {}) {
   /**
    * @typedef SortableHeaderConfig
@@ -73,7 +71,7 @@ function sortableHeaderProjectionHandler(state, {
       const column = leafColumnIndex[cell.name];
 
       if (column && column.sortable) {
-        patchCell.classes = cell.classes.concat('column-header-sortable');
+        patchCell.classes = cell.classes.concat(['clickable', 'column-header-sortable']);
 
         const decorationTemplate = column.sortable.template || template;
         const direction = column.name === name ? column.sortable.direction[directionIndex] : 0;
@@ -86,7 +84,7 @@ function sortableHeaderProjectionHandler(state, {
           ariaSort = ascString;
         };
 
-        patchCell.attributes = _.defaults({ 'aria-sort': ariaSort }, cell.attributes);
+        patchCell.attributes = _.defaults({ 'aria-sort': ariaSort, tabindex: 0 }, cell.attributes);
 
         /**
          * @callback SortableHeaderTemplate
