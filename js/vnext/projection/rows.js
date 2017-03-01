@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { normalizeClasses } from './common.js';
+import { normalizeClasses, normalizeAttributes } from './common.js';
 
 const bufferStateClasses = {
   changed: ['row-buffer-changed'],
@@ -17,7 +17,9 @@ const bufferStateClasses = {
  *    * `'data'`. Indicating the row is expanded from the `'data-rows'`.
  *
  * @property {?ClassesConfig} classes
- *    Classes of the `TR` element.
+ *    The classes of the `TR` element.
+ * @property {?AttributesConfig} attributes
+ *    The attributes of the `TR` element.
  * @property {?Object} item
  *    The data item for the row.
  * @property {?string} html
@@ -53,36 +55,45 @@ function rowsProjectionHandler(state, {
   footRows = [],
   bodyRows = ['data-rows'],
 } = {}) {
-  const patch = { headRows, footRows };
-
   const primaryKey = state.primaryKey;
   const changed = this.get('buffer').changed || {};
 
   // TODO [wewei], use Fake items for better performance.
   const items = state.items.slice(0, state.items.length);
 
-  patch.bodyRows = _.reduce(bodyRows, (memo, row) => {
-    if (row === 'data-rows' || row.type === 'data-rows') {
-      _.each(items, item => {
-        const key = item[primaryKey];
-        const bufferState = _.chain(changed).result(key).result('state').value();
-        const classes = _.union(
-          normalizeClasses(row.classes, item),
-          _.result(bufferStateClasses, bufferState, [])
-        );
+  return _.defaults({
+    headRows: _.map(headRows, row => (_.isObject(row) ? _.defaults({
+      classes: normalizeClasses(row.classes, row),
+      attributes: normalizeAttributes(row.attributes, row),
+    }, row) : row)),
 
-        memo.push({ item, classes, type: 'data' });
-      });
-    } else if (row.view) {
-      throw new Error('Body row cannot have subviews');
-    } else {
-      memo.push(row);
-    }
+    bodyRows: _.reduce(bodyRows, (memo, row) => {
+      if (row === 'data-rows' || row.type === 'data-rows') {
+        _.each(items, item => {
+          const key = item[primaryKey];
+          const bufferState = _.chain(changed).result(key).result('state').value();
+          const classes = _.union(
+            normalizeClasses(row.classes, item),
+            _.result(bufferStateClasses, bufferState, [])
+          );
+          const attributes = normalizeAttributes(row.attributes, item);
 
-    return memo;
-  }, []);
+          memo.push({ item, classes, type: 'data', attributes });
+        });
+      } else if (row.view) {
+        throw new Error('Body row cannot have subviews');
+      } else {
+        memo.push(row);
+      }
 
-  return _.defaults(patch, state);
+      return memo;
+    }, []),
+
+    footRows: _.map(footRows, row => (_.isObject(row) ? _.defaults({
+      classes: normalizeClasses(row.classes, row),
+      attributes: normalizeAttributes(row.attributes, row),
+    }, row) : row)),
+  }, state);
 }
 
 export const rows = {

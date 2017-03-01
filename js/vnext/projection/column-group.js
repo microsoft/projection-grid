@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { normalizeClasses } from './common.js';
+import { normalizeClasses, normalizeAttributes } from './common.js';
 import defaultCellTemplate from './default-cell.jade';
 
 function stringProperty(property) {
@@ -201,18 +201,18 @@ class ColumnGroup {
       if (!_.isFunction(col.template)) {
         col.template = defaultCellTemplate;
       }
-      col.height  = _.isNumber(height) ? height : 1;
+      col.height = _.isNumber(height) ? height : 1;
       col.rowIndex = parent ? parent.rowIndex + parent.height : 0;
       col.columns = _.map(columns, c => buildColumn(_.extend({ parent: col }, c)));
       col.treeHeight = col.height;
       col.treeWidth = 1;
-      if (!_.isEmpty(col.columns)) {
+      if (_.isEmpty(col.columns)) {
+        this.leafColumns.push(col);
+      } else {
         col.treeHeight += _.chain(col.columns)
           .map(_.property('treeHeight')).max().value();
         col.treeWidth = _.chain(col.columns)
           .map(_.property('treeWidth')).reduce((a, b) => a + b, 0).value();
-      } else {
-        this.leafColumns.push(col);
       }
 
       return col;
@@ -236,11 +236,11 @@ class ColumnGroup {
         if (_.isEmpty(col.columns)) {
           classes.push('column-header-leaf');
         }
-        const attributes = {
+        const attributes = _.defaults({
           colspan,
           rowspan,
           'data-name': name,
-        };
+        }, normalizeAttributes(col.headAttributes, col));
         col.cell = { html, name, classes, attributes };
         this.headerRows[col.rowIndex].cells.push(col.cell);
       }
@@ -276,6 +276,7 @@ class ColumnGroup {
 function translateColumnGroup(columnGroup) {
   return _.map(columnGroup.leafColumns, col => {
     const colClasses = _.union(normalizeClasses(col.colClasses, col), [`col-${col.name}`]);
+    const colAttributes = normalizeAttributes(col.colAttributes, col);
     /**
      * The content of a `COL` element in `COLGROUP`.
      * @typedef ColContent
@@ -286,6 +287,7 @@ function translateColumnGroup(columnGroup) {
      *    The CSS width for the column.
      */
     return {
+      attributes: colAttributes,
       classes: colClasses,
       width: _.isNumber(col.width) ? `${col.width}px` : col.width,
     };

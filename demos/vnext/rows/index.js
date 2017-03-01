@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import _ from 'underscore';
 import Backbone from 'backbone';
 import pgrid from '../../../js';
 
@@ -39,7 +40,7 @@ window.gridView = pgrid.factory({ vnext: true }).create({
   selection: {
     headClasses: 'grid-select-all',
     bodyClasses: 'grid-select-row',
-    selectable: (item) => item.OrderID % 2,
+    selectable: item => item.OrderID % 2,
   },
   rows: {
     headRows: [
@@ -50,15 +51,22 @@ window.gridView = pgrid.factory({ vnext: true }).create({
       {
         html: '',
         classes: ['separator'],
+        attributes: {
+          'data-type': 'html',
+          'data-classes': ({ classes }) => classes.join(' '),
+        },
       },
       'column-header-rows',
     ],
     bodyRows: [{
       type: 'data-rows',
       classes: {
-        redColor: true,
-        longer: (row) => { return row.ShipAddress.length > 15; },
-      }
+        'red-color': true,
+        'longer': row => (row.ShipAddress.length > 15),
+      },
+      attributes: {
+        'data-order-id': _.property('OrderID'),
+      },
     }, {
       item: {
         CustomerID: 'foobar',
@@ -74,6 +82,10 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     name: 'Group 0',
     html: '<i>Group 0</i>',
     headClasses: 'Iamgrouphead',
+    headAttributes: {
+      'aria-label': ({ title, name }) => title || name,
+      'tabindex': 0,
+    },
     columns: [{
       name: 'CustomerID',
       sortable: true,
@@ -81,22 +93,49 @@ window.gridView = pgrid.factory({ vnext: true }).create({
       bodyClasses: 'Iambody',
       footClasses: 'Iamfoot',
       colClasses: 'Iamcol',
-    },{
+      colAttributes: {
+        'data-name': _.property('name'),
+        'data-sortable': true,
+      },
+      headAttributes: {
+        'aria-label': ({ title, name }) => title || name,
+        'tabindex': 0,
+      },
+    }, {
       name: 'OrderID',
       sortable: -1,
+      headAttributes: {
+        'aria-label': ({ title, name }) => title || name,
+        'tabindex': 0,
+      },
+      bodyAttributes: {
+        'data-ship-via': ({ item }) => item.ShipVia,
+      },
     }, {
       name: 'ShipAddress',
       property: 'ShipAddress/length',
       title: 'Ship Address Length',
       width: 150,
       sortable: 'length(ShipAddress)',
+      headAttributes: {
+        'aria-label': ({ title, name }) => title || name,
+        'tabindex': 0,
+      },
     }, {
       name: 'Destination',
       property: item => `${item.ShipCountry} / ${item.ShipCity}`,
+      headAttributes: {
+        'aria-label': ({ title, name }) => title || name,
+        'tabindex': 0,
+      },
     }],
-  },{
+  }, {
     name: 'ShipCity',
     sortable: true,
+    headAttributes: {
+      'aria-label': ({ title, name }) => title || name,
+      'tabindex': 0,
+    },
   }],
   events: {
     'click th.column-header': (e) => console.log(e.target),

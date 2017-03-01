@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { normalizeClasses } from './common.js';
+import { normalizeClasses, normalizeAttributes } from './common.js';
 
 /**
  * Translate the {@link RowConfig} into {@link RowContent}
@@ -42,14 +42,19 @@ function translateRow({
   }
   if (_.has(row, 'item')) {
     patch.cells = _.map(columnGroup.leafColumns, col => {
-      let cellClasses;
+      let cellClasses, cellAttributes;
+
       if (rowType === 'foot') {
         cellClasses = normalizeClasses(col.footClasses, row);
+        cellAttributes = normalizeAttributes(col.footAttributes, row);
       } else if (rowType === 'body') {
         cellClasses = normalizeClasses(col.bodyClasses, row);
+        cellAttributes = normalizeAttributes(col.bodyAttributes, row);
       } else if (rowType === 'head') {
         cellClasses = normalizeClasses(col.headClasses, row);
+        cellAttributes = normalizeAttributes(col.headAttributes, row);
       }
+
       /**
        * The object represents a cell.
        * @typedef CellContent
@@ -64,7 +69,7 @@ function translateRow({
        *    The Backbone View to be filled into the cell. Unsupported for
        *    the body cells.
        */
-      const cell = { classes: cellClasses, attributes: {} };
+      const cell = { classes: cellClasses, attributes: cellAttributes };
       cell.value = col.property.get(row.item);
       cell.html = col.template(_.pick(cell, 'value'));
 

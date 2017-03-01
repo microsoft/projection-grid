@@ -36,6 +36,19 @@ let gridConfig = {
     colClasses: ['nameClass1', 'nameClass2'],
     headClasses: ['nameHeadClass1', 'nameHeadClass2'],
     bodyClasses: bodyClassGenerator,
+    colAttributes: {
+      'data-name': _.property('name'),
+      'data-sortable': true,
+    },
+    headAttributes: {
+      'data-title': _.property('title'),
+      'data-sortable': true,
+    },
+    bodyAttributes: {
+      'data-name': 'FirstName',
+      'data-length': ({ item }) => item.FirstName.length,
+      'data-type': 'string',
+    },
   }, {
     name: 'LastName',
     title: 'Last Name',
@@ -215,6 +228,28 @@ describe('columns config', function () {
         })
         .asCallback(done);
     });
+  });
+
+  it('should render the attributes correctly', function (done) {
+    driver.once(gridView, 'didUpdate')
+      .then(() => driver.element('#container > .table-container colgroup > col[data-name="FirstName"]'))
+      .then(result => {
+        expect(result.length).to.equal(1);
+        expect(result.attr('data-sortable')).to.be.equal('');
+      })
+      .then(() => driver.element('#container > .table-container th[data-name="FirstName"]'))
+      .then(result => {
+        expect(result.length).to.equal(1);
+        expect(result.attr('data-title')).to.equal('First Name');
+        expect(result.attr('data-sortable')).to.be.equal('');
+      })
+      .then(() => driver.element('#container > .table-container tbody > tr[data-key]:eq(0) > td[data-name="FirstName"]'))
+      .then(result => {
+        expect(result.length).to.equal(1);
+        expect(result.attr('data-type')).to.equal('string');
+        expect(result.attr('data-length')).to.equal(result.text().length.toString());
+      })
+      .asCallback(done);
   });
 
   // it(sub colums should works as expected', function () {

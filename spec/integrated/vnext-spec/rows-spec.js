@@ -35,45 +35,46 @@ let gridConfig = {
     primaryKey: 'UserName',
   },
   rows: {
-    headRows: [
-      {
-        html: '<div class="head-rows-html">head rows html</div>',
+    headRows: [{
+      html: '<div class="head-rows-html">head rows html</div>',
+      payload: 'Custom Row',
+      attributes: {
+        'data-type': 'html',
+        'data-payload': _.property('payload'),
       },
-      'column-header-rows',
-    ],
+    }, 'column-header-rows'],
     bodyRows: [
       {
         type: 'data-rows',
         classes: {
-          male: (row) => {
-            return row.Gender === 'Male';
-          },
-          female: (row) => {
-            return row.Gender === 'Female';
-          },
+          male: row => (row.Gender === 'Male'),
+          female: row => (row.Gender === 'Female'),
+        },
+        attributes: {
+          'data-type': 'data',
+          'data-first-name': _.property('FirstName'),
         },
       },
     ],
-    footRows: [
-      {
-        view: new TitleView({title: 'view in footer'}).render(),
+    footRows: [{
+      view: new TitleView({ title: 'view in footer' }).render(),
+      attributes: {
+        'data-type': 'view',
+        'data-title': ({ view }) => view.title,
       },
-    ]
+    }],
   },
 };
 
-let pgrid;
-let gridView;
+let pgrid, gridView;
 
 describe('rows config', function () {
   beforeEach(function () {
     util.renderTestContainer();
-    pgrid = pGrid 
-      .factory({ vnext: true })
-      .create(gridConfig)
+    pgrid = pGrid.factory({ vnext: true }).create(gridConfig);
     gridView = pgrid.gridView.render();
   });
-  
+
   afterEach(() => {
     gridView.remove();
     util.cleanup();
@@ -96,8 +97,7 @@ describe('rows config', function () {
         expect(assertion).to.be.true;
         expect(result[3].text()).to.be.equal('view in footer');
       })
-      .then(done)
-      .catch(console.log);
+      .asCallback(done);
   });
 
   it('rows should works as expected in body', function (done) {
@@ -109,7 +109,27 @@ describe('rows config', function () {
         util.validateClassesForElementArray([result.eq(0), result.eq(4), result.eq(9)], ['male']);
         util.validateClassesForElementArray([result.eq(10), result.eq(13), result.eq(15)], ['female']);
       })
-      .then(done)
-      .catch(console.log);
+      .asCallback(done);
+  });
+
+  it('should render the attributes of TRs correctly', function (done) {
+    driver.once(gridView, 'didUpdate')
+      .then(() => driver.element('.table-container table > thead > tr[data-type="html"]'))
+      .then(result => {
+        expect(result.length).to.equal(1);
+        expect(result.attr('data-payload')).to.equal('Custom Row');
+      })
+      .then(() => driver.element('.table-container table > tbody > tr[data-key]:eq(0)'))
+      .then(result => {
+        expect(result.length).to.equal(1);
+        expect(result.attr('data-type')).to.equal('data');
+        expect(result.attr('data-first-name')).to.equal(_.first(memoryData).FirstName);
+      })
+      .then(() => driver.element('.table-container table > tfoot > tr[data-type="view"]'))
+      .then(result => {
+        expect(result.length).to.equal(1);
+        expect(result.attr('data-title')).to.equal('view in footer');
+      })
+      .asCallback(done);
   });
 });
