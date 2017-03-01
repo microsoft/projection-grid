@@ -65,7 +65,7 @@ window.gridView = pgrid.factory({ vnext: true }).create({
         'longer': row => (row.ShipAddress.length > 15),
       },
       attributes: {
-        'data-order-id': _.property('OrderID')
+        'data-order-id': _.property('OrderID'),
       },
     }, {
       item: {
