@@ -41,6 +41,14 @@ import _ from 'underscore';
  *    The classes for the `TD` elements in `TBODY`.
  * @property {ClassesConfig} footClasses
  *    The classes for the `TD` elements in `TFOOT`.
+ * @property {ClassesConfig} colAttributes
+ *    The attributes for the `COL` element in `COLGROUP`.
+ * @property {AttributesConfig} headAttributes
+ *    The attributes for the `TH` elements in `THEAD`.
+ * @property {AttributesConfig} bodyAttributes
+ *    The attributes for the `TD` elements in `TBODY`.
+ * @property {AttributesConfig} footAttributes
+ *    The attributes for the `TD` elements in `TFOOT`.
  * @property {ColumnConfig[]} columns
  *    The children columns.
  */
@@ -58,7 +66,7 @@ function columnsProjectionHandler(state, columns) {
   return _.defaults({
     columns: columns || _.chain(state.items.slice(0, 1)).first().keys().map(name => ({
       name,
-        sortable: true,
+      sortable: true,
     })).value(),
   }, state);
 }

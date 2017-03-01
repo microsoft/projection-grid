@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { normalizeClasses } from './common.js';
+import { normalizeClasses, normalizeAttributes } from './common.js';
 
 const bufferStateClasses = {
   changed: ['row-buffer-changed'],
@@ -17,7 +17,9 @@ const bufferStateClasses = {
  *    * `'data'`. Indicating the row is expanded from the `'data-rows'`.
  *
  * @property {?ClassesConfig} classes
- *    Classes of the `TR` element.
+ *    The classes of the `TR` element.
+ * @property {?AttributesConfig} attributes
+ *    The attributes of the `TR` element.
  * @property {?Object} item
  *    The data item for the row.
  * @property {?string} html
@@ -70,8 +72,9 @@ function rowsProjectionHandler(state, {
           normalizeClasses(row.classes, item),
           _.result(bufferStateClasses, bufferState, [])
         );
+        const attributes = normalizeAttributes(row.attributes, item);
 
-        memo.push({ item, classes, type: 'data' });
+        memo.push({ item, classes, type: 'data', attributes });
       });
     } else if (row.view) {
       throw new Error('Body row cannot have subviews');
