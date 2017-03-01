@@ -72,8 +72,7 @@ describe('scrollable for non-vnext', function () {
       .then((result) => {
         expect(result.position().top).to.be.equal(0);
       })
-      .then(done)
-      .catch(console.log);
+      .asCallback(done);
   });
 
   it('virtualization should works as expected for non-vnext', function (done) {
@@ -87,11 +86,11 @@ describe('scrollable for non-vnext', function () {
     gridView = pgridFactory
       .create(_.extend(scrollalbeConfig, gridConfig))
       .gridView
-      .render({fetch: true});
+      .render({ fetch: true });
 
     driver.scroll(0, document.body.scrollHeight)
       .then(() => {
-        return driver.pause(50);
+        return driver.pause(200);
       })
       .then(() => {
         return driver.element('#container .grid tbody .table__row--body');
@@ -102,11 +101,10 @@ describe('scrollable for non-vnext', function () {
         let bottomForLastRow = lastRow.position().top + lastRow.outerHeight(true) + 2;
         let documentHeight = $(document).height();
 
-        expect(bottomForLastRow).to.equal(documentHeight);
+        expect(bottomForLastRow).to.be.closeTo(documentHeight, 0.01);
         let assertion = util.validateElementMatrix(result.last(), [['laurelosborn', 'Laurel', 'Osborn', 'Female']]);
         expect(assertion).to.be.true;
       })
-      .then(done)
-      .catch(console.log);
+      .asCallback(done);
   });
 });

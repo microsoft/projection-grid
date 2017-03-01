@@ -51,6 +51,10 @@ window.gridView = pgrid.factory({ vnext: true }).create({
       {
         html: '',
         classes: ['separator'],
+        attributes: {
+          'data-type': 'html',
+          'data-classes': ({ classes }) => classes.join(' '),
+        },
       },
       'column-header-rows',
     ],
@@ -90,7 +94,8 @@ window.gridView = pgrid.factory({ vnext: true }).create({
       footClasses: 'Iamfoot',
       colClasses: 'Iamcol',
       colAttributes: {
-        'data-name': 'CustomerID',
+        'data-name': _.property('name'),
+        'data-sortable': true,
       },
       headAttributes: {
         'aria-label': ({ title, name }) => title || name,
