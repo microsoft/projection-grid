@@ -28,7 +28,7 @@ define([
       this.subviews = [];
 
       this.onChange = this.onViewPortChange.bind(this);
-      
+
       if (!_.isEmpty(this.renderers)) {
       	this.listenTo(this.container, 'scroll:container', this.onViewPortChange);
       	this.listenTo(this.container, 'resize:container', this.onViewPortChange);
@@ -332,6 +332,10 @@ define([
       this.grid.on('change:data', this.update);
 
       // this.grid.projection.data.on('change', this.update);
+    },
+
+    rerender: function () {
+      this.scheduleDraw();
     },
   });
 

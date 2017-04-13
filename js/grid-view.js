@@ -88,6 +88,10 @@ define([
       return this;
     },
 
+    rerender: function () {
+      this.layout.rerender();
+    },
+
     getSelection: function () {
       return this.projection.get('row.check.list') || [];
     },
