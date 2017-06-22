@@ -49,6 +49,13 @@ function queryProjectionHandler(state, params) {
       itemIndex[item[primaryKey]] = item;
     });
 
+    /**
+     * The `GridView` did reload data from the data source.
+     * @event GridView#didReload
+     * @type Boolean - true if reload succeed
+     */
+    this.trigger('didReload', true);
+
     return {
       uniqueId: _.uniqueId('grid-data-'),
       items,
@@ -56,13 +63,8 @@ function queryProjectionHandler(state, params) {
       primaryKey,
       totalCount,
     };
-
-  }).finally(() => {
-    /**
-     * The `GridView` did reload data from the data source.
-     * @event GridView#didReload
-     */
-    this.trigger('didReload')
+  }).catch(() => {
+    this.trigger('didReload', false);
   });
 }
 
