@@ -34,6 +34,7 @@ function queryProjectionHandler(state, params) {
 
   return Promise.resolve(this.query(params)).catch(error => {
     console.warn(error);
+    this.trigger('didReload', false);
     return {
       totalCount: 0,
       items: [],
@@ -63,8 +64,6 @@ function queryProjectionHandler(state, params) {
       primaryKey,
       totalCount,
     };
-  }).catch(() => {
-    this.trigger('didReload', false);
   });
 }
 
