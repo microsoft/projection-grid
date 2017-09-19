@@ -19,7 +19,7 @@ import Promise from 'bluebird';
 /**
  * Fetching data from the data source
  * @param {DataChainState} state
- * @param {QueryConfig} params 
+ * @param {QueryConfig} params
  *    The data source configurations.
  * @return {DataChainState}
  */
@@ -34,7 +34,7 @@ function queryProjectionHandler(state, params) {
 
   return Promise.resolve(this.query(params)).catch(error => {
     console.warn(error);
-    this.trigger('didReload', false);
+    this.trigger('didReload', false, error);
     return {
       totalCount: 0,
       items: [],
@@ -52,10 +52,18 @@ function queryProjectionHandler(state, params) {
 
     /**
      * The `GridView` did reload data from the data source.
+     * This event take 2 parameters
+     * 1. succeeded (Boolean), true if the data fetch succeeded
+     * 2. data|rejection (Object)
+     *    * If the data fetch succeeded, pass the fetched data in form of
+     *      `{ totalCount, items }`. Where `totalCount` is the server side total
+     *      item count, and the items is the array of data items with current
+     *      query condition
+     *    * If the data fetch failed, pass the rejection object, which is
+     *      usually an `Error` object from the data source
      * @event GridView#didReload
-     * @type Boolean - true if reload succeed
      */
-    this.trigger('didReload', true);
+    this.trigger('didReload', true, { totalCount, items });
 
     return {
       uniqueId: _.uniqueId('grid-data-'),
@@ -72,4 +80,3 @@ export const query = {
   handler: queryProjectionHandler,
   defaults: {},
 };
-
