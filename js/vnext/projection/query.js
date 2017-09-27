@@ -1,5 +1,4 @@
 import _ from 'underscore';
-import $ from 'jquery';
 import Promise from 'bluebird';
 
 /**
@@ -32,15 +31,11 @@ function queryProjectionHandler(state, params) {
    */
   this.trigger('willReload');
 
-  return Promise.resolve(this.query(params)).catch(error => {
-    console.warn(error);
-    this.trigger('didReload', false, error);
-    return {
-      totalCount: 0,
-      items: [],
-      error,
-    };
-  }).then(({ totalCount, items }) => {
+  return Promise.resolve(this.query(params)).catch(error => ({
+    totalCount: 0,
+    items: [],
+    error: error || new Error('Failed to load grid data'),
+  })).then(({ totalCount, items, error }) => {
     const itemIndex = {};
 
     _.each(items, item => {
@@ -63,7 +58,11 @@ function queryProjectionHandler(state, params) {
      *      usually an `Error` object from the data source
      * @event GridView#didReload
      */
-    this.trigger('didReload', true, { totalCount, items });
+    if (error) {
+      this.trigger('didReload', false, error);
+    } else {
+      this.trigger('didReload', true, { totalCount, items });
+    }
 
     return {
       uniqueId: _.uniqueId('grid-data-'),
