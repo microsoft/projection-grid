@@ -22,6 +22,7 @@ import {
   MemoryDataSource,
   JSDataDataSource,
   ODataDataSource,
+  DataSource,
 } from './data-source';
 
 function defaultsDeep(dest, src) {
@@ -375,7 +376,7 @@ export class GridView extends Backbone.View {
    */
   set(config = {}, callback = _.noop) {
     // backward compatibility
-    if (_.has(config, 'dataSource')) {
+    if (_.has(config, 'dataSource') && !(config.dataSource instanceof DataSource)) {
       const dataSource = config.dataSource;
 
       config.query = _.defaults({}, config.query, _.pick(dataSource, [
