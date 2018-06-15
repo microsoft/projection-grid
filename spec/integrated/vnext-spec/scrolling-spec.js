@@ -1,16 +1,16 @@
-import $ from 'jquery';
 import _ from 'underscore';
 import pGrid from 'component/grid';
 import chai from 'chai';
 import util from 'util';
 import rawData from 'data/scrolling.json';
 import driver from 'driver';
+import Promise from 'bluebird';
+
+/* eslint-disable no-unused-expressions */
 
 let expect = chai.expect;
 let selectedKeys = ['UserName', 'FirstName', 'LastName', 'Gender', 'Concurrency'];
-let memoryData = _.map(rawData.value, (row) => {
-  return _.pick(row, selectedKeys);
-});
+let memoryData = _.map(rawData.value, row => _.pick(row, selectedKeys));
 
 let gridConfig = {
   el: '#container',
@@ -21,94 +21,93 @@ let gridConfig = {
   },
 };
 
-let pgrid;
-let pgridFactory;
-let gridView;
+let pgridFactory = null;
+let gridView = null;
 
 describe('scrolling config', function () {
   beforeEach(function () {
     util.renderTestContainer();
-    pgridFactory = pGrid 
-      .factory({ vnext: true })
+    pgridFactory = pGrid
+      .factory({ vnext: true });
   });
-  
+
   afterEach(() => {
     gridView.remove();
     util.cleanup();
   });
 
-  it('static header should works as expected', function (done) {
+  it('static header should works as expected', function () {
     let scorllingConfig = {
       scrolling: {
         virtualized: true,
         viewport: window,
         header: 'static',
-      }
+      },
     };
 
     gridView = pgridFactory
       .create(_.extend(scorllingConfig, gridConfig))
-      .gridView
-      .render();
-    driver.once(gridView, 'didUpdate')
+      .gridView;
+
+    return new Promise(resolve => gridView.render(resolve))
+      .then(() => driver.once(gridView, 'didUpdate'))
       .then(() => {
         return Promise.all([
           driver.element('table.sticky-header'),
           driver.element('div.fixed-header'),
         ]);
       })
-      .then((result) => {
+      .then(result => {
         expect(result[0].length).to.be.equal(0);
         expect(result[1].length).to.be.equal(0);
       })
       .then(() => {
         return driver.element('#container .table-container table');
       })
-      .then((result) => {
+      .then(result => {
         expect(result.length).to.be.equal(1);
       })
-      .then(done)
-      .catch(console.log);
+      .tapCatch(console.log);
   });
 
-  it('fixed header should works as expected', function (done) {
+  it('fixed header should works as expected', function () {
     let scorllingConfig = {
       scrolling: {
         viewport: window,
         header: 'fixed',
-      }
+      },
     };
 
     gridView = pgridFactory
       .create(_.extend(scorllingConfig, gridConfig))
-      .gridView
-      .render();
-    driver.once(gridView, 'didUpdate')
+      .gridView;
+
+    return new Promise(resolve => gridView.render(resolve))
+      .then(() => driver.once(gridView, 'didUpdate'))
       .then(() => {
         return driver.element('div.fixed-header');
       })
-      .then((result) => {
+      .then(result => {
         expect(result.length).to.be.equal(1);
       })
-      .then(done)
-      .catch(console.log);
+      .tapCatch(console.log);
   });
 
-  it('sticky header should works as expected', function (done) {
+  it('sticky header should works as expected', function () {
     let scorllingConfig = {
       scrolling: {
         virtualized: true,
         viewport: window,
         header: 'sticky',
-      }
+      },
     };
 
     gridView = pgridFactory
       .create(_.extend(scorllingConfig, gridConfig))
-      .gridView
-      .render();
+      .gridView;
 
-    driver.once(gridView, 'didUpdate')
+    return new Promise(resolve => gridView.render(resolve))
+      .then(() => driver.once(gridView, 'didUpdate'))
       .then(() => {
         return driver.scroll(0, document.body.scrollHeight);
       })
@@ -118,15 +117,14 @@ describe('scrolling config', function () {
       .then(() => {
         return driver.element('table.sticky-header');
       })
-      .then((result) => {
+      .then(result => {
         expect(result.length).to.be.equal(1);
         expect(result.position().top).to.be.equal(0);
       })
-      .then(done)
-      .catch(console.log);
+      .tapCatch(console.log);
   });
 
-  it('sticky header with numerical offset should works as expected', function (done) {
+  it('sticky header with numerical offset should works as expected', function () {
     let scorllingConfig = {
       scrolling: {
         virtualized: true,
@@ -135,14 +133,15 @@ describe('scrolling config', function () {
           type: 'sticky',
           offset: 10,
         },
-      }
+      },
     };
 
     gridView = pgridFactory
       .create(_.extend(scorllingConfig, gridConfig))
-      .gridView
-      .render();
-    driver.once(gridView, 'didUpdate')
+      .gridView;
+
+    return new Promise(resolve => gridView.render(resolve))
+      .then(() => driver.once(gridView, 'didUpdate'))
       .then(() => {
         return driver.scroll(0, document.body.scrollHeight);
       })
@@ -152,15 +151,14 @@ describe('scrolling config', function () {
       .then(() => {
         return driver.element('table.sticky-header');
       })
-      .then((result) => {
+      .then(result => {
         expect(result.length).to.be.equal(1);
         expect(result.position().top).to.be.equal(10);
       })
-      .then(done)
-      .catch(console.log);
+      .tapCatch(console.log);
   });
 
-  it('sticky header with function offset should works as expected', function (done) {
+  it('sticky header with function offset should works as expected', function () {
     let scorllingConfig = {
       scrolling: {
         virtualized: true,
@@ -173,9 +171,9 @@ describe('scrolling config', function () {
 
     gridView = pgridFactory
       .create(_.extend(scorllingConfig, gridConfig))
-      .gridView
-      .render();
-    driver.once(gridView, 'didUpdate')
+      .gridView;
+    return new Promise(resolve => gridView.render(resolve))
+      .then(() => driver.once(gridView, 'didUpdate'))
       .then(() => {
         return driver.scroll(0, document.body.scrollHeight);
       })
@@ -185,45 +183,44 @@ describe('scrolling config', function () {
       .then(() => {
         return driver.element('table.sticky-header');
       })
-      .then((result) => {
+      .then(result => {
         expect(result.length).to.be.equal(1);
         expect(result.position().top).to.be.equal(15);
       })
-      .then(done)
-      .catch(console.log);
+      .tapCatch(console.log);
   });
 
-  it('static header should be default when config a non-supported header type', function (done) {
+  it('static header should be default when config a non-supported header type', function () {
     let scorllingConfig = {
       scrolling: {
         virtualized: true,
         viewport: window,
         header: 'non-supported type',
-      }
+      },
     };
 
     gridView = pgridFactory
       .create(_.extend(scorllingConfig, gridConfig))
-      .gridView
-      .render();
-    driver.once(gridView, 'didUpdate')
+      .gridView;
+
+    return new Promise(resolve => gridView.render(resolve))
+      .then(() => driver.once(gridView, 'didUpdate'))
       .then(() => {
         return Promise.all([
           driver.element('table.sticky-header'),
           driver.element('div.fixed-header'),
         ]);
       })
-      .then((result) => {
+      .then(result => {
         expect(result[0].length).to.be.equal(0);
         expect(result[1].length).to.be.equal(0);
       })
       .then(() => {
         return driver.element('#container .table-container table');
       })
-      .then((result) => {
+      .then(result => {
         expect(result.length).to.be.equal(1);
       })
-      .then(done)
-      .catch(console.log);
+      .tapCatch(console.log);
   });
 });

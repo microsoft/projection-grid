@@ -246,7 +246,7 @@ export class GridView extends Backbone.View {
      * @param {boolean} [force=false]
      *    True for force refresh ignoring the cached states.
      */
-    const refresh = this.refresh = force => {
+    const refresh = force => {
       const changes = refreshState.changes;
 
       refreshState.changes = null;
@@ -260,10 +260,10 @@ export class GridView extends Backbone.View {
       // Don't refresh before the view is rendered
       if (!this._isRendered) {
         this.trigger('didUpdate', changes);
-        return;
+        return Promise.resolve();
       }
 
-      _.reduce([
+      return _.reduce([
         this._chainData,
         this._chainStructure,
         this._chainContent,
@@ -283,25 +283,26 @@ export class GridView extends Backbone.View {
            * The `GridView` did update its configuration and redraw.
            * @event GridView#didUpdate
            */
+          refreshState.promise = null;
           this.trigger('didUpdate', changes);
         });
     };
 
-    const scheduleUpdate = () => {
+    const scheduleUpdate = this.refresh = force => {
       if (refreshState.changes) {
         _.extend(refreshState.changes, this.model.changedAttributes());
       } else {
         refreshState.changes = this.model.changedAttributes();
 
         if (refreshState.promise) {
-          refreshState.promise = refreshState.promise.then(refresh);
+          refreshState.promise = refreshState.promise.then(() => refresh(force)).finally();
         } else {
-          refreshState.promise = refresh();
+          refreshState.promise = nextTick().then(() => refresh(force));
         }
       }
     };
 
-    this.model.on('change', scheduleUpdate);
+    this.model.on('change', () => scheduleUpdate(false));
 
     _.each([
       /**
