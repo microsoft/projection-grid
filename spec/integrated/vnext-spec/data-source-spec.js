@@ -9,13 +9,15 @@ import jsDataSource from 'data/js-data-source';
 import jsDataExpected from 'data/js-data-expected.json';
 import Promise from 'bluebird';
 
+/* eslint-disable no-unused-expressions */
+
 const expect = chai.expect;
 
 let gridConfig = {
   el: '#container',
 };
 
-let memoryDataSource = _.map(peopleData.value, (row) => {
+let memoryDataSource = _.map(peopleData.value, row => {
   return _.pick(row, 'UserName', 'FirstName', 'LastName', 'Gender', 'Concurrency');
 });
 let memoryHeader = _.keys(_.first(memoryDataSource));
@@ -25,9 +27,8 @@ let odataAndJsdataHeader = _.keys(_.first(jsDataExpected.value));
 // only pick data for line 0, 9, 19
 let odataAdnJsdataData = util.getExpectedGridData(jsDataExpected.value);
 
-let pgrid;
-let pgridFactory;
-let gridView;
+let pgridFactory = null;
+let gridView = null;
 
 class CustomDataSource extends pGrid.dataSource.JSData {
   constructor(resource, options) {
@@ -45,8 +46,8 @@ class CustomDataSource extends pGrid.dataSource.JSData {
       return {
         totalCount,
         items: filteredItems,
-      }
-    })
+      };
+    });
   }
 }
 
@@ -62,7 +63,7 @@ describe('data source config', function () {
   });
 
   describe('memory data source', function () {
-    it('should render as expected', function (done) {
+    it('should render as expected', function () {
       let memoryConfig = {
         dataSource: {
           type: 'memory',
@@ -70,16 +71,13 @@ describe('data source config', function () {
           primaryKey: 'UserName',
         },
       };
-      gridView = pgridFactory
-        .create(_.extend(memoryConfig, gridConfig))
-        .gridView
-        .render();
-      driver.once(gridView, 'didUpdate')
-        .then(() => {
-          return driver.element('#container > .table-container .header th');
-        })
-        .then((result) => {
-          let header = _.map(result, (item) => {
+      gridView = pgridFactory.create(_.extend(memoryConfig, gridConfig)).gridView;
+
+      return new Promise(resolve => gridView.render(resolve))
+        .then(() => driver.once(gridView, 'didUpdate'))
+        .then(() => driver.element('#container > .table-container .header th'))
+        .then(result => {
+          let header = _.map(result, item => {
             return item.textContent;
           });
           expect(header).to.eql(memoryHeader);
@@ -87,15 +85,14 @@ describe('data source config', function () {
         .then(() => {
           return driver.element('#container > .table-container tbody tr[data-key]');
         })
-        .then((result) => {
+        .then(result => {
           let assertion = util.validateElementMatrix(result, memoryData);
           expect(assertion).to.be.true;
         })
-        .then(done)
-        .catch(console.log);
+        .tapCatch(console.log);
     });
 
-    it('should cache the sorting and filtering result', function (done) {
+    it('should cache the sorting and filtering result', function () {
       let memoryConfig = {
         dataSource: {
           type: 'memory',
@@ -106,15 +103,16 @@ describe('data source config', function () {
 
       gridView = pgridFactory
         .create(_.extend(memoryConfig, gridConfig))
-        .gridView.render();
+        .gridView;
 
       let cachedItems = null;
-
-      driver.once(gridView, 'didUpdate')
+      return new Promise(resolve => gridView.render(resolve))
+        .then(() => driver.once(gridView, 'didUpdate'))
         .then(() => {
           cachedItems = gridView.dataSource.cachedItems;
-          return driver.click('#container > .table-container .header th[data-name="FirstName"]');
         })
+        .then(() => driver.click('#container > .table-container .header th[data-name="FirstName"]'))
+        .then(() => driver.once(gridView, 'didUpdate'))
         .then(() => {
           expect(gridView.dataSource.cachedItems).to.not.equal(cachedItems);
 
@@ -126,10 +124,10 @@ describe('data source config', function () {
         .then(() => {
           expect(cachedItems).to.equal(gridView.dataSource.cachedItems);
         })
-        .nodeify(done);
+        .tapCatch(console.log);
     });
 
-    it('should bust the cache on data set change', function (done) {
+    it('should bust the cache on data set change', function () {
       let memoryConfig = {
         dataSource: {
           type: 'memory',
@@ -144,7 +142,8 @@ describe('data source config', function () {
 
       let cachedItems = null;
 
-      driver.once(gridView, 'didUpdate')
+      return new Promise(resolve => gridView.render(resolve))
+        .then(() => driver.once(gridView, 'didUpdate'))
         .then(() => {
           cachedItems = gridView.dataSource.cachedItems;
           return new Promise(resolve => gridView.patch({
@@ -156,11 +155,11 @@ describe('data source config', function () {
         .then(() => {
           expect(gridView.dataSource.cachedItems).to.not.equal(cachedItems);
         })
-        .nodeify(done);
+        .tapCatch(console.log);
     });
   });
 
-  it('js-data should works as expected', function (done) {
+  it('js-data should works as expected', function () {
     let jsDataConfig = {
       dataSource: {
         type: 'js-data',
@@ -169,14 +168,15 @@ describe('data source config', function () {
     };
     gridView = pgridFactory
       .create(_.extend(jsDataConfig, gridConfig))
-      .gridView
-      .render();
-    driver.once(gridView, 'didUpdate')
+      .gridView;
+
+    return new Promise(resolve => gridView.render(resolve))
+      .then(() => driver.once(gridView, 'didUpdate'))
       .then(() => {
         return driver.element('#container > .table-container .header th');
       })
-      .then((result) => {
-        let header = _.map(result, (item) => {
+      .then(result => {
+        let header = _.map(result, item => {
           return item.textContent;
         });
         expect(header).to.eql(odataAndJsdataHeader);
@@ -184,16 +184,15 @@ describe('data source config', function () {
       .then(() => {
         return driver.element('#container > .table-container tbody tr[data-key]');
       })
-      .then((result) => {
+      .then(result => {
         let actualData = [result[0], result[9], result[19]];
         let assertion = util.validateElementMatrix(actualData, odataAdnJsdataData);
         expect(assertion).to.be.true;
       })
-      .then(done)
-      .catch(console.log);
+      .tapCatch(console.log);
   });
 
-  it('odata should works as expected', function (done) {
+  it('odata should works as expected', function () {
     let odataConfig = {
       dataSource: {
         type: 'odata',
@@ -203,60 +202,51 @@ describe('data source config', function () {
     };
     gridView = pgridFactory
       .create(_.extend(odataConfig, gridConfig))
-      .gridView
-      .render();
-    driver.once(gridView, 'didUpdate')
-      .then(() => {
-        return driver.element('#container > .table-container .header th');
-      })
-      .then((result) => {
-        let header = _.map(result, (item) => {
-          return item.textContent;
-        });
+      .gridView;
+
+    return new Promise(resolve => gridView.render(resolve))
+      .then(() => driver.once(gridView, 'didUpdate'))
+      .then(() => driver.element('#container > .table-container .header th'))
+      .then(result => {
+        let header = _.map(result, item => item.textContent);
         expect(header).to.eql(odataAndJsdataHeader);
       })
       .then(() => {
         return driver.element('#container > .table-container tbody tr[data-key]');
       })
-      .then((result) => {
+      .then(result => {
         let actualData = [result[0], result[9], result[19]];
         let assertion = util.validateElementMatrix(actualData, odataAdnJsdataData);
         expect(assertion).to.be.true;
       })
-      .then(done)
-      .catch(console.log);
+      .tapCatch(console.log);
   });
 
-  it('customed data source should works as expected', function (done) {
+  it('customed data source should works as expected', function () {
     let jsDataConfig = {
       dataSource: new CustomDataSource(jsDataSource),
     };
     gridView = pgridFactory
       .create(_.extend(jsDataConfig, gridConfig))
-      .gridView
-      .render();
-    driver.once(gridView, 'didUpdate')
-      .then(() => {
-        return driver.element('#container > .table-container .header th');
-      })
-      .then((result) => {
-        let header = _.map(result, (item) => {
-          return item.textContent;
-        });
+      .gridView;
+    return new Promise(resolve => gridView.render(resolve))
+      .then(() => driver.once(gridView, 'didUpdate'))
+      .then(() => driver.element('#container > .table-container .header th'))
+      .then(result => {
+        let header = _.map(result, item => item.textContent);
         expect(header).to.eql(odataAndJsdataHeader);
       })
       .then(() => {
         return driver.element('#container > .table-container tbody tr[data-key]');
       })
-      .then((result) => {
+      .then(result => {
         // customed data has a filter which customerId not start with "A"
         expect(result.eq(0).find('td').eq(0).find('span').text()).to.be.equal('BERGS');
       })
-      .then(done)
-      .catch(console.log);
+      .tapCatch(console.log);
   });
 
-  it('orderby should works as expected', function (done) {
+  it('orderby should works as expected', function () {
     let jsDataConfig = {
       dataSource: {
         type: 'js-data',
@@ -270,18 +260,15 @@ describe('data source config', function () {
 
     gridView = pgridFactory
       .create(_.extend(jsDataConfig, gridConfig))
-      .gridView
-      .render();
-    driver.once(gridView, 'didUpdate')
-      .then(() => {
-        return driver.element('#container > .table-container tbody tr[data-key]');
-      })
-      .then((result) => {
+      .gridView;
+    return new Promise(resolve => gridView.render(resolve))
+      .then(() => driver.once(gridView, 'didUpdate'))
+      .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
+      .then(result => {
         let targetCustomerID = $(result).eq(0).find('td').eq(0).text();
         expect(targetCustomerID).to.be.equal('WOLZA');
       })
-      .then(done)
-      .catch(console.log);
+      .tapCatch(console.log);
   });
 
   // it('backward compatibility for memory data source should works as expected', function (done) {

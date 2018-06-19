@@ -7,9 +7,11 @@ import rawData from 'data/people.json';
 import driver from 'driver';
 import colAddressTemplate from 'template/column-address.jade';
 
+/* eslint-disable no-unused-expressions */
+
 let expect = chai.expect;
 let selectedKeys = ['UserName', 'FirstName', 'LastName', 'AddressInfo', 'Gender', 'Concurrency'];
-let memoryData = _.map(rawData.value, (row) => {
+let memoryData = _.map(rawData.value, row => {
   return _.pick(row, selectedKeys);
 });
 
@@ -64,14 +66,14 @@ let gridConfig = {
     html: '<i>Gender</i>',
   }, {
     name: 'Concurrency',
-  }]
+  }],
 };
 
-let pgrid;
-let gridView;
+let pgrid = null;
+let gridView = null;
 let expectedHeader = ['User Name', 'First Name', 'Last Name', 'Address', 'Gender', 'Concurrency'];
 let expectedData = util.getExpectedGridData(memoryData, selectedKeys);
-_.each(expectedData, (dataItem) => {
+_.each(expectedData, dataItem => {
   let addressInfo = dataItem.AddressInfo[0] ? dataItem.AddressInfo[0].Address : '';
   dataItem.AddressInfo = addressInfo;
 });
@@ -81,12 +83,14 @@ function bodyClassGenerator() {
 }
 
 describe('columns config', function () {
-  beforeEach(function () {
+  beforeEach(() => {
     util.renderTestContainer();
     pgrid = pGrid
       .factory({ vnext: true })
-      .create(gridConfig)
-    gridView = pgrid.gridView.render();
+      .create(gridConfig);
+    gridView = pgrid.gridView;
+    return new Promise(resolve => gridView.render(resolve))
+      .then(() => driver.once(gridView, 'didUpdate'));
   });
 
   afterEach(() => {
@@ -94,14 +98,12 @@ describe('columns config', function () {
     util.cleanup();
   });
 
-  it('name, title, html, and headClasses should works as expected in header', function (done) {
-    driver.once(gridView, 'didUpdate')
-      .then(() => {
-        return driver.element('#container > .table-container .header th');
-      })
-      .then((result) => {
+  it('name, title, html, and headClasses should works as expected in header', function () {
+    return driver
+      .element('#container > .table-container .header th')
+      .then(result => {
         // validate name, tilte
-        let header = _.map(result, (item) => {
+        let header = _.map(result, item => {
           return $(item).text();
         });
         expect(header).to.eql(expectedHeader);
@@ -115,21 +117,18 @@ describe('columns config', function () {
         expect(classAssertion).to.be.true;
         return null;
       })
-      .then(done)
-      .catch(console.log);
+      .tapCatch(console.log);
   });
 
-  it('property, template, and bodyClasses should works as expected in body', function (done) {
-    driver.once(gridView, 'didUpdate')
-      .then(() => {
-        return driver.element('#container > .table-container tbody tr[data-key]');
-      })
-      .then((result) => {
-        //validate data, especially for property
+  it('property, template, and bodyClasses should works as expected in body', function () {
+    return driver
+      .element('#container > .table-container tbody tr[data-key]')
+      .then(result => {
+        // validate data, especially for property
         let assertion = util.validateElementMatrix(result, expectedData);
         expect(assertion).to.be.true;
         // validate template & classes
-        _.each(result, (rowItem, index) => {
+        _.each(result, rowItem => {
           // validate template
           let tmplAssertion = $(rowItem).find('td').eq(3).find('div').hasClass('column-address');
           expect(tmplAssertion).to.be.true;
@@ -141,35 +140,30 @@ describe('columns config', function () {
           return null;
         });
       })
-      .then(done)
-      .catch(console.log);
+      .tapCatch(console.log);
   });
 
-  it('colClasses should works as expected in body', function (done) {
-    driver.once(gridView, 'didUpdate')
-      .then(() => {
-        return driver.element('#container > .table-container .column-group');
-      })
-      .then((result) => {
+  it('colClasses should works as expected in body', function () {
+    return driver
+      .element('#container > .table-container .column-group')
+      .then(result => {
         let firstNameCol = result.find('col').eq(1);
         let lastNameCol = result.find('col').eq(2);
-        let classAssertion = util.validateClassesForElement(firstNameCol, ['nameClass1', 'nameClass2'])
-          && util.validateClassesForElement(lastNameCol, ['nameClass3', 'nameClass4']);
+        let classAssertion = util.validateClassesForElement(firstNameCol, ['nameClass1', 'nameClass2']) &&
+          util.validateClassesForElement(lastNameCol, ['nameClass3', 'nameClass4']);
         expect(classAssertion).to.be.true;
         return null;
       })
-      .then(done)
-      .catch(console.log);
+      .tapCatch(console.log);
   });
 
   describe('sortable', function () {
-
-    it('should do 2 state sorting correctly', function (done) {
+    it('should do 2 state sorting correctly', function () {
       const sortAsc = _.sortBy(expectedData, 'UserName');
       const sortDesc = _.sortBy(expectedData, 'UserName').reverse();
 
-      driver.once(gridView, 'didUpdate')
-        .then(() => driver.click('th[data-name="UserName"]'))
+      return driver
+        .click('th[data-name="UserName"]')
         .then(() => driver.once(gridView, 'didUpdate'))
         .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
         .then(result => {
@@ -189,16 +183,15 @@ describe('columns config', function () {
         .then(result => {
           expect(util.validateElementMatrix(result, sortAsc)).to.be.true;
           return null;
-        })
-        .asCallback(done);
+        });
     });
 
-    it('should do multiple state sorting correctly', function (done) {
+    it('should do multiple state sorting correctly', function () {
       const sortAsc = _.sortBy(expectedData, 'FirstName');
       const sortDesc = _.sortBy(expectedData, 'FirstName').reverse();
 
-      driver.once(gridView, 'didUpdate')
-        .then(() => driver.click('th[data-name="FirstName"]'))
+      return driver
+        .click('th[data-name="FirstName"]')
         .then(() => driver.once(gridView, 'didUpdate'))
         .then(() => driver.element('#container > .table-container tbody tr[data-key]'))
         .then(result => {
@@ -225,14 +218,13 @@ describe('columns config', function () {
         .then(result => {
           expect(util.validateElementMatrix(result, sortAsc)).to.be.true;
           return null;
-        })
-        .asCallback(done);
+        });
     });
   });
 
-  it('should render the attributes correctly', function (done) {
-    driver.once(gridView, 'didUpdate')
-      .then(() => driver.element('#container > .table-container colgroup > col[data-name="FirstName"]'))
+  it('should render the attributes correctly', function () {
+    return driver
+      .element('#container > .table-container colgroup > col[data-name="FirstName"]')
       .then(result => {
         expect(result.length).to.equal(1);
         expect(result.attr('data-sortable')).to.be.equal('');
@@ -248,8 +240,7 @@ describe('columns config', function () {
         expect(result.length).to.equal(1);
         expect(result.attr('data-type')).to.equal('string');
         expect(result.attr('data-length')).to.equal(result.text().length.toString());
-      })
-      .asCallback(done);
+      });
   });
 
   // it(sub colums should works as expected', function () {
