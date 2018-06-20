@@ -234,6 +234,7 @@ export class GridView extends Backbone.View {
     });
     const refreshState = {
       changes: null,
+      force: false,
       promise: null,
     };
 
@@ -246,10 +247,12 @@ export class GridView extends Backbone.View {
      * @param {boolean} [force=false]
      *    True for force refresh ignoring the cached states.
      */
-    const refresh = force => {
+    const refresh = () => {
       const changes = refreshState.changes;
+      const force = refreshState.force;
 
       refreshState.changes = null;
+      refreshState.force = false;
 
       /**
        * The `GridView` will update its configuration and redraw.
@@ -289,15 +292,16 @@ export class GridView extends Backbone.View {
     };
 
     const scheduleUpdate = this.refresh = force => {
+      refreshState.force = force || refreshState.force;
       if (refreshState.changes) {
         _.extend(refreshState.changes, this.model.changedAttributes());
       } else {
         refreshState.changes = this.model.changedAttributes();
 
         if (refreshState.promise) {
-          refreshState.promise = refreshState.promise.then(() => refresh(force)).finally();
+          refreshState.promise = refreshState.promise.then(() => refresh()).finally();
         } else {
-          refreshState.promise = nextTick().then(() => refresh(force));
+          refreshState.promise = nextTick().then(() => refresh());
         }
       }
     };
