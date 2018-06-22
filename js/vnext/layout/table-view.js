@@ -261,11 +261,12 @@ export class TableView extends Backbone.View {
           viewportSize.height = metricsVP.outer.height;
 
           // Let the content table layout freely, then sync the width to sticky header
-          $stickyHeader.css({ width: 'auto' });
-          $table.css({ width: 'auto' });
+          $stickyHeader.css({ 'width': 'auto', 'min-width': 0 });
+          $table.css({ 'width': 'auto', 'min-width': 0 });
           const width = $tableContainer.width();
           style.width = width;
-          $table.css({ width });
+          style['min-width'] = width;
+          $table.css({ width: width, 'min-width': width });
         }
 
         $stickyHeader.css(style);
