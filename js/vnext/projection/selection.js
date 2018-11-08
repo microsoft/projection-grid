@@ -24,10 +24,12 @@ function changeSelectAll(e) {
 }
 
 export function setSelectRow(gridView, key, checked) {
-  const { resolver } = gridView.get('selection');
-  const selection = checked ? resolver.selectRow(key) : resolver.deselectRow(key);
+  if (key !== null && key !== undefined) {
+    const { resolver } = gridView.get('selection');
+    const selection = checked ? resolver.selectRow(key) : resolver.deselectRow(key);
 
-  updateSelection(gridView, selection);
+    updateSelection(gridView, selection);
+  }
 }
 
 function changeSelectRow(e) {
