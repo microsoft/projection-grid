@@ -235,7 +235,7 @@ export class TableView extends Backbone.View {
       const metricsVP = listView.viewport.getMetrics();
       const topVP = metricsVP.outer.top;
       const offset = _.result(this._props.scrolling.header, 'offset', 0);
-      const rectContainer = $tableContainer.parents('html').length > 0 ?
+      const rectContainer = document.body.contains($tableContainer.get(0)) ?
         $tableContainer.get(0).getBoundingClientRect() :
         { top: 0, left: 0 };
       const topCur = rectContainer.top;
