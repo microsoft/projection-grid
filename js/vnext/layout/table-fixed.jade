@@ -1,0 +1,19 @@
+-
+  var tableStyle = {
+    'border-collapse': 'collapse',
+    'margin': 0,
+    'table-layout': 'fixed',
+  };
+
+.table-container
+  .fixed-header
+    table(style=tableStyle, class=classes)
+      colgroup.column-group
+      thead.header
+  .viewport
+    table(style=tableStyle, class=classes)
+      colgroup.column-group
+      tbody
+        tr.top-filler
+        tr.bottom-filler
+      tfoot.footer

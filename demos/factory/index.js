@@ -35,10 +35,15 @@ var grid = pgrid.factory().use(pagerViewPlugin).create({
     pageSize: 10,
     pageSizes: [5, 10, 15, 20],
   },
+  editable: {
+    tooltipText: 'Edit Me!',
+    iconClasses: ['glyphicon', 'glyphicon-wrench'],
+  },
   columns: [
     {
       name: 'CustomerID',
       title: 'Customer ID',
+      hoverText: 'This is hover text',
       sortable: true,
       locked: true,
       headerTemplate: keyHeaderTemplate,

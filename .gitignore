@@ -12,8 +12,13 @@ coverage
 node-debug.log
 npm-debug.log
 
-# dist
+# yarn logs
+yarn-error.log
+
+# output folder
 dist
+docs
 
 # the npm settings
 .npmrc
+

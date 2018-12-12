@@ -48,13 +48,18 @@ define([
         var column = arg.column;
 
         if (column.sortable) {
-          var orderby = {};
+          var orderby = this.projection.get('orderby') || [];
+          orderby = _.filter(orderby, function (item) {
+            return item.scope === 'global';
+          });
 
           var key = _.isString(column.sortable) ? column.sortable : column.property;
 
-          orderby[key] = column.$orderby ? column.$orderby.dir * -1 : 1;
+          var orderItem = {};
+          orderItem[key] = column.$orderby ? column.$orderby.dir * -1 : 1;
+          orderby.push(orderItem);
 
-          this.projection.set({ 'orderby': [orderby], 'page.number': 0 });
+          this.projection.set({ 'orderby': orderby, 'page.number': 0 });
         }
       }.bind(this));
 
@@ -83,8 +88,16 @@ define([
       return this;
     },
 
+    rerender: function () {
+      this.layout.rerender();
+    },
+
     getSelection: function () {
       return this.projection.get('row.check.list') || [];
+    },
+
+    monitorViewportChange: function (timeout, interval) {
+      this.layout.monitorViewportChange(timeout, interval);
     },
 
   });

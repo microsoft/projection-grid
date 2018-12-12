@@ -1,0 +1,28 @@
+mixin mixinHeadCell(cell)
+  th&attributes(cell.attributes)(class=cell.classes)
+    if (cell.html)
+      != cell.html
+    else
+      = cell.value
+
+mixin mixinCell(cell)
+  td&attributes(cell.attributes)(class=cell.classes)
+    if (cell.html)
+      != cell.html
+    else
+      = cell.value
+
+mixin mixinRow(row, group)
+  tr&attributes(row.attributes)(class=row.classes)
+    each cell in row.cells || []
+      case group
+        when 'head'
+          +mixinHeadCell(cell)
+        when 'body'
+        when 'foot'
+          +mixinCell(cell)
+
+mixin mixinRows(rows, group)
+  each row in rows || []
+    +mixinRow(row, group)
+

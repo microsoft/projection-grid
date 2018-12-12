@@ -2,8 +2,20 @@ import _ from 'underscore';
 import Backbone from 'backbone';
 import projections from '../projection/index';
 import { delegateEvents } from './utility';
+import prompt from '../popup-editor/index';
 
 const projectionConfigs = {
+  A11y(config) {
+    const accConfig = {};
+
+    // temp config to fix a11y bug of latency projection grid, should not to reuse it.
+    if (_.has(config.a11y, 'selection') && _.has(config.a11y.selection, 'selectAllLabel')) {
+      accConfig['a11y.selection.selectAllLabel'] = config.a11y.selection.selectAllLabel;
+    }
+
+    return accConfig;
+  },
+
   AggregateRow(config) {
     const configAgg = {};
 
@@ -125,11 +137,12 @@ const projectionConfigs = {
     return colqConfig;
   },
 
-  ColumnGroup(config) {
-    return {
-      'column.group': config.columnGroup,
-    };
-  },
+  // Todo[hezhan]: deprecated?
+  // ColumnGroup(config) {
+  //   return {
+  //     'column.group': config.columnGroup,
+  //   };
+  // },
 
   ColumnShifter() {},
 
@@ -144,19 +157,33 @@ const projectionConfigs = {
     };
   },
 
+  ColumnHoverText() {},
+
   Editable(config) {
-    var editableConf = {};
-    // the popupEditorBuilder is used to set the customized popup editor
-    var defaultBuilder = config.popupEditorBuilder;
+    const editableOptions = {};
 
     _.each(config.columns, column => {
       if (column.editable) {
-        editableConf[column.name] = column.popupEditorBuilder || defaultBuilder;
+        const options = editableOptions[column.name] = {
+          condition: () => true,
+          editor: prompt,
+        };
+
+        if (_.isFunction(column.editable)) {
+          options.condition = column.editable;
+        } else if (_.isObject(column.editable)) {
+          _.extend(options, column.editable);
+        }
       }
     });
 
+    const tooltipText = _.result(config.editable, 'tooltipText', 'Edit');
+    const iconClasses = _.result(config.editable, 'iconClasses', ['glyphicon', 'glyphicon-pencil']);
+
     return {
-      'column.editable': editableConf,
+      'column.editable': editableOptions,
+      'editable.tooltip.text': tooltipText,
+      'editable.icon.class': iconClasses,
     };
   },
 
@@ -194,6 +221,12 @@ const projectionConfigs = {
   },
 
   RowIndex() { },
+
+  Row(config) {
+    return {
+      'row.classes': _.result(config.rows, 'classes'),
+    };
+  },
 
   RowCheckbox(config) {
     return {
@@ -277,6 +310,7 @@ export default definePlugin => definePlugin('projection', [
 
   const dataSourceProjection = projection;
 
+  pipeProjection('A11y');
   pipeProjection('Columns');
   pipeProjection('Map');
   if (config.aggregate) {
@@ -284,21 +318,23 @@ export default definePlugin => definePlugin('projection', [
   }
   pipeProjection('ColumnQueryable');
   pipeProjection('ColumnI18n');
-  if (config.enablePoP) {
-    pipeProjection('ColumnGroup');
-  }
-
+  // Todo[hezhan]: deprecated?
+  // if (config.enablePoP) {
+  //   pipeProjection('ColumnGroup');
+  // }
   if (_.has(config.columnShifter, 'totalColumns')) {
     pipeProjection('ColumnShifter');
   }
-
   pipeProjection('ColumnTemplate');
+  pipeProjection('ColumnHoverText');
   pipeProjection('PropertyTemplate');
   if (config.selectable) {
     pipeProjection('RowIndex');
     pipeProjection('RowCheckbox');
   }
-
+  if (config.rows || (config.selectable)) {
+    pipeProjection('Row');
+  }
   if (_.has(config.pageable, 'pageSize')) {
     pipeProjection('Page');
   }

@@ -19,11 +19,9 @@ define([
       'click form': function (e) {
         e.stopPropagation();
       },
-      'keypress .editor': function (e) {
-        if (e.key === 'Enter') {
-          this.setValue(e.target.value);
-          this.trigger('save', this.model);
-        }
+      'submit form': function () {
+        this.trigger('save', this.model);
+        return false;
       },
     },
 
@@ -31,6 +29,8 @@ define([
       this.position = options.position;
       this.model = options.model;
       this.property = options.property;
+      this.saveButtonText = options.saveButtonText || 'Save';
+      this.cancelButtonText = options.cancelButtonText || 'Cancel';
     },
 
     getValue: function () {
@@ -54,12 +54,23 @@ define([
     render: function () {
       var val = this.getValue();
 
-      this.$el.html(template({ value: val }));
-      this.$el.css({
-        position: 'absolute',
-        left: this.position.left,
-        top: this.position.top,
-      });
+      this.$el.html(template({
+        value: val,
+        saveButtonText: this.saveButtonText,
+        cancelButtonText: this.cancelButtonText,
+      }));
+      this.$el.css({ position: 'absolute' });
+
+      if (this.position.left) {
+        this.$el.css({ left: this.position.left });
+      } else {
+        this.$el.css({ right: this.position.right });
+      }
+      if (this.position.top) {
+        this.$el.css({ top: this.position.top });
+      } else {
+        this.$el.css({ bottom: this.position.bottom });
+      }
 
       this.dismiss = function () {
         this.trigger('cancel');

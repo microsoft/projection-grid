@@ -1,0 +1,4 @@
+each col in cols || []
+  - var columnStyle = col.width ? 'width: ' + col.width + ';' : null;
+  col&attributes(col.attributes)(class=col.classes, style=columnStyle)
+
