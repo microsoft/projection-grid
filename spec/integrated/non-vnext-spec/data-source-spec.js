@@ -162,7 +162,7 @@ describe('data source config for non-vnext', function () {
     let odataConfig = {
       dataSource: {
         type: 'odata',
-        url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Customers',
+        url: 'https://services.odata.org/V4/Northwind/Northwind.svc/Customers',
       },
       columns: columnsForOdataService,
     };
