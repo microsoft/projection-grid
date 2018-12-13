@@ -52,7 +52,7 @@ class ProjectionChain {
   /*
    * When updating, execute each function in projections successively
    */
-  update(input, force = false) {
+  update(input, changes, force = false) {
     const updated = force || input !== this.input;
 
     this.input = input;
@@ -64,7 +64,7 @@ class ProjectionChain {
       const { name, handler, p$output } = proj;
       const result = {};
 
-      if (updated || !p$output || _.has(this.model.changed, name)) {
+      if (updated || !p$output || _.has(changes, name)) {
         result.updated = true;
         result.p$state = proj.p$output = p$state.then(
           state => handler(state, this.model.get(name), this.model.attributes)
@@ -270,7 +270,7 @@ export class GridView extends Backbone.View {
         this._chainData,
         this._chainStructure,
         this._chainContent,
-      ], (memo, chain) => chain.update(memo, force), null)
+      ], (memo, chain) => chain.update(memo, changes, force), null)
         .then(patchEvents)
         .then(state => new Promise(resolve => {
           this._tableView.set(state, resolve);
