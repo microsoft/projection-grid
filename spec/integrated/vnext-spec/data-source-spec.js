@@ -196,7 +196,7 @@ describe('data source config', function () {
     let odataConfig = {
       dataSource: {
         type: 'odata',
-        url: 'http://services.odata.org/V4/Northwind/Northwind.svc/Customers',
+        url: 'https://services.odata.org/V4/Northwind/Northwind.svc/Customers',
         primaryKey: 'CustomerID',
       },
     };

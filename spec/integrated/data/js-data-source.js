@@ -6,7 +6,7 @@ JSData.DSUtils.Promise = require('bluebird');
 let store = new JSData.DS();
 
 store.registerAdapter('http', new DSHttpAdapter({
-  basePath: 'http://services.odata.org/V4/Northwind/Northwind.svc/',
+  basePath: 'https://services.odata.org/V4/Northwind/Northwind.svc/',
   deserialize: (definition, response) => {
     return response.data.value;
   },
