@@ -10,9 +10,11 @@ import tableStaticTemplate from './table-static.jade';
 import tableStickyTemplate from './table-sticky.jade';
 
 import columnGroupTemplate from './column-group.jade';
+import { escapeAttr } from './escape';
 
 const STATE_OPTIONS = ['cols', 'headRows', 'bodyRows', 'footRows', 'events'];
 const HEADER_TYPES = ['static', 'fixed', 'sticky'];
+const rowTemplateWithEscape = row => rowTemplate(_.defaults({ escapeAttr }, row));
 
 /**
  * Table view with virtualization support
@@ -178,7 +180,7 @@ export class TableView extends Backbone.View {
 
   _renderColumnGroup() {
     this.$colgroup = this.$('colgroup.column-group');
-    this.$colgroup.html(columnGroupTemplate(this._state));
+    this.$colgroup.html(columnGroupTemplate(_.defaults({ escapeAttr }, this._state)));
   }
 
   _renderHeader() {
@@ -295,7 +297,7 @@ export class TableView extends Backbone.View {
         classes: this._props.classes,
       },
       listTemplate: tableStaticTemplate,
-      itemTemplate: rowTemplate,
+      itemTemplate: rowTemplateWithEscape,
     }).render(() => {
       this._renderColumnGroup();
       this._renderHeader();
@@ -310,7 +312,7 @@ export class TableView extends Backbone.View {
         classes: this._props.classes,
       },
       listTemplate: tableFixedTemplate,
-      itemTemplate: rowTemplate,
+      itemTemplate: rowTemplateWithEscape,
     }).render(() => {
       this._renderColumnGroup();
       this._renderHeader();
@@ -335,7 +337,7 @@ export class TableView extends Backbone.View {
         classes: this._props.classes,
       },
       listTemplate: tableStickyTemplate,
-      itemTemplate: rowTemplate,
+      itemTemplate: rowTemplateWithEscape,
     }).render(() => {
       this._renderColumnGroup();
       this._renderHeader();
