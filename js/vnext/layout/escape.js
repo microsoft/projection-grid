@@ -40,8 +40,8 @@ export function escapeAttr(attr) {
       memo[key] = escapeAttr(attr[key]);
       return memo;
     }, {});
-  } else if (typeof attr === 'boolean' || attr === undefined) {
-    return attr;
+  } else if (typeof attr === 'string') {
+    return pugEscape(attr);
   }
-  return pugEscape(attr);
+  return attr;
 }
