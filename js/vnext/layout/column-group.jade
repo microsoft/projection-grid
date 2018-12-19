@@ -1,4 +1,9 @@
+- var pug_match_html = /["&<>]/
+- function pug_escape(_html){var html = '' + _html; var regexResult = pug_match_html.exec(html); if (!regexResult) return _html; var result = ''; var i, lastIndex, escape; for (i = regexResult.index, lastIndex = 0; i < html.length; i++) { switch(html.charCodeAt(i)) { case 34: escape = '&quot;'; break; case 38: escape = '&amp;'; break;case 60: escape = '&lt;'; break; case 62: escape = '&gt;'; break;default: continue;}if (lastIndex !== i) result += html.substring(lastIndex, i);lastIndex = i + 1; result += escape; } if (lastIndex !== i) return result + html.substring(lastIndex, i); else return result;};
+- function escapeAttr(attr) {if (Array.isArray(attr)) {return attr.map(function(val){ return escapeAttr(val);});} else if (typeof attr === 'object') {return Object.keys(attr).reduce(function(memo, key) {memo[key] = escapeAttr(attr[key]);return memo;}, {});} else if(typeof attr ==='boolean' || attr === undefined) {return attr;} return pug_escape(attr);}
+
 each col in cols || []
   - var columnStyle = col.width ? 'width: ' + col.width + ';' : null;
-  col&attributes(col.attributes)(class=col.classes, style=columnStyle)
+  - var attr = escapeAttr(col.attributes);
+  col&attributes(attr)(class=col.classes, style=columnStyle)
 

@@ -5,6 +5,7 @@ import Promise from 'bluebird';
 import {
   query,
   buffer,
+  itemIndex,
   selection,
   setSelectAll,
   setSelectRow,
@@ -215,7 +216,7 @@ export class GridView extends Backbone.View {
      */
     this._chainContent = new ProjectionChain(this.model);
 
-    this.pipeDataProjections(query, buffer);
+    this.pipeDataProjections(query, buffer, itemIndex);
     this.pipeStructureProjections([
       columns,
       rows,

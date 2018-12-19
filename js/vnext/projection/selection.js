@@ -121,9 +121,9 @@ function selectionProjectionHandler(state, {
         },
         classes: _.union(selectedClassArray, row.classes),
       }, _.isObject(row) ? row : {});
-    } else {
-      return row;
     }
+
+    return row;
   });
 
   const events = _.defaults({
@@ -185,7 +185,6 @@ function normalizeSelectionConfig(selection) {
 
   return config;
 }
-
 
 export const selection = {
   name: 'selection',
