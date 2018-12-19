@@ -36,15 +36,6 @@ function queryProjectionHandler(state, params) {
     items: [],
     error: error || new Error('Failed to load grid data'),
   })).then(({ totalCount, items, error }) => {
-    const itemIndex = {};
-
-    _.each(items, item => {
-      if (!_.has(item, primaryKey)) {
-        item[primaryKey] = _.uniqueId('grid-item-');
-      }
-      itemIndex[item[primaryKey]] = item;
-    });
-
     /**
      * The `GridView` did reload data from the data source.
      * This event take 2 parameters
@@ -67,7 +58,6 @@ function queryProjectionHandler(state, params) {
     return {
       uniqueId: _.uniqueId('grid-data-'),
       items,
-      itemIndex,
       primaryKey,
       totalCount,
     };

@@ -1,5 +1,6 @@
 export { query } from './query.js';
 export { buffer } from './buffer.js';
+export { itemIndex } from './item-index.js';
 export { selection, setSelectAll, setSelectRow } from './selection.js';
 export { rangeSelection } from './range-selection.js';
 export { columns } from './columns.js';

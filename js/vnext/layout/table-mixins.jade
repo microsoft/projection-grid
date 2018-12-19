@@ -1,19 +1,26 @@
+- var pug_match_html = /["&<>]/
+- function pug_escape(_html){var html = '' + _html; var regexResult = pug_match_html.exec(html); if (!regexResult) return _html; var result = ''; var i, lastIndex, escape; for (i = regexResult.index, lastIndex = 0; i < html.length; i++) { switch(html.charCodeAt(i)) { case 34: escape = '&quot;'; break; case 38: escape = '&amp;'; break;case 60: escape = '&lt;'; break; case 62: escape = '&gt;'; break;default: continue;}if (lastIndex !== i) result += html.substring(lastIndex, i);lastIndex = i + 1; result += escape; } if (lastIndex !== i) return result + html.substring(lastIndex, i); else return result;};
+- function escapeAttr(attr) {if (Array.isArray(attr)) {return attr.map(function(val){ return escapeAttr(val);});} else if (typeof attr === 'object') {return Object.keys(attr).reduce(function(memo, key) {memo[key] = escapeAttr(attr[key]);return memo;}, {});} else if(typeof attr ==='boolean' || attr === undefined) {return attr;} return pug_escape(attr);}
+
 mixin mixinHeadCell(cell)
-  th&attributes(cell.attributes)(class=cell.classes)
+  - var attr = escapeAttr(cell.attributes)
+  th&attributes(attr)(class=cell.classes)
     if (cell.html)
       != cell.html
     else
       = cell.value
 
 mixin mixinCell(cell)
-  td&attributes(cell.attributes)(class=cell.classes)
+  - var attr = escapeAttr(cell.attributes)
+  td&attributes(attr)(class=cell.classes)
     if (cell.html)
       != cell.html
     else
       = cell.value
 
 mixin mixinRow(row, group)
-  tr&attributes(row.attributes)(class=row.classes)
+  - var attr = escapeAttr(row.attributes)
+  tr&attributes(attr)(class=row.classes)
     each cell in row.cells || []
       case group
         when 'head'
