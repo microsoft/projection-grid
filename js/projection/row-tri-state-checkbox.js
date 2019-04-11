@@ -171,6 +171,7 @@ define([
           'row.check.map': checkMap,
         });
 
+        e.preventDefault();
         e.stopImmediatePropagation();
       }
     },
