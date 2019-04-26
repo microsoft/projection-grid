@@ -60,6 +60,7 @@ function selectionProjectionHandler(state, {
   const {
     selected,
     single,
+    hideSelectionCol,
     colClasses,
     headClasses,
     bodyClasses,
@@ -88,28 +89,31 @@ function selectionProjectionHandler(state, {
     selectedAll = selectableCount !== 0 && selectedCount === selectableCount;
   }
 
-  const columns = [{
-    name: 'selection',
-    html: selectionHeadTemplate({
-      single,
-      checked: selectedAll,
-      checkAllLabel: selectAllLabel,
-    }),
-    template: selectionBodyTemplate,
-    property: item => {
-      return {
+  let { columns } = state;
+  if (!hideSelectionCol) {
+    columns = [{
+      name: 'selection',
+      html: selectionHeadTemplate({
         single,
-        selectable: selectable(item),
-        checked: selectedIndex[item[primaryKey]],
-        labelbyId: item[primaryKey],
-      };
-    },
-    sortable: false,
-    colClasses,
-    headClasses,
-    bodyClasses,
-    footClasses,
-  }].concat(state.columns);
+        checked: selectedAll,
+        checkAllLabel: selectAllLabel,
+      }),
+      template: selectionBodyTemplate,
+      property: item => {
+        return {
+          single,
+          selectable: selectable(item),
+          checked: selectedIndex[item[primaryKey]],
+          labelbyId: item[primaryKey],
+        };
+      },
+      sortable: false,
+      colClasses,
+      headClasses,
+      bodyClasses,
+      footClasses,
+    }].concat(state.columns);
+  }
 
   const bodyRows = _.map(state.bodyRows, row => {
     if (row && row.type === 'data' && row.item && selectable(row.item)) {
