@@ -73,6 +73,7 @@ function selectionProjectionHandler(state, {
   }, {});
   const primaryKey = state.primaryKey;
   let selectedAll = false;
+  let partSelected = false;
 
   /**
    * Callback to decide whether a row is selectable.
@@ -86,6 +87,7 @@ function selectionProjectionHandler(state, {
     const selectedCount = _.filter(selected, key => selectable(this.itemWithKey(key))).length;
 
     selectedAll = selectableCount !== 0 && selectedCount === selectableCount;
+    partSelected = selectedCount > 0 && selectedCount < selectableCount;
   }
 
   const columns = [{
@@ -93,6 +95,7 @@ function selectionProjectionHandler(state, {
     html: selectionHeadTemplate({
       single,
       checked: selectedAll,
+      partSelected,
       checkAllLabel: selectAllLabel,
     }),
     template: selectionBodyTemplate,
