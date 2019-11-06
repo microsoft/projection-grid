@@ -2,16 +2,16 @@ import _ from 'underscore';
 
 function changeSelectRow(e) {
   const key = this.keyOfElement(e.target);
+  const selection = this.get('selection');
   const rangeSelection = this.get('rangeSelection');
 
   // if the user didn't press shift key or the disableShiftKey option is set to true,
   // act as a simple click select.
-  if (!e.shiftKey || this.disableShiftKey) {
+  if (!e.shiftKey || selection.disableShiftKey) {
     rangeSelection.preSelect = key;
     return;
   }
 
-  const selection = this.get('selection');
   const selected = selection.selected;
   const selectable = selection.selectable;
   const preSelect = rangeSelection.preSelect;

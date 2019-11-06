@@ -1,8 +1,6 @@
 import _ from 'underscore';
 import sortableHeaderTemplate from './sortable-header.jade';
 
-const regexKey = /\s*(-)?\s*(\w+)/;
-
 // Reorder column data referring to 'column.sortable'.
 // 'column.sortable' takes four types of values: boolean, number, string and function.
 function reorder(e) {
@@ -74,7 +72,7 @@ function sortableHeaderProjectionHandler(state, {
         const direction = column.name === name ? column.sortable.direction[directionIndex] : 0;
         const ariaSort = direction > 0 ? 'ascending' : direction < 0 ? 'descending' : 'none';
 
-        patchCell.attributes = _.defaults({ 'aria-sort': ariaSort, tabindex: 0 }, cell.attributes);
+        patchCell.attributes = _.defaults({ 'aria-sort': ariaSort, 'tabindex': 0 }, cell.attributes);
 
         /**
          * @callback SortableHeaderTemplate
