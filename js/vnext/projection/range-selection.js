@@ -5,7 +5,7 @@ function changeSelectRow(e) {
   const selection = this.get('selection');
   const rangeSelection = this.get('rangeSelection');
 
-  if (!e.shiftKey) {
+  if (!e.shiftKey || selection.disableShiftKey) {
     rangeSelection.preSelect = key;
     return;
   }
