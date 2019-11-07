@@ -216,13 +216,18 @@ export class GridView extends Backbone.View {
      */
     this._chainContent = new ProjectionChain(this.model);
 
-    this.pipeDataProjections(query, buffer, itemIndex);
-    this.pipeStructureProjections([
+    const selection = this.model.get('selection') || {};
+    const structureProjections = [
       columns,
       rows,
       selection,
-      rangeSelection,
-    ]);
+    ];
+    if (!selection.disableShiftKey) {
+      structureProjections.push(rangeSelection);
+    }
+
+    this.pipeDataProjections(query, buffer, itemIndex);
+    this.pipeStructureProjections(structureProjections);
     this.pipeContentProjections([
       columnGroup,
       cells,
