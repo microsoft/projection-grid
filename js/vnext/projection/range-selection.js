@@ -5,9 +5,7 @@ function changeSelectRow(e) {
   const selection = this.get('selection');
   const rangeSelection = this.get('rangeSelection');
 
-  // if the user didn't press shift key or the disableShiftKey option is set to true,
-  // act as a simple click select.
-  if (!e.shiftKey || selection.disableShiftKey) {
+  if (!e.shiftKey) {
     rangeSelection.preSelect = key;
     return;
   }
