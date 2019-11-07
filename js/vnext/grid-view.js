@@ -222,6 +222,8 @@ export class GridView extends Backbone.View {
       rows,
       selection,
     ];
+    // if disableShiftKey option is set to true,
+    // disable range selection
     if (!selectionConfig.disableShiftKey) {
       structureProjections.push(rangeSelection);
     }
