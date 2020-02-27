@@ -5,10 +5,10 @@
   };
 
 .table-container
-  table(style=tableStyle, class=classes)
+  table.data-table(style=tableStyle, class=classes, role='grid')
     colgroup.column-group
     thead.header
     tbody  
-      tr.top-filler
-      tr.bottom-filler
+      tr.top-filler(role='presentation')
+      tr.bottom-filler(role='presentation')
     tfoot.footer

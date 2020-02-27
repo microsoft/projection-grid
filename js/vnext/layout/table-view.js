@@ -142,6 +142,14 @@ export class TableView extends Backbone.View {
     return this._props.scrolling.header.type;
   }
 
+   /**
+   * The state of table view
+   * @type {Object}
+   */
+  get state() {
+    return this._state;
+  }
+
   set(state = {}, callback = _.noop) {
     const isSet = key => !_.isUndefined(state[key]);
     const listState = {};
@@ -270,7 +278,7 @@ export class TableView extends Backbone.View {
           const width = $tableContainer.width();
           style.width = width;
           style['min-width'] = width;
-          $table.css({ width: width, 'min-width': width });
+          $table.css({ width, 'min-width': width });
         }
 
         $stickyHeader.css(style);
