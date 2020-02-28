@@ -270,7 +270,7 @@ export class TableView extends Backbone.View {
           const width = $tableContainer.width();
           style.width = width;
           style['min-width'] = width;
-          $table.css({ width: width, 'min-width': width });
+          $table.css({ width, 'min-width': width });
         }
 
         $stickyHeader.css(style);
