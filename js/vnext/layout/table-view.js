@@ -142,14 +142,6 @@ export class TableView extends Backbone.View {
     return this._props.scrolling.header.type;
   }
 
-   /**
-   * The state of table view
-   * @type {Object}
-   */
-  get state() {
-    return this._state;
-  }
-
   set(state = {}, callback = _.noop) {
     const isSet = key => !_.isUndefined(state[key]);
     const listState = {};

@@ -493,14 +493,6 @@ export class GridView extends Backbone.View {
   }
 
   /**
-   * The table view of the grid
-   * @type {TableView}
-   */
-  get tableView() {
-    return this._tableView;
-  }
-
-  /**
    * A object implements a minimal interface of array to lazy fetch items.
    * We use this structure a lot in projections, so that we don't need to
    * procceed all the rows when virtualization is on.
