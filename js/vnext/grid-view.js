@@ -108,16 +108,18 @@ class ProjectionChain {
  * @param {Object} options
  *    The constructor options.
  * @param {string[]} [options.tableClasses=[]]
+ * @param {object} [options.tableAttributes={aria-label: 'table'}]
  *    The classes for the TABLE elements (content table and sticky/fixed header)
  * @param {ScrollingConfig} [options.scrolling={virtualized: false, header: 'static'}]
  *    The scrolling related configurations
  */
 export class GridView extends Backbone.View {
-  initialize({ scrolling, tableClasses, dataSource }) {
+  initialize({ scrolling, tableClasses, tableAttributes, dataSource }) {
     this._tableView = new TableView({
       el: this.$el,
       scrolling,
       classes: tableClasses,
+      attributes: tableAttributes,
     });
     this.model = new Backbone.Model();
 

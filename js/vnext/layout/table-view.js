@@ -28,10 +28,11 @@ const rowTemplateWithEscape = row => rowTemplate(_.defaults({ escapeAttr }, row)
  *  the scrolling related configurations
  */
 export class TableView extends Backbone.View {
-  initialize({ scrolling = {}, classes = [] }) {
+  initialize({ scrolling = {}, classes = [], attributes = {} }) {
     this._props = {
       scrolling: this._normalizeScrollingConfig(scrolling),
       classes,
+      attributes,
     };
 
     this._state = {
@@ -67,7 +68,7 @@ export class TableView extends Backbone.View {
       header.type = 'sticky';
       header.offset = config;
     } else if (_.isObject(config) && _.isString(config.type)) {
-      _.extend(header, _.pick(config, 'type', 'offset'));
+      _.extend(header, _.pick(config, 'type', 'offset', 'attributes'));
     }
 
     if (!_.contains(HEADER_TYPES, header.type)) {
@@ -295,6 +296,7 @@ export class TableView extends Backbone.View {
     this._listView.set({
       model: {
         classes: this._props.classes,
+        dataTableAttributes: this._props.attributes,
       },
       listTemplate: tableStaticTemplate,
       itemTemplate: rowTemplateWithEscape,
@@ -310,6 +312,8 @@ export class TableView extends Backbone.View {
     this._listView.set({
       model: {
         classes: this._props.classes,
+        headerAttributes: _.result(this._props.scrolling.header, 'attributes', {}),
+        dataTableAttributes: this._props.attributes,
       },
       listTemplate: tableFixedTemplate,
       itemTemplate: rowTemplateWithEscape,
@@ -335,6 +339,8 @@ export class TableView extends Backbone.View {
     this._listView.set({
       model: {
         classes: this._props.classes,
+        headerAttributes: _.result(this._props.scrolling.header, 'attributes', {}),
+        dataTableAttributes: this._props.attributes,
       },
       listTemplate: tableStickyTemplate,
       itemTemplate: rowTemplateWithEscape,
