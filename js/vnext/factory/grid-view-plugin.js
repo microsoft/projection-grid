@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import { GridView } from '../grid-view.js';
 
-const CONSTRUCTOR_OPTIONS = ['el', 'scrolling', 'tableClasses'];
+const CONSTRUCTOR_OPTIONS = ['el', 'scrolling', 'tableClasses', 'tableAttributes'];
 const NONE_PROJECTION_OPTIONS = CONSTRUCTOR_OPTIONS.concat(['plugins']);
 
 /**
@@ -15,6 +15,8 @@ const NONE_PROJECTION_OPTIONS = CONSTRUCTOR_OPTIONS.concat(['plugins']);
  *    The scrolling behavior configuratoin.
  * @property {strings[]} tableClasses
  *    An array of classes to be applied to `TABLE` elements.
+ * @property {object} tableAttributes
+ *    An object of attributes to be applied to `TABLE` elements.
  * @property {Object.<string,Object>} plugins
  *    The plugin configurations. The keys are the plugin names, and the values
  *    are the configuation objects.
