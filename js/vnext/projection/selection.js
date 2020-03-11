@@ -51,7 +51,9 @@ function selectionProjectionHandler(state, {
   resolver,
   a11y: {
     selectAllLabel = 'Select All',
+    deselectAllLabel = 'Deselect All',
     selectOneLabel = null,
+    deselectOneLabel = null,
   } = {},
 }) {
   if (!enabled) {
@@ -97,7 +99,7 @@ function selectionProjectionHandler(state, {
       single,
       checked: selectedAll,
       partSelected,
-      checkAllLabel: selectAllLabel,
+      checkAllLabel: selectedAll ? deselectAllLabel : selectAllLabel,
     }),
     template: selectionBodyTemplate,
     property: item => {
@@ -105,7 +107,7 @@ function selectionProjectionHandler(state, {
         single,
         selectable: selectable(item),
         checked: selectedIndex[item[primaryKey]],
-        ariaLabel: selectOneLabel,
+        ariaLabel: selectedIndex[item[primaryKey]] ? deselectOneLabel : selectOneLabel,
         labelbyId: selectOneLabel ? undefined : item[primaryKey],
       };
     },
