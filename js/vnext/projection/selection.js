@@ -51,6 +51,7 @@ function selectionProjectionHandler(state, {
   resolver,
   a11y: {
     selectAllLabel = 'Select All',
+    selectOneLabel = undefined,
   } = {},
 }) {
   if (!enabled) {
@@ -104,7 +105,8 @@ function selectionProjectionHandler(state, {
         single,
         selectable: selectable(item),
         checked: selectedIndex[item[primaryKey]],
-        labelbyId: item[primaryKey],
+        ariaLabel: selectOneLabel,
+        labelbyId: selectOneLabel ? undefined : item[primaryKey],
       };
     },
     sortable: false,
