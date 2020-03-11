@@ -51,7 +51,7 @@ function selectionProjectionHandler(state, {
   resolver,
   a11y: {
     selectAllLabel = 'Select All',
-    selectOneLabel = undefined,
+    selectOneLabel = null,
   } = {},
 }) {
   if (!enabled) {
