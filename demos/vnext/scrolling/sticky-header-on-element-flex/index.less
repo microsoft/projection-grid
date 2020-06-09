@@ -1,0 +1,43 @@
+.grid-viewport {
+  height: 600px;
+  width: 900px;
+  overflow-y: auto;
+  position: relative;
+  border-style: dashed;
+
+  ul.nav.nav-tabs {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
+table.table {
+  thead {
+    background: lavender;
+  }
+}
+
+col {
+  width: 120px;
+}
+
+div.tr {
+  display: flex;
+  align-items: stretch;
+}
+
+div.td, div.th {
+  border: 1px solid red;
+  width: 150px;
+  height: 50px;
+  flex-shrink: 0;
+}
+
+.non-sticky-column {
+  display: flex;
+}
+
+.sticky-column {
+  display: flex;
+}

@@ -4,7 +4,7 @@ import sortableHeaderTemplate from './sortable-header.jade';
 // Reorder column data referring to 'column.sortable'.
 // 'column.sortable' takes four types of values: boolean, number, string and function.
 function reorder(e) {
-  const name = this.$(e.target).closest('th').attr('data-name');
+  const name = this.$(e.target).closest('.column-header-sortable').attr('data-name');
   const sortable = this.columnWithName(name).sortable;
 
   if (sortable) {
@@ -98,7 +98,7 @@ function sortableHeaderProjectionHandler(state, {
   });
 
   patch.events = _.defaults({
-    'click th.column-header-sortable': reorder,
+    'click .column-header-sortable': reorder,
   }, state.events);
 
   return _.defaults(patch, state);

@@ -149,7 +149,6 @@ function normalizeSortable(sortable, column) {
  */
 class ColumnGroup {
   constructor(columns) {
-
     /**
      * The column header rows
      * @type {RowContent[]}
@@ -226,6 +225,7 @@ class ColumnGroup {
         const colspan = col.treeWidth;
         const rowspan = _.isEmpty(col.columns) ? this.root.treeHeight - col.rowIndex : col.height;
         const name = col.name;
+        const sticky = col.sticky;
         const html = col.html || col.title || col.name;
 
         while (this.headerRows.length <= col.rowIndex) {
@@ -241,7 +241,7 @@ class ColumnGroup {
           rowspan,
           'data-name': name,
         }, normalizeAttributes(col.headAttributes, col));
-        col.cell = { html, name, classes, attributes };
+        col.cell = { html, name, classes, attributes, sticky };
         this.headerRows[col.rowIndex].cells.push(col.cell);
       }
       _.each(col.columns, buildColumnHeader);

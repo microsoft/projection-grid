@@ -93,7 +93,12 @@ function selectionProjectionHandler(state, {
     partSelected = selectedCount > 0 && selectedCount < selectableCount;
   }
 
+  const hasStickColumn = _.reduce(state.columns, (memo, column) => {
+    return memo || column.sticky;
+  }, false);
+
   const columns = [{
+    sticky: hasStickColumn,
     name: 'selection',
     html: selectionHeadTemplate({
       single,
@@ -134,8 +139,8 @@ function selectionProjectionHandler(state, {
   });
 
   const events = _.defaults({
-    'change th input.select-all': changeSelectAll,
-    'change td input.select-row': changeSelectRow,
+    'change input.select-all': changeSelectAll,
+    'change input.select-row': changeSelectRow,
   }, state.events);
 
   return _.defaults({ columns, events, bodyRows }, state);

@@ -68,10 +68,13 @@ function translateRow({
        * @property {Backbone.View} view
        *    The Backbone View to be filled into the cell. Unsupported for
        *    the body cells.
+       * @property {boolean} [sticky=false]
+       *    Sticky the column
        */
       const cell = { classes: cellClasses, attributes: cellAttributes };
       cell.value = col.property.get(row.item);
       cell.html = col.template(_.pick(cell, 'value'));
+      cell.sticky = _.result(columnGroup.columnIndex[col.name], 'sticky', false);
 
       return cell;
     });

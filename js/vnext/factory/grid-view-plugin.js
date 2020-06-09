@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import { GridView } from '../grid-view.js';
 
-const CONSTRUCTOR_OPTIONS = ['el', 'scrolling', 'tableClasses', 'tableAttributes'];
+const CONSTRUCTOR_OPTIONS = ['el', 'scrolling', 'tableClasses', 'tableAttributes', 'layout'];
 const NONE_PROJECTION_OPTIONS = CONSTRUCTOR_OPTIONS.concat(['plugins']);
 
 /**

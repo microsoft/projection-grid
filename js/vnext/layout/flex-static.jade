@@ -1,0 +1,13 @@
+-
+  var tableStyle = {
+    'border-collapse': 'collapse',
+    'margin': 0,
+  };
+
+.table-container
+  div.table.data-table(style=tableStyle, class=classes, role='grid')&attributes(dataTableAttributes)
+    div.thead.header
+    div.tbody  
+      div.tr.top-filler(role='presentation')
+      div.tr.bottom-filler(role='presentation')
+    div.tfoot.footer

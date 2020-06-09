@@ -1,16 +1,17 @@
 import _ from 'underscore';
 import Backbone from 'backbone';
-import headerFooterTemplate from './header-footer.jade';
 import { escapeAttr } from './escape';
+import { headerFooterTemplate } from './const';
 
 const subviewClass = i => `header-subview-${i}`;
 const subviewSelector = i => `.${subviewClass(i)}`;
 
 class HeaderFooterView extends Backbone.View {
-  initialize({ tableView, group }) {
+  initialize({ tableView, group, layout }) {
     this.tableView = tableView;
     this.group = group;
     this.subviews = [];
+    this.headerFooterTemplate = headerFooterTemplate[layout];
   }
 
   redraw() {
@@ -52,7 +53,7 @@ export class HeaderView extends HeaderFooterView {
   }
 
   template(model) {
-    return headerFooterTemplate(_.defaults({ group: 'head', escapeAttr }, model));
+    return this.headerFooterTemplate(_.defaults({ group: 'head', escapeAttr }, model));
   }
 }
 
@@ -62,7 +63,7 @@ export class FooterView extends HeaderFooterView {
   }
 
   template(model) {
-    return headerFooterTemplate(_.defaults({ group: 'foot', escapeAttr }, model));
+    return this.headerFooterTemplate(_.defaults({ group: 'foot', escapeAttr }, model));
   }
 }
 
