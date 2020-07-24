@@ -117,6 +117,7 @@ function selectionProjectionHandler(state, {
       };
     },
     sortable: false,
+    isResizable: false,
     colClasses,
     headClasses,
     bodyClasses,
