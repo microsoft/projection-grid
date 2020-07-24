@@ -1,19 +1,27 @@
+mixin cellValue(cell)
+  if (cell.html)
+    != cell.html
+  else
+    = cell.value
+
 mixin mixinHeadCell(cell, escapeAttr)
   - var attr = escapeAttr(cell.attributes)
-  div.th&attributes(attr)(class=cell.classes)
-    if (cell.html)
-      != cell.html
-    else
-      = cell.value
+  if attr.colspan > 1
+    .column-group-container(style=`flex-grow: ${attr.colspan};`)
+      div.th&attributes(attr)(class=cell.classes, style="width: 100%;")
+        +cellValue(cell)
+      if (cell.hasChild)
+        .column-group-placeholder
+  else
+    div.th&attributes(attr)(class=cell.classes)
+      +cellValue(cell)
+    if (cell.hasChild)
+      .column-group-placeholder
 
 mixin mixinCell(cell, escapeAttr)
   - var attr = escapeAttr(cell.attributes)
   div.td&attributes(attr)(class=cell.classes)
-    if (cell.html)
-      != cell.html
-    else
-      = cell.value
-
+    +cellValue(cell)
 
 mixin mixinGroup(group, cell, escapeAttr)
   case group
@@ -28,14 +36,18 @@ mixin mixinRow(row, group, escapeAttr)
   - var stickyCells = (row.cells || []).filter(c => c.sticky);
   - var nonStickyCells = (row.cells || []).filter(c => !c.sticky);
   div.tr&attributes(attr)(class=row.classes)
-    .sticky-column-container
-      .sticky-column
-        each cell in stickyCells
-          +mixinGroup(group, cell, escapeAttr)
-    .non-sticky-column-container
-      .non-sticky-column
-        each cell in nonStickyCells
-          +mixinGroup(group, cell, escapeAttr)
+    if row.html || row.view
+      each cell in row.cells 
+        +mixinGroup(group, cell, escapeAttr)
+    else 
+      .sticky-column-container
+        .sticky-column
+          each cell in stickyCells
+            +mixinGroup(group, cell, escapeAttr)
+      .non-sticky-column-container
+        .non-sticky-column
+          each cell in nonStickyCells
+            +mixinGroup(group, cell, escapeAttr)
 
 
 mixin mixinRows(rows, group, escapeAttr)

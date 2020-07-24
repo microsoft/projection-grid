@@ -7,8 +7,43 @@ import rows from '../rows';
 import './index.less';
 import 'bootstrap-webpack';
 
+const columns = [{
+  name: 'UserName',
+  width: 120,
+  sortable: true,
+  sticky: true,
+}, {
+  name: 'Name',
+  property: item => `${item.FirstName}, ${item.LastName}`,
+  width: 150,
+  sortable: true,
+  sticky: true,
+}, {
+  name: 'Emails',
+  width: 220,
+  sortable: item => item.Emails.length,
+}, {
+  name: 'AddressInfo',
+  columns: [{
+    name: 'Address',
+    property: 'AddressInfo/0/Address',
+    sortable: true,
+  }, {
+    name: 'City',
+    columns: [{
+      name: 'CityName',
+      property: 'AddressInfo/0/City/Name',
+      sortable: true,
+    }, {
+      name: 'CityCountry',
+      property: 'AddressInfo/0/City/CountryRegion',
+      sortable: true,
+    }],
+  }],
+}];
+
 const gridConfigBase = {
-  tableClasses: ['table', 'table-bordered'],
+  tableClasses: ['table'],
   layout: 'flex',
   selection: true,
   dataSource: {
@@ -16,45 +51,7 @@ const gridConfigBase = {
     data: people.value,
   },
   rows,
-  columns: [{
-    name: 'UserName',
-    width: 120,
-    sortable: true,
-    sticky: true,
-  }, {
-    name: 'Name',
-    property: item => `${item.FirstName}, ${item.LastName}`,
-    width: 150,
-    sortable: true,
-    sticky: true,
-  }, {
-    name: 'Emails',
-    width: 220,
-    sortable: item => item.Emails.length,
-  }, {
-    name: 'AddressInfo',
-    property: 'AddressInfo/0/Address',
-    sortable: true,
-  }, {
-    name: 'CityName',
-    property: 'AddressInfo/0/City/Name',
-    sortable: true,
-  }, {
-    name: 'CityCountry',
-    property: 'AddressInfo/0/City/CountryRegion',
-    sortable: true,
-  }, {
-    name: 'CityRegion',
-    property: 'AddressInfo/0/City/Region',
-    sortable: true,
-  }, {
-    name: 'Gender',
-    sortable: true,
-  }, {
-    name: 'Concurrency',
-    width: 200,
-    sortable: true,
-  }],
+  columns,
 };
 
 const stickyGridConfig = _.defaults({

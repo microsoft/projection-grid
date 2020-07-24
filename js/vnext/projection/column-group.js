@@ -241,7 +241,16 @@ class ColumnGroup {
           rowspan,
           'data-name': name,
         }, normalizeAttributes(col.headAttributes, col));
-        col.cell = { html, name, classes, attributes, sticky };
+
+        col.cell = {
+          html,
+          name,
+          classes,
+          attributes,
+          sticky,
+          parentName: col.parent.name,
+          hasChild: colspan > 1,
+        };
         this.headerRows[col.rowIndex].cells.push(col.cell);
       }
       _.each(col.columns, buildColumnHeader);
