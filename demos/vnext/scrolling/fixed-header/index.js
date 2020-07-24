@@ -13,7 +13,6 @@ window.gridView = pgrid.factory({ vnext: true }).create({
     virtualized: true,
     header: 'fixed',
   },
-  layout: 'flex',
   dataSource: {
     type: 'memory',
     data: people.value,

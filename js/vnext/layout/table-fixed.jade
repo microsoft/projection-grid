@@ -8,9 +8,11 @@
 .table-container
   .fixed-header
     table.fixed-header(style=tableStyle, class=classes, role='grid')&attributes(headerAttributes)
+      colgroup.column-group
       thead.header
   .viewport
     table.data-table(style=tableStyle, class=classes, role='grid')&attributes(dataTableAttributes)
+      colgroup.column-group
       tbody
         tr.top-filler(role='presentation')
         tr.bottom-filler(role='presentation')
