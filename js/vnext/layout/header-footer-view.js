@@ -8,7 +8,7 @@ import flexHeadCell from './flex-head-cell.jade';
 const subviewClass = i => `header-subview-${i}`;
 const subviewSelector = i => `.${subviewClass(i)}`;
 const columnNameClass = name => `column-name-${name}`;
-const columnPlaceholderSelector = name => `.${columnNameClass(name)} +.column-group-placeholder`;
+const columnPlaceholderSelector = name => `.${columnNameClass(name)} +.nested-column-placeholder`;
 
 class HeaderFooterView extends Backbone.View {
   initialize({ tableView, group, layout }) {

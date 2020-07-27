@@ -93,12 +93,8 @@ function selectionProjectionHandler(state, {
     partSelected = selectedCount > 0 && selectedCount < selectableCount;
   }
 
-  const hasStickColumn = _.reduce(state.columns, (memo, column) => {
-    return memo || column.sticky;
-  }, false);
-
   const columns = [{
-    sticky: hasStickColumn,
+    group: _.chain(state.columns).first().result('group', 'other').value(),
     name: 'selection',
     html: selectionHeadTemplate({
       single,

@@ -68,13 +68,14 @@ function translateRow({
        * @property {Backbone.View} view
        *    The Backbone View to be filled into the cell. Unsupported for
        *    the body cells.
-       * @property {boolean} [sticky=false]
-       *    Sticky the column
+       * @property {string} group [group=other]
+       *    Group name.
+       *    A Row will be separated by the group name. [[cell, cell], [cell], [cell]]
        */
       const cell = { classes: cellClasses, attributes: cellAttributes };
       cell.value = col.property.get(row.item);
       cell.html = col.template(_.pick(cell, 'value'));
-      cell.sticky = _.result(columnGroup.columnIndex[col.name], 'sticky', false);
+      cell.group = _.result(columnGroup.columnIndex[col.name], 'group', 'other');
 
       return cell;
     });
@@ -145,7 +146,6 @@ function cellsProjectionHandler(state) {
     footRows,
   }, state);
 }
-
 
 export const cells = {
   name: 'cells',

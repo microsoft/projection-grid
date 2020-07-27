@@ -21,6 +21,7 @@ import {
   stickyHeaderFillerTableSelector,
   viewportTableSelector,
  } from './const';
+import './flex-layout.less';
 
 const STATE_OPTIONS = ['cols', 'headRows', 'bodyRows', 'footRows', 'events'];
 const HEADER_TYPES = ['static', 'fixed', 'sticky'];

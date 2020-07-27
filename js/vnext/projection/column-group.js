@@ -225,7 +225,7 @@ class ColumnGroup {
         const colspan = col.treeWidth;
         const rowspan = _.isEmpty(col.columns) ? this.root.treeHeight - col.rowIndex : col.height;
         const name = col.name;
-        const sticky = col.sticky;
+        const group = _.result(col, 'group', 'other');
         const html = col.html || col.title || col.name;
 
         while (this.headerRows.length <= col.rowIndex) {
@@ -247,7 +247,7 @@ class ColumnGroup {
           name,
           classes,
           attributes,
-          sticky,
+          group,
           parentName: col.parent.name,
           hasChild: colspan > 1,
         };

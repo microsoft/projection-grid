@@ -7,47 +7,50 @@ mixin cellValue(cell)
 mixin mixinHeadCell(cell, escapeAttr)
   - var attr = escapeAttr(cell.attributes)
   if attr.colspan > 1
-    .column-group-container(style=`flex-grow: ${attr.colspan};`)
-      div.th&attributes(attr)(class=cell.classes, style="width: 100%;")
+    .nested-column-container(style=`flex-grow: ${attr.colspan};`)
+      div.th.flex-cell&attributes(attr)(class=cell.classes)
         +cellValue(cell)
       if (cell.hasChild)
-        .column-group-placeholder
+        .nested-column-placeholder
   else
-    div.th&attributes(attr)(class=cell.classes)
+    div.th.flex-cell&attributes(attr)(class=cell.classes)
       +cellValue(cell)
     if (cell.hasChild)
-      .column-group-placeholder
+      .nested-column-placeholder
 
 mixin mixinCell(cell, escapeAttr)
   - var attr = escapeAttr(cell.attributes)
-  div.td&attributes(attr)(class=cell.classes)
+  div.td.flex-cell&attributes(attr)(class=cell.classes)
     +cellValue(cell)
 
-mixin mixinGroup(group, cell, escapeAttr)
-  case group
+mixin mixinSection(section, cell, escapeAttr)
+  case section
     when 'head'
       +mixinHeadCell(cell, escapeAttr)
     when 'body'
     when 'foot'
       +mixinCell(cell, escapeAttr)
 
-mixin mixinRow(row, group, escapeAttr)
+mixin mixinRow(row, section, escapeAttr)
   - var attr = escapeAttr(row.attributes)
-  - var stickyCells = (row.cells || []).filter(c => c.sticky);
-  - var nonStickyCells = (row.cells || []).filter(c => !c.sticky);
-  div.tr&attributes(attr)(class=row.classes)
+
+  div.tr.flex-row&attributes(attr)(class=row.classes)
     if row.html || row.view
       each cell in row.cells 
-        +mixinGroup(group, cell, escapeAttr)
+        +mixinSection(section, cell, escapeAttr)
     else 
-      .sticky-column-container
-        .sticky-column
-          each cell in stickyCells
-            +mixinGroup(group, cell, escapeAttr)
-      .non-sticky-column-container
-        .non-sticky-column
-          each cell in nonStickyCells
-            +mixinGroup(group, cell, escapeAttr)
+      - var groups = [], cellByGroup = (row.cells || []).reduce((memo, cell) => {
+      -   var group = cell.group;
+      -   !memo[group] && (memo[group] = [], groups.push(group));
+      -   memo[group].push(cell);
+      -   return memo;
+      - }, {});
+
+      each group in groups 
+        div(class=`${group}-group-container flex-column-group-container`)
+          div(class=`${group}-group flex-column-group`)
+            each cell in cellByGroup[group] 
+              +mixinSection(section, cell, escapeAttr)
 
 
 mixin mixinRows(rows, group, escapeAttr)

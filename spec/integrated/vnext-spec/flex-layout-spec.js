@@ -7,7 +7,6 @@ import people from 'data/people.json';
 import util from 'util';
 import { expect } from 'chai';
 import driver from 'driver';
-import 'styles/flex-layout.less';
 
 class CustomView extends Backbone.View {
   events() {
@@ -28,13 +27,13 @@ const columns = [{
   name: 'UserName',
   width: 120,
   sortable: true,
-  sticky: true,
+  group: 'freezing',
 }, {
   name: 'Name',
   property: item => `${item.FirstName}, ${item.LastName}`,
   width: 150,
   sortable: true,
-  sticky: true,
+  group: 'freezing',
 }, {
   name: 'AddressInfo',
   columns: [{
@@ -145,8 +144,8 @@ describe('Flex layout', () => {
     return driver
       .element('#container > .table-container .header .tr:eq(2)')
       .then(result => {
-        const $stickyGroup = result.find('.sticky-column-container .sticky-column');
-        const $nonStickyGroup = result.find('.non-sticky-column-container .non-sticky-column');
+        const $stickyGroup = result.find('.freezing-group-container .freezing-group');
+        const $nonStickyGroup = result.find('.other-group-container .other-group');
 
         // Check sticky group. The checkbox column should be in sticky group
         expect($stickyGroup.find('[data-name="selection"]').size()).to.be.equal(1);

@@ -11,17 +11,18 @@ const columns = [{
   name: 'UserName',
   width: 120,
   sortable: true,
-  sticky: true,
+  group: 'freezing',
 }, {
   name: 'Name',
   property: item => `${item.FirstName}, ${item.LastName}`,
   width: 150,
   sortable: true,
-  sticky: true,
+  group: 'freezing',
 }, {
   name: 'Emails',
   width: 220,
   sortable: item => item.Emails.length,
+  group: 'freezing',
 }, {
   name: 'AddressInfo',
   columns: [{
