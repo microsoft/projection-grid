@@ -114,9 +114,10 @@ class ProjectionChain {
  *    The scrolling related configurations
  */
 export class GridView extends Backbone.View {
-  initialize({ scrolling, tableClasses, tableAttributes, dataSource }) {
+  initialize({ scrolling, tableClasses, tableAttributes, dataSource, layout }) {
     this._tableView = new TableView({
       el: this.$el,
+      layout,
       scrolling,
       classes: tableClasses,
       attributes: tableAttributes,
@@ -581,7 +582,7 @@ export class GridView extends Backbone.View {
    * @return {string} - The primary key for the row.
    */
   keyOfElement(el) {
-    const $tr = $(el).closest('tr', this.$el);
+    const $tr = $(el).closest('[data-key]', this.$el);
 
     if ($tr.length > 0) {
       return $tr.attr('data-key') || null;

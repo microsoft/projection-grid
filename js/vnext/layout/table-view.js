@@ -4,17 +4,27 @@ import ListView from 'backbone-virtualized-listview';
 
 import { HeaderView, FooterView } from './header-footer-view.js';
 
-import rowTemplate from './row.jade';
-import tableFixedTemplate from './table-fixed.jade';
-import tableStaticTemplate from './table-static.jade';
-import tableStickyTemplate from './table-sticky.jade';
+// import tableFixedTemplate from './table-fixed.jade';
+// import tableStaticTemplate from './table-static.jade';
 
 import columnGroupTemplate from './column-group.jade';
 import { escapeAttr } from './escape';
+import {
+  LAYOUT,
+  rowTemplateWithEscape,
+  colgroupSelector,
+  headerSelector,
+  footerSelector,
+  stickyTemplate,
+  fixedTemplate,
+  staticTemplate,
+  stickyHeaderFillerTableSelector,
+  viewportTableSelector,
+ } from './const';
+import './flex-layout.less';
 
 const STATE_OPTIONS = ['cols', 'headRows', 'bodyRows', 'footRows', 'events'];
 const HEADER_TYPES = ['static', 'fixed', 'sticky'];
-const rowTemplateWithEscape = row => rowTemplate(_.defaults({ escapeAttr }, row));
 
 /**
  * Table view with virtualization support
@@ -26,13 +36,16 @@ const rowTemplateWithEscape = row => rowTemplate(_.defaults({ escapeAttr }, row)
  *  the classes for the TABLE elements (content table and sticky/fixed header)
  * @param {ScrollingConfig} [options.scrolling={virtualized: false, header: 'static'}]
  *  the scrolling related configurations
+ * @param {string} [options.layout='table']
+ *  the layout of the grid. can be 'table' or 'flex'
  */
 export class TableView extends Backbone.View {
-  initialize({ scrolling = {}, classes = [], attributes = {} }) {
+  initialize({ scrolling = {}, classes = [], attributes = {}, layout = LAYOUT.table }) {
     this._props = {
       scrolling: this._normalizeScrollingConfig(scrolling),
       classes,
       attributes,
+      layout,
     };
 
     this._state = {
@@ -49,8 +62,8 @@ export class TableView extends Backbone.View {
       viewport: this._props.scrolling.viewport,
     });
 
-    this._headerView = new HeaderView({ tableView: this });
-    this._footerView = new FooterView({ tableView: this });
+    this._headerView = new HeaderView({ tableView: this, layout: this._props.layout });
+    this._footerView = new FooterView({ tableView: this, layout: this._props.layout });
 
     _.each(['willRedraw', 'didRedraw'], event => {
       this._listView.on(event, (...args) => {
@@ -180,17 +193,17 @@ export class TableView extends Backbone.View {
   }
 
   _renderColumnGroup() {
-    this.$colgroup = this.$('colgroup.column-group');
+    this.$colgroup = this.$(colgroupSelector[this._props.layout]);
     this.$colgroup.html(columnGroupTemplate(_.defaults({ escapeAttr }, this._state)));
   }
 
   _renderHeader() {
-    this._headerView.setElement(this.$('thead.header'));
+    this._headerView.setElement(this.$(headerSelector[this._props.layout]));
     this._headerView.render();
   }
 
   _renderFooter() {
-    this._footerView.setElement(this.$('tfoot.footer'));
+    this._footerView.setElement(this.$(footerSelector[this._props.layout]));
     this._footerView.render();
   }
 
@@ -227,7 +240,7 @@ export class TableView extends Backbone.View {
     const $tableContainer = this.$('.table-container');
     const $stickyHeader = this.$('.sticky-header');
     const $stickyHeaderFiller = this.$('.sticky-header-filler');
-    const $table = this.$('.sticky-header-filler + table');
+    const $table = this.$(stickyHeaderFillerTableSelector[this._props.layout]);
     const viewportSize = { width: 0, height: 0 };
 
     const adjustStickyHeader = () => {
@@ -293,13 +306,16 @@ export class TableView extends Backbone.View {
   }
 
   _renderStatic(callback) {
+    const listTemplate = staticTemplate[this._props.layout];
+    const itemTemplate = rowTemplateWithEscape[this._props.layout];
+
     this._listView.set({
       model: {
         classes: this._props.classes,
         dataTableAttributes: this._props.attributes,
       },
-      listTemplate: tableStaticTemplate,
-      itemTemplate: rowTemplateWithEscape,
+      listTemplate,
+      itemTemplate,
     }).render(() => {
       this._renderColumnGroup();
       this._renderHeader();
@@ -309,14 +325,17 @@ export class TableView extends Backbone.View {
   }
 
   _renderFixed(callback) {
+    const listTemplate = fixedTemplate[this._props.layout];
+    const itemTemplate = rowTemplateWithEscape[this._props.layout];
+
     this._listView.set({
       model: {
         classes: this._props.classes,
         headerAttributes: _.result(this._props.scrolling.header, 'attributes', {}),
         dataTableAttributes: this._props.attributes,
       },
-      listTemplate: tableFixedTemplate,
-      itemTemplate: rowTemplateWithEscape,
+      listTemplate,
+      itemTemplate,
     }).render(() => {
       this._renderColumnGroup();
       this._renderHeader();
@@ -328,7 +347,7 @@ export class TableView extends Backbone.View {
       const widthViewport = this.$('.viewport').get(0).clientWidth;
       const widthContainer = this.el.clientWidth;
       const widthScrollbar = widthContainer - widthViewport;
-      const widthTable = this.$('.viewport > table').get(0).offsetWidth;
+      const widthTable = this.$(viewportTableSelector[this._props.layout]).get(0).offsetWidth;
 
       this.$el.width(widthTable + widthScrollbar);
       this.$('.fixed-header').width(widthTable);
@@ -336,14 +355,17 @@ export class TableView extends Backbone.View {
   }
 
   _renderSticky(callback) {
+    const listTemplate = stickyTemplate[this._props.layout];
+    const itemTemplate = rowTemplateWithEscape[this._props.layout];
+
     this._listView.set({
       model: {
         classes: this._props.classes,
         headerAttributes: _.result(this._props.scrolling.header, 'attributes', {}),
         dataTableAttributes: this._props.attributes,
       },
-      listTemplate: tableStickyTemplate,
-      itemTemplate: rowTemplateWithEscape,
+      listTemplate,
+      itemTemplate,
     }).render(() => {
       this._renderColumnGroup();
       this._renderHeader();
@@ -393,7 +415,7 @@ export class TableView extends Backbone.View {
   }
 
   indexOfElement(el) {
-    const $elTr = this._listView.$(el).closest('tr', this._listView.$container);
+    const $elTr = this._listView.$(el).closest('tr, .tr', this._listView.$container);
     if ($elTr.length > 0) {
       return $elTr.index() + this._listView.indexFirst - 1;
     }

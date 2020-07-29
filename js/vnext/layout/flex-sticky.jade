@@ -1,0 +1,17 @@
+-
+  var tableStyle = {
+    'border-collapse': 'collapse',
+    'margin': 0,
+    'table-layout': 'fixed',
+  };
+
+.table-container.flex-layout
+  div.table.sticky-header(style=tableStyle, class=classes, role='grid')&attributes(headerAttributes)
+    div.thead.header
+  .sticky-header-filler
+  div.table.data-table(style=tableStyle, class=classes, role='grid')&attributes(dataTableAttributes)
+    div.tbody
+      div.tr.top-filler(role='presentation')
+      div.tr.bottom-filler(role='presentation')
+    div.tfoot.footer
+

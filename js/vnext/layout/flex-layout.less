@@ -1,0 +1,32 @@
+.flex-layout {
+  .flex-row,
+  .flex-column-group,
+  .flex-column-group-container,
+  .nested-column-container,
+  .nested-column-placeholder {
+    display: flex;
+  }
+
+  .flex-column-group,
+  .flex-column-group-container {
+    flex-grow: 1;
+  }
+
+  .nested-column-container > .flex-cell {
+    width: 100%;
+  }
+  
+  .nested-column-container {
+    flex-direction: column;
+  }
+  
+  .flex-cell {
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 0;
+    align-items: center;
+    padding: 6px 8px;
+    border-right: 1px solid #EDEBE9;
+    border-bottom: 1px solid #EDEBE9;
+  }
+}

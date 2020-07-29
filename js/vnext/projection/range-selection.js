@@ -60,8 +60,8 @@ function selectionProjectionHandler(state, config, model) {
   }
 
   const events = _.defaults({
-    'click th input.select-all': changeSelectAll,
-    'click td input.select-row': changeSelectRow,
+    'click input.select-all': changeSelectAll,
+    'click input.select-row': changeSelectRow,
   }, state.events);
 
   return _.defaults({ events }, state);

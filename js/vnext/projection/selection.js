@@ -94,6 +94,7 @@ function selectionProjectionHandler(state, {
   }
 
   const columns = [{
+    group: _.chain(state.columns).first().result('group', 'other').value(),
     name: 'selection',
     html: selectionHeadTemplate({
       single,
@@ -135,8 +136,8 @@ function selectionProjectionHandler(state, {
   });
 
   const events = _.defaults({
-    'change th input.select-all': changeSelectAll,
-    'change td input.select-row': changeSelectRow,
+    'change input.select-all': changeSelectAll,
+    'change input.select-row': changeSelectRow,
   }, state.events);
 
   return _.defaults({ columns, events, bodyRows }, state);
