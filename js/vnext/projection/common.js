@@ -79,3 +79,24 @@ export function normalizeAttributes(attributes, context) {
 
   return {};
 }
+
+/**
+ * Normalize the attributes configuration
+ * @param {ColumnConfig} column 
+ *    The column config.
+ * @return {ColumnConfig}
+ *    The column config with attribute.
+ */
+export const extendDataColumnAttribute= (column) => _.defaults({
+  headAttributes: _.extend({
+    'data-column': column.name || column.property,
+  }, column.headAttributes),
+
+  bodyAttributes: _.extend({
+    'data-column': column.name || column.property,
+  }, column.bodyAttributes),
+
+  footAttributes: _.extend({
+    'data-column': column.name || column.property,
+  }, column.footAttributes),
+}, column);

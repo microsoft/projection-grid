@@ -1,4 +1,15 @@
 import _ from 'underscore';
+import { extendDataColumnAttribute } from './common.js';
+
+function extendColumns(columns, extendFunc) {
+  return _.map(columns, column => {
+    if (column.columns) {
+      return _.defaults({ columns: extendColumns(column.columns, extendFunc) }, extendFunc(column));
+    } else {
+      return extendFunc(column);
+    }
+  });
+}
 
 /**
  * @typedef ColumnConfig
@@ -55,19 +66,25 @@ import _ from 'underscore';
 
 /**
  * Columns projection handling columns configuration
+ * 1. If the columnsConfig is null, generate the columns config.
+ * 2. Add head/body/foot attribute data-column="name" which will render data-column attribute on each cell.
  * @param {Object} state
  * @param {(object[]|FakeArray)} [state.items]
  *    Original data items from data source.
- * @param {ColumnConfig[]} [columns]
+ * @param {ColumnConfig[]} [columnsConfig]
  *    Columns configuration defined by user. If omitted, all columns in original
  *    data will be shown.
  */
 function columnsProjectionHandler(state, columns) {
+  const defaultColumns = columns || _.chain(state.items.slice(0, 1)).first().keys().map(name => ({
+    name,
+    sortable: true,
+  })).value();
+
+  const extendedColumns = extendColumns(defaultColumns, extendDataColumnAttribute);
+
   return _.defaults({
-    columns: columns || _.chain(state.items.slice(0, 1)).first().keys().map(name => ({
-      name,
-      sortable: true,
-    })).value(),
+    columns: extendedColumns,
   }, state);
 }
 
