@@ -3,6 +3,7 @@ import { SingleSelectionResolver } from './single-selection-resolver.js';
 import { MultipleSelectionResolver } from './multiple-selection-resolver.js';
 import selectionHeadTemplate from './selection-head.jade';
 import selectionBodyTemplate from './selection-body.jade';
+import { extendDataColumnAttribute } from './common.js';
 
 function updateSelection(gridView, selection) {
   gridView.trigger('willSelect', selection.selected);
@@ -93,7 +94,7 @@ function selectionProjectionHandler(state, {
     partSelected = selectedCount > 0 && selectedCount < selectableCount;
   }
 
-  const columns = [{
+  const columns = [extendDataColumnAttribute({
     group: _.chain(state.columns).first().result('group', 'other').value(),
     name: 'selection',
     html: selectionHeadTemplate({
@@ -118,7 +119,7 @@ function selectionProjectionHandler(state, {
     headClasses,
     bodyClasses,
     footClasses,
-  }].concat(state.columns);
+  })].concat(state.columns);
 
   const bodyRows = _.map(state.bodyRows, row => {
     if (row && row.type === 'data' && row.item && selectable(row.item)) {

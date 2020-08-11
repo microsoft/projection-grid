@@ -98,6 +98,20 @@ describe('Flex layout', () => {
     util.cleanup();
   });
 
+  it('should grid body should have data-column attribute', function () {
+    return driver
+      .element('#container > .table-container .tbody .flex-row:eq(1) .flex-cell')
+      .then(result => {
+        expect(result.eq(0).attr('data-column')).to.be.equal('selection');
+        expect(result.eq(1).attr('data-column')).to.be.equal('UserName');
+        expect(result.eq(2).attr('data-column')).to.be.equal('Name');
+        expect(result.eq(3).attr('data-column')).to.be.equal('Address');
+        expect(result.eq(4).attr('data-column')).to.be.equal('CityName');
+        expect(result.eq(5).attr('data-column')).to.be.equal('CityCountry');
+      })
+      .tapCatch(console.log);
+  });
+
   it('should grid header have correct flex layout', function () {
     return driver
       .element('#container > .table-container .header .tr:eq(2) .th')
@@ -126,9 +140,9 @@ describe('Flex layout', () => {
               - CityCountry
         */
         const $addressInfo = result.eq(3);
-        const $address = $addressInfo.parent().find('[data-name="Address"]');
-        const $city = $addressInfo.parent().find('[data-name="City"]');
-        const $cityName = $city.parent().find('[data-name="CityName"]');
+        const $address = $addressInfo.parent().find('[data-column="Address"]');
+        const $city = $addressInfo.parent().find('[data-column="City"]');
+        const $cityName = $city.parent().find('[data-column="CityName"]');
         const $cityCountry = $city.parent().find('[data-name="CityCountry"]');
 
         expect($addressInfo.text()).to.equal('AddressInfo');
