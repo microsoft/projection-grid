@@ -326,6 +326,36 @@ export class GridView extends Backbone.View {
        * @event GridView#didRedraw
        */
       'didRedraw',
+
+      /**
+       * @event GridView#willRedrawHeader
+       */
+      'willRedrawHeader',
+
+      /**
+       * @event GridView#didRedrawHeader
+       */
+      'didRedrawHeader',
+
+      /**
+       * @event GridView#willRedrawFooter
+       */
+      'willRedrawFooter',
+
+      /**
+       * @event GridView#didRedrawFooter
+       */
+      'didRedrawFooter',
+
+      /**
+       * @event GridView#wwillRedrawBody
+       */
+      'willRedrawBody',
+
+      /**
+       * @event GridView#didRedrawBody
+       */
+      'didRedrawBody',
     ], event => {
       this._tableView.on(event, (...args) => {
         this.trigger(event, ...args);

@@ -64,4 +64,20 @@ const stickyGridConfig = _.defaults({
   },
 }, gridConfigBase);
 
-window.gridView = pgrid.factory({ vnext: true }).create(stickyGridConfig).gridView.render();
+
+window.gridView = pgrid.factory({ vnext: true }).create(stickyGridConfig).gridView
+
+_.each([
+  'willRedrawHeader',
+  'didRedrawHeader',
+  'willRedrawFooter',
+  'didRedrawFooter',
+  'willRedrawBody',
+  'didRedrawBody',
+], event => {
+  window.gridView.on(event, () => {
+    window.console.log(`trigger the event ${event}`);
+  });
+});
+
+window.gridView.render();
