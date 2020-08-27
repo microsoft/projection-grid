@@ -70,6 +70,14 @@ export class TableView extends Backbone.View {
         this.trigger(event, ...args);
       });
     });
+
+    this._listView.on('willRedraw', (...args) => {
+      this.trigger('willRedrawBody', ...args);
+    });
+
+    this._listView.on('didRedraw', (...args) => {
+      this.trigger('didRedrawBody', ...args);
+    });
   }
 
   _normalizeHeaderConfig(config) {
@@ -180,11 +188,15 @@ export class TableView extends Backbone.View {
     this._renderColumnGroup();
 
     if (this._headerView) {
+      this.trigger('willRedrawHeader');
       this._headerView.redraw();
+      this.trigger('didRedrawHeader');
     }
 
     if (this._footerView) {
+      this.trigger('willRedrawFooter');
       this._footerView.redraw();
+      this.trigger('didRedrawFooter');
     }
 
     this._listView.set(listState, callback);
