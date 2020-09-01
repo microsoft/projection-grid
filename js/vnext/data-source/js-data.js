@@ -44,10 +44,16 @@ export class JSDataDataSource extends DataSource {
 
     return this._resource
       .findAll(translateParams(this, _.omit(params, 'options')), options)
-      .then(data => ({
-        items: data.slice(),
-        totalCount: data.totalCount || 0,
-      }));
+      .then(data => {
+        if (_.isArray(data)) {
+          return ({
+            items: data.slice(),
+            totalCount: data.totalCount || 0,
+          });
+        } else {
+          throw data; // propagate error out
+        }
+      });
   }
 
   get resource() {
