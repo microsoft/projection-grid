@@ -40,14 +40,14 @@
 			<li class="dropdown">
 				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="GridView.html#event:didRedraw">GridView#event:didRedraw</a></li><li><a href="GridView.html#event:didReload">GridView#event:didReload</a></li><li><a href="GridView.html#event:didUpdate">GridView#event:didUpdate</a></li><li><a href="GridView.html#event:willRedraw">GridView#event:willRedraw</a></li><li><a href="GridView.html#event:willReload">GridView#event:willReload</a></li><li><a href="GridView.html#event:willUpdate">GridView#event:willUpdate</a></li>
+					<li><a href="GridView.html#event:didRedraw">GridView#event:didRedraw</a></li><li><a href="GridView.html#event:didRedrawBody">GridView#event:didRedrawBody</a></li><li><a href="GridView.html#event:didRedrawFooter">GridView#event:didRedrawFooter</a></li><li><a href="GridView.html#event:didRedrawHeader">GridView#event:didRedrawHeader</a></li><li><a href="GridView.html#event:didReload">GridView#event:didReload</a></li><li><a href="GridView.html#event:didUpdate">GridView#event:didUpdate</a></li><li><a href="GridView.html#event:willRedraw">GridView#event:willRedraw</a></li><li><a href="GridView.html#event:willRedrawFooter">GridView#event:willRedrawFooter</a></li><li><a href="GridView.html#event:willRedrawHeader">GridView#event:willRedrawHeader</a></li><li><a href="GridView.html#event:willReload">GridView#event:willReload</a></li><li><a href="GridView.html#event:willUpdate">GridView#event:willUpdate</a></li><li><a href="GridView.html#event:wwillRedrawBody">GridView#event:wwillRedrawBody</a></li>
 				</ul>
 			</li>
 			
 			<li class="dropdown">
 				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="global.html#cellsProjectionHandler">cellsProjectionHandler</a></li><li><a href="global.html#columnGroupProjectionHandler">columnGroupProjectionHandler</a></li><li><a href="global.html#columnsProjectionHandler">columnsProjectionHandler</a></li><li><a href="global.html#eventsProjectionHandler">eventsProjectionHandler</a></li><li><a href="global.html#normalizeClasses">normalizeClasses</a></li><li><a href="global.html#normalizeSelectionConfig">normalizeSelectionConfig</a></li><li><a href="global.html#queryProjectionHandler">queryProjectionHandler</a></li><li><a href="global.html#rowsProjectionHandler">rowsProjectionHandler</a></li><li><a href="global.html#selectionProjectionHandler">selectionProjectionHandler</a></li><li><a href="global.html#sortableHeaderProjectionHandler">sortableHeaderProjectionHandler</a></li><li><a href="global.html#translateRow">translateRow</a></li>
+					<li><a href="global.html#cellsProjectionHandler">cellsProjectionHandler</a></li><li><a href="global.html#columnGroupProjectionHandler">columnGroupProjectionHandler</a></li><li><a href="global.html#columnsProjectionHandler">columnsProjectionHandler</a></li><li><a href="global.html#eventsProjectionHandler">eventsProjectionHandler</a></li><li><a href="global.html#extendDataColumnAttribute">extendDataColumnAttribute</a></li><li><a href="global.html#normalizeAttributes">normalizeAttributes</a></li><li><a href="global.html#normalizeClasses">normalizeClasses</a></li><li><a href="global.html#normalizeSelectionConfig">normalizeSelectionConfig</a></li><li><a href="global.html#queryProjectionHandler">queryProjectionHandler</a></li><li><a href="global.html#rowsProjectionHandler">rowsProjectionHandler</a></li><li><a href="global.html#selectionProjectionHandler">selectionProjectionHandler</a></li><li><a href="global.html#sortableHeaderProjectionHandler">sortableHeaderProjectionHandler</a></li><li><a href="global.html#translateRow">translateRow</a></li>
 				</ul>
 			</li>
 			
@@ -59,16 +59,18 @@
 			</li>
 			
 		</ul>
-		<div class="col-sm-3 col-md-3">
-            <form class="navbar-form" role="search">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
-                    <div class="input-group-btn">
-                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
                     </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        
 	</div>
 
 </div>
@@ -156,6 +158,70 @@
 
     
 
+    
+        <h3 class="subsection-title">Members</h3>
+
+        <dl>
+            
+<hr>
+<dt class="name" id="extendDataColumnAttribute">
+    <h4 id="extendDataColumnAttribute"><span class="type-signature">&lt;constant> </span>extendDataColumnAttribute<span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Normalize the attributes configuration</p>
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        </dl>
     
 
     
@@ -462,7 +528,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="columnsProjectionHandler"><span class="type-signature"></span>columnsProjectionHandler(state [, columns])</h4>
+    <h4 class="name" id="columnsProjectionHandler"><span class="type-signature"></span>columnsProjectionHandler(state [, columnsConfig])</h4>
     
     
 </dt>
@@ -471,6 +537,10 @@
     
     <div class="description">
         <p>Columns projection handling columns configuration</p>
+<ol>
+<li>If the columnsConfig is null, generate the columns config.</li>
+<li>Add head/body/foot attribute data-column=&quot;name&quot; which will render data-column attribute on each cell.</li>
+</ol>
     </div>
     
 
@@ -604,7 +674,7 @@
 
         <tr>
             
-                <td class="name"><code>columns</code></td>
+                <td class="name"><code>columnsConfig</code></td>
             
 
             <td class="type">
@@ -852,6 +922,187 @@
             
 <hr>
 <dt>
+    <h4 class="name" id="normalizeAttributes"><span class="type-signature"></span>normalizeAttributes(attributes, context)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Normalize the attributes configuration</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>attributes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">AttributesConfig</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The attributes configuration.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The context for the classes. It could be</p>
+<ul>
+<li>A <a href="global.html#ColumnConfig">ColumnConfig</a> for a column's headAttributes/colAttributes</li>
+<li>A <a href="global.html#RowConfig">RowConfig</a> for a column or row's bodyAttributes/footAttributes</li>
+<li>An object representing the data item for data rows in the body</li>
+</ul></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The normalized attributes configuration.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object.&lt;string, string></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
     <h4 class="name" id="normalizeClasses"><span class="type-signature"></span>normalizeClasses(classes, context)</h4>
     
     
@@ -940,6 +1191,7 @@
 <ul>
 <li>A <a href="global.html#ColumnConfig">ColumnConfig</a> for a column's headClasses/colClasses</li>
 <li>A <a href="global.html#RowConfig">RowConfig</a> for a column or row's bodyClasses/footClasses</li>
+<li>An object representing the data item for data rows in the body</li>
 </ul></td>
         </tr>
 
@@ -2094,7 +2346,7 @@
                 
 <hr>
 <dt class="name" id="BuiltinDataSourceConfig">
-    <h4>BuiltinDataSourceConfig</h4>
+    <h4 id="BuiltinDataSourceConfig">BuiltinDataSourceConfig</h4>
 
     
 </dt>
@@ -2353,7 +2605,7 @@
                 
 <hr>
 <dt class="name" id="CellContent">
-    <h4>CellContent</h4>
+    <h4 id="CellContent">CellContent</h4>
 
     
 </dt>
@@ -2501,6 +2753,32 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>group</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>[group=other]
+   Group name.
+   A Row will be separated by the group name. [[cell, cell], [cell], [cell]]</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 </dl>
@@ -2550,7 +2828,7 @@
                 
 <hr>
 <dt class="name" id="ClassesConfig">
-    <h4>ClassesConfig</h4>
+    <h4 id="ClassesConfig">ClassesConfig</h4>
 
     
 </dt>
@@ -2632,7 +2910,7 @@
                 
 <hr>
 <dt class="name" id="ClassPredicate">
-    <h4>ClassPredicate</h4>
+    <h4 id="ClassPredicate">ClassPredicate</h4>
 
     
 </dt>
@@ -2855,7 +3133,7 @@ When it's a function, it takes the context and return a boolean.</p>
                 
 <hr>
 <dt class="name" id="ColContent">
-    <h4>ColContent</h4>
+    <h4 id="ColContent">ColContent</h4>
 
     
 </dt>
@@ -3006,7 +3284,7 @@ When it's a function, it takes the context and return a boolean.</p>
                 
 <hr>
 <dt class="name" id="ColumnConfig">
-    <h4>ColumnConfig</h4>
+    <h4 id="ColumnConfig">ColumnConfig</h4>
 
     
 </dt>
@@ -3229,30 +3507,6 @@ Only available for memory data source.</li>
 
         <tr>
             
-                <td class="name"><code>editable</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Indicates whether the column is editable.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
                 <td class="name"><code>colClasses</code></td>
             
 
@@ -3349,6 +3603,102 @@ Only available for memory data source.</li>
 
         <tr>
             
+                <td class="name"><code>colAttributes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#ClassesConfig">ClassesConfig</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The attributes for the <code>COL</code> element in <code>COLGROUP</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>headAttributes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">AttributesConfig</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The attributes for the <code>TH</code> elements in <code>THEAD</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bodyAttributes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">AttributesConfig</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The attributes for the <code>TD</code> elements in <code>TBODY</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>footAttributes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">AttributesConfig</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The attributes for the <code>TD</code> elements in <code>TFOOT</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>columns</code></td>
             
 
@@ -3419,7 +3769,7 @@ Only available for memory data source.</li>
                 
 <hr>
 <dt class="name" id="ContentChainState">
-    <h4>ContentChainState</h4>
+    <h4 id="ContentChainState">ContentChainState</h4>
 
     
 </dt>
@@ -3640,7 +3990,7 @@ overrides some of the properties.</p>
                 
 <hr>
 <dt class="name" id="DataChainState">
-    <h4>DataChainState</h4>
+    <h4 id="DataChainState">DataChainState</h4>
 
     
 </dt>
@@ -3885,7 +4235,7 @@ overrides some of the properties.</p>
                 
 <hr>
 <dt class="name" id="DataSourceConfig">
-    <h4>DataSourceConfig</h4>
+    <h4 id="DataSourceConfig">DataSourceConfig</h4>
 
     
 </dt>
@@ -3955,7 +4305,7 @@ overrides some of the properties.</p>
                 
 <hr>
 <dt class="name" id="ExtendedColumnConfig">
-    <h4>ExtendedColumnConfig</h4>
+    <h4 id="ExtendedColumnConfig">ExtendedColumnConfig</h4>
 
     
 </dt>
@@ -4201,7 +4551,7 @@ overrides some of the properties.</p>
                 
 <hr>
 <dt class="name" id="FakeArray">
-    <h4>FakeArray</h4>
+    <h4 id="FakeArray">FakeArray</h4>
 
     
 </dt>
@@ -4352,7 +4702,7 @@ procceed all the rows when virtualization is on.</p>
                 
 <hr>
 <dt class="name" id="GridViewConfig">
-    <h4>GridViewConfig</h4>
+    <h4 id="GridViewConfig">GridViewConfig</h4>
 
     
 </dt>
@@ -4498,6 +4848,30 @@ procceed all the rows when virtualization is on.</p>
             
 
             <td class="description last"><p>An array of classes to be applied to <code>TABLE</code> elements.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tableAttributes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>An object of attributes to be applied to <code>TABLE</code> elements.</p></td>
         </tr>
 
     
@@ -4749,7 +5123,7 @@ GridView#didUpdate.</li>
                 
 <hr>
 <dt class="name" id="HeaderConfig">
-    <h4>HeaderConfig</h4>
+    <h4 id="HeaderConfig">HeaderConfig</h4>
 
     
 </dt>
@@ -4906,7 +5280,7 @@ below the viewport top.</p></td>
                 
 <hr>
 <dt class="name" id="NormalizedOrderByPair">
-    <h4>NormalizedOrderByPair</h4>
+    <h4 id="NormalizedOrderByPair">NormalizedOrderByPair</h4>
 
     
 </dt>
@@ -5121,7 +5495,7 @@ below the viewport top.</p></td>
                 
 <hr>
 <dt class="name" id="OrderByConfig">
-    <h4>OrderByConfig</h4>
+    <h4 id="OrderByConfig">OrderByConfig</h4>
 
     
 </dt>
@@ -5195,7 +5569,7 @@ below the viewport top.</p></td>
                 
 <hr>
 <dt class="name" id="OrderByItem">
-    <h4>OrderByItem</h4>
+    <h4 id="OrderByItem">OrderByItem</h4>
 
     
 </dt>
@@ -5269,7 +5643,7 @@ below the viewport top.</p></td>
                 
 <hr>
 <dt class="name" id="OrderByKey">
-    <h4>OrderByKey</h4>
+    <h4 id="OrderByKey">OrderByKey</h4>
 
     
 </dt>
@@ -5348,7 +5722,7 @@ order config.</li>
                 
 <hr>
 <dt class="name" id="OrderByObject">
-    <h4>OrderByObject</h4>
+    <h4 id="OrderByObject">OrderByObject</h4>
 
     
 </dt>
@@ -5493,7 +5867,7 @@ for ascending, non-positive for descending</p></td>
                 
 <hr>
 <dt class="name" id="OrderByPair">
-    <h4>OrderByPair</h4>
+    <h4 id="OrderByPair">OrderByPair</h4>
 
     
 </dt>
@@ -5564,7 +5938,7 @@ for ascending, non-positive for descending</p></td>
                 
 <hr>
 <dt class="name" id="ProjectionDefinition">
-    <h4>ProjectionDefinition</h4>
+    <h4 id="ProjectionDefinition">ProjectionDefinition</h4>
 
     
 </dt>
@@ -6123,7 +6497,7 @@ as a <a href="global.html#PropertySetter">PropertySetter</a> when passed 2 argum
                 
 <hr>
 <dt class="name" id="PropertyConfig">
-    <h4>PropertyConfig</h4>
+    <h4 id="PropertyConfig">PropertyConfig</h4>
 
     
 </dt>
@@ -6546,7 +6920,7 @@ as a <a href="global.html#PropertySetter">PropertySetter</a> when passed 2 argum
                 
 <hr>
 <dt class="name" id="QueryConfig">
-    <h4>QueryConfig</h4>
+    <h4 id="QueryConfig">QueryConfig</h4>
 
     
 </dt>
@@ -6742,7 +7116,7 @@ as a <a href="global.html#PropertySetter">PropertySetter</a> when passed 2 argum
                 
 <hr>
 <dt class="name" id="RowConfig">
-    <h4>RowConfig</h4>
+    <h4 id="RowConfig">RowConfig</h4>
 
     
 </dt>
@@ -6863,7 +7237,39 @@ multiple rows representing each of the data items.</li>
 
             
 
-            <td class="description last"><p>Classes of the <code>TR</code> element.</p></td>
+            <td class="description last"><p>The classes of the <code>TR</code> element.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>attributes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">AttributesConfig</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                    &lt;nullable><br>
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The attributes of the <code>TR</code> element.</p></td>
         </tr>
 
     
@@ -7013,7 +7419,7 @@ multiple rows representing each of the data items.</li>
                 
 <hr>
 <dt class="name" id="RowContent">
-    <h4>RowContent</h4>
+    <h4 id="RowContent">RowContent</h4>
 
     
 </dt>
@@ -7161,7 +7567,7 @@ multiple rows representing each of the data items.</li>
                 
 <hr>
 <dt class="name" id="RowsConfig">
-    <h4>RowsConfig</h4>
+    <h4 id="RowsConfig">RowsConfig</h4>
 
     
 </dt>
@@ -7340,7 +7746,7 @@ rows.</p>
                 
 <hr>
 <dt class="name" id="ScrollingConfig">
-    <h4>ScrollingConfig</h4>
+    <h4 id="ScrollingConfig">ScrollingConfig</h4>
 
     
 </dt>
@@ -7675,7 +8081,7 @@ rows.</p>
                 
 <hr>
 <dt class="name" id="SelectionConfig">
-    <h4>SelectionConfig</h4>
+    <h4 id="SelectionConfig">SelectionConfig</h4>
 
     
 </dt>
@@ -8113,7 +8519,7 @@ rows.</p>
                 
 <hr>
 <dt class="name" id="SortableConfig">
-    <h4>SortableConfig</h4>
+    <h4 id="SortableConfig">SortableConfig</h4>
 
     
 </dt>
@@ -8202,6 +8608,9 @@ Only available for memory data source.</li>
             
                 
 <span class="param-type">number</span>
+|
+
+<span class="param-type">Array.&lt;number></span>
 
 
 
@@ -8212,8 +8621,14 @@ Only available for memory data source.</li>
 
             
 
-            <td class="description last"><p>A number indicating the order on first click. Positive for ascending,
-   otherwise descending.</p></td>
+            <td class="description last"><p>The direction could be</p>
+<ul>
+<li>A number
+A number indicating the order on first click. Positive for ascending,
+otherwise descending.</li>
+<li>An array of numbers
+Indicating the sequence of sorting orders.</li>
+</ul></td>
         </tr>
 
     
@@ -8290,7 +8705,7 @@ Only available for memory data source.</li>
                 
 <hr>
 <dt class="name" id="SortableHeaderConfig">
-    <h4>SortableHeaderConfig</h4>
+    <h4 id="SortableHeaderConfig">SortableHeaderConfig</h4>
 
     
 </dt>
@@ -8372,7 +8787,7 @@ Only available for memory data source.</li>
 
         <tr>
             
-                <td class="name"><code>direction</code></td>
+                <td class="name"><code>directionIndex</code></td>
             
 
             <td class="type">
@@ -8395,7 +8810,7 @@ Only available for memory data source.</li>
 
             
 
-            <td class="description last"><p>The order direction. Positive for ascending, otherwise descending.</p></td>
+            <td class="description last"><p>The index of direction in the direction sequence.</p></td>
         </tr>
 
     
@@ -8683,7 +9098,7 @@ Only available for memory data source.</li>
                 
 <hr>
 <dt class="name" id="StructureChainState">
-    <h4>StructureChainState</h4>
+    <h4 id="StructureChainState">StructureChainState</h4>
 
     
 </dt>
@@ -8900,28 +9315,30 @@ Only available for memory data source.</li>
 </div>
 </div>
 
-<div class="modal fade" id="searchResults">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Search results</h4>
-      </div>
-      <div class="modal-body"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div>
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
 
 <footer>
 
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 	
-		on 2016-09-28T21:05:29+08:00
+		on 2020-09-17T14:39:17-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
@@ -8929,7 +9346,9 @@ Only available for memory data source.</li>
 
 <script src="scripts/docstrap.lib.js"></script>
 <script src="scripts/toc.js"></script>
-<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
 
 <script>
 $( function () {
@@ -8939,7 +9358,7 @@ $( function () {
 		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
 	} );
 
-	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
 		var $this = $( this );
 
 		var example = $this.find( "code" );
@@ -8975,8 +9394,7 @@ $( function () {
 	} );
 	$( "#toc" ).toc( {
 		anchorName  : function ( i, heading, prefix ) {
-			var id = $( heading ).attr( "id" );
-			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+			return $( heading ).attr( "id" ) || ( prefix + i );
 		},
 		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
 		showAndHide : false,
@@ -9002,11 +9420,13 @@ $( function () {
 <!--Google Analytics-->
 
 
-<script type="text/javascript">
-	$(document).ready(function() {
-		SearcherDisplay.init();
-	});
-</script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
 
 </body>
 </html>

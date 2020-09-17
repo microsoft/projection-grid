@@ -40,14 +40,14 @@
 			<li class="dropdown">
 				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="GridView.html#event:didRedraw">GridView#event:didRedraw</a></li><li><a href="GridView.html#event:didReload">GridView#event:didReload</a></li><li><a href="GridView.html#event:didUpdate">GridView#event:didUpdate</a></li><li><a href="GridView.html#event:willRedraw">GridView#event:willRedraw</a></li><li><a href="GridView.html#event:willReload">GridView#event:willReload</a></li><li><a href="GridView.html#event:willUpdate">GridView#event:willUpdate</a></li>
+					<li><a href="GridView.html#event:didRedraw">GridView#event:didRedraw</a></li><li><a href="GridView.html#event:didRedrawBody">GridView#event:didRedrawBody</a></li><li><a href="GridView.html#event:didRedrawFooter">GridView#event:didRedrawFooter</a></li><li><a href="GridView.html#event:didRedrawHeader">GridView#event:didRedrawHeader</a></li><li><a href="GridView.html#event:didReload">GridView#event:didReload</a></li><li><a href="GridView.html#event:didUpdate">GridView#event:didUpdate</a></li><li><a href="GridView.html#event:willRedraw">GridView#event:willRedraw</a></li><li><a href="GridView.html#event:willRedrawFooter">GridView#event:willRedrawFooter</a></li><li><a href="GridView.html#event:willRedrawHeader">GridView#event:willRedrawHeader</a></li><li><a href="GridView.html#event:willReload">GridView#event:willReload</a></li><li><a href="GridView.html#event:willUpdate">GridView#event:willUpdate</a></li><li><a href="GridView.html#event:wwillRedrawBody">GridView#event:wwillRedrawBody</a></li>
 				</ul>
 			</li>
 			
 			<li class="dropdown">
 				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="global.html#cellsProjectionHandler">cellsProjectionHandler</a></li><li><a href="global.html#columnGroupProjectionHandler">columnGroupProjectionHandler</a></li><li><a href="global.html#columnsProjectionHandler">columnsProjectionHandler</a></li><li><a href="global.html#eventsProjectionHandler">eventsProjectionHandler</a></li><li><a href="global.html#normalizeClasses">normalizeClasses</a></li><li><a href="global.html#normalizeSelectionConfig">normalizeSelectionConfig</a></li><li><a href="global.html#queryProjectionHandler">queryProjectionHandler</a></li><li><a href="global.html#rowsProjectionHandler">rowsProjectionHandler</a></li><li><a href="global.html#selectionProjectionHandler">selectionProjectionHandler</a></li><li><a href="global.html#sortableHeaderProjectionHandler">sortableHeaderProjectionHandler</a></li><li><a href="global.html#translateRow">translateRow</a></li>
+					<li><a href="global.html#cellsProjectionHandler">cellsProjectionHandler</a></li><li><a href="global.html#columnGroupProjectionHandler">columnGroupProjectionHandler</a></li><li><a href="global.html#columnsProjectionHandler">columnsProjectionHandler</a></li><li><a href="global.html#eventsProjectionHandler">eventsProjectionHandler</a></li><li><a href="global.html#extendDataColumnAttribute">extendDataColumnAttribute</a></li><li><a href="global.html#normalizeAttributes">normalizeAttributes</a></li><li><a href="global.html#normalizeClasses">normalizeClasses</a></li><li><a href="global.html#normalizeSelectionConfig">normalizeSelectionConfig</a></li><li><a href="global.html#queryProjectionHandler">queryProjectionHandler</a></li><li><a href="global.html#rowsProjectionHandler">rowsProjectionHandler</a></li><li><a href="global.html#selectionProjectionHandler">selectionProjectionHandler</a></li><li><a href="global.html#sortableHeaderProjectionHandler">sortableHeaderProjectionHandler</a></li><li><a href="global.html#translateRow">translateRow</a></li>
 				</ul>
 			</li>
 			
@@ -59,16 +59,18 @@
 			</li>
 			
 		</ul>
-		<div class="col-sm-3 col-md-3">
-            <form class="navbar-form" role="search">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
-                    <div class="input-group-btn">
-                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
                     </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        
 	</div>
 
 </div>
@@ -226,6 +228,46 @@
                 </td>
             
 
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tableAttributes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    {aria-label: 'table'}
+                
+                </td>
+            
+
             <td class="description last"><p>The classes for the TABLE elements (content table and sticky/fixed header)</p></td>
         </tr>
 
@@ -368,7 +410,7 @@
             
 <hr>
 <dt class="name" id="countRows">
-    <h4><span class="type-signature"></span>countRows<span class="type-signature"> :number</span></h4>
+    <h4 id="countRows"><span class="type-signature"></span>countRows<span class="type-signature"> :number</span></h4>
 
     
 </dt>
@@ -438,8 +480,79 @@
         
             
 <hr>
+<dt class="name" id="dataSource">
+    <h4 id="dataSource"><span class="type-signature"></span>dataSource<span class="type-signature"> :<a href="DataSource.html">DataSource</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The data source of the grid</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="DataSource.html">DataSource</a></span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
 <dt class="name" id="itemArray">
-    <h4><span class="type-signature"></span>itemArray<span class="type-signature"> :Array.&lt;Object></span></h4>
+    <h4 id="itemArray"><span class="type-signature"></span>itemArray<span class="type-signature"> :Array.&lt;Object></span></h4>
 
     
 </dt>
@@ -510,7 +623,7 @@
             
 <hr>
 <dt class="name" id="items">
-    <h4><span class="type-signature"></span>items<span class="type-signature"> :Array.&lt;Object>|<a href="global.html#FakeArray">FakeArray</a></span></h4>
+    <h4 id="items"><span class="type-signature"></span>items<span class="type-signature"> :Array.&lt;Object>|<a href="global.html#FakeArray">FakeArray</a></span></h4>
 
     
 </dt>
@@ -584,7 +697,7 @@
             
 <hr>
 <dt class="name" id="primaryKey">
-    <h4><span class="type-signature"></span>primaryKey<span class="type-signature"> :string</span></h4>
+    <h4 id="primaryKey"><span class="type-signature"></span>primaryKey<span class="type-signature"> :string</span></h4>
 
     
 </dt>
@@ -655,7 +768,7 @@
             
 <hr>
 <dt class="name" id="totalCountRows">
-    <h4><span class="type-signature"></span>totalCountRows<span class="type-signature"> :number</span></h4>
+    <h4 id="totalCountRows"><span class="type-signature"></span>totalCountRows<span class="type-signature"> :number</span></h4>
 
     
 </dt>
@@ -2226,6 +2339,161 @@ changes the TR sequence of TBODY. Insteadly, you should use
             
 <hr>
 <dt>
+    <h4 class="name" id="itemOfElement"><span class="type-signature"></span>itemOfElement(el)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the data item from a DOM element in a certain row.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>el</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">HTMLElement</span>
+|
+
+<span class="param-type">jQuery</span>
+|
+
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The DOM element. It can be an <code>HTMLElement</code>, a jQuery object or a
+   jQuery selector.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
     <h4 class="name" id="itemWithKey"><span class="type-signature"></span>itemWithKey(key)</h4>
     
     
@@ -2527,6 +2795,195 @@ changes the TR sequence of TBODY. Insteadly, you should use
 
 
         
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="monitorViewportChange"><span class="type-signature"></span>monitorViewportChange( [timeout] [, interval])</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Monitor the viewport change during a certain period and adjust the sticky
+headers if necessary.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>timeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    1000
+                
+                </td>
+            
+
+            <td class="description last"><p>The period of monitoring in milliseconds</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>interval</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    100
+                
+                </td>
+            
+
+            <td class="description last"><p>The interval of sampling in milliseconds</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 </dd>
@@ -5225,6 +5682,228 @@ when virtualization is enabled.</p>
             
 <hr>
 <dt>
+    <h4 class="name" id="event:didRedrawBody">didRedrawBody</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:didRedrawFooter">didRedrawFooter</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:didRedrawHeader">didRedrawHeader</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
     <h4 class="name" id="event:didReload">didReload</h4>
     
     
@@ -5233,7 +5912,20 @@ when virtualization is enabled.</p>
 
     
     <div class="description">
-        <p>The <code>GridView</code> did reload data from the data source.</p>
+        <p>The <code>GridView</code> did reload data from the data source.
+This event take 2 parameters</p>
+<ol>
+<li>succeeded (Boolean), true if the data fetch succeeded</li>
+<li>data|rejection (Object)<ul>
+<li>If the data fetch succeeded, pass the fetched data in form of
+<code>{ totalCount, items }</code>. Where <code>totalCount</code> is the server side total
+item count, and the items is the array of data items with current
+query condition</li>
+<li>If the data fetch failed, pass the rejection object, which is
+usually an <code>Error</code> object from the data source</li>
+</ul>
+</li>
+</ol>
     </div>
     
 
@@ -5460,6 +6152,154 @@ when virtualization is enabled.</p>
             
 <hr>
 <dt>
+    <h4 class="name" id="event:willRedrawFooter">willRedrawFooter</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:willRedrawHeader">willRedrawHeader</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
     <h4 class="name" id="event:willReload">willReload</h4>
     
     
@@ -5612,6 +6452,80 @@ when virtualization is enabled.</p>
     
 </dd>
 
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:wwillRedrawBody">wwillRedrawBody</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
         </dl>
     
 </article>
@@ -5635,28 +6549,30 @@ when virtualization is enabled.</p>
 </div>
 </div>
 
-<div class="modal fade" id="searchResults">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Search results</h4>
-      </div>
-      <div class="modal-body"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div>
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
 
 <footer>
 
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 	
-		on 2016-09-28T21:05:29+08:00
+		on 2020-09-17T14:39:18-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
@@ -5664,7 +6580,9 @@ when virtualization is enabled.</p>
 
 <script src="scripts/docstrap.lib.js"></script>
 <script src="scripts/toc.js"></script>
-<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
 
 <script>
 $( function () {
@@ -5674,7 +6592,7 @@ $( function () {
 		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
 	} );
 
-	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
 		var $this = $( this );
 
 		var example = $this.find( "code" );
@@ -5710,8 +6628,7 @@ $( function () {
 	} );
 	$( "#toc" ).toc( {
 		anchorName  : function ( i, heading, prefix ) {
-			var id = $( heading ).attr( "id" );
-			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+			return $( heading ).attr( "id" ) || ( prefix + i );
 		},
 		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
 		showAndHide : false,
@@ -5737,11 +6654,13 @@ $( function () {
 <!--Google Analytics-->
 
 
-<script type="text/javascript">
-	$(document).ready(function() {
-		SearcherDisplay.init();
-	});
-</script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
 
 </body>
 </html>
