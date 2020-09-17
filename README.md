@@ -91,6 +91,14 @@ An option of `'js-data'` data source which is a [JSData Resource][js-data-resour
 ### `dataSource.schema`
 An optional [JSON schema][json-schema] object specifying the schema of the row data.
 
+### `layout`
+The grid layout. Available values are
+
+* `'table'`, the table layout 
+* `'flex'`, the flex layout 
+
+The default value is `'table'`.
+
 ### `columns`
 An array of grid column configuration objects.
 
@@ -170,6 +178,9 @@ A boolean value specifies whether the column is sortable by clicking the header.
 
 ### `columns[].editable`
 A boolean value specifies whether the cell data is editable with a pop up editor.
+
+### `columns[].group`
+A string value. The row will be splitted into several groups by this value.
 
 ### `pageable`
 Define the pagination behavior.
