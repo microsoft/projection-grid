@@ -9,33 +9,37 @@ import 'bootstrap-webpack';
 
 const columns = [{
   name: 'UserName',
-  width: 120,
+  width: 70,
   sortable: true,
   group: 'freezing',
 }, {
   name: 'Name',
   property: item => `${item.FirstName}, ${item.LastName}`,
-  width: 150,
+  width: 70,
   sortable: true,
   group: 'freezing',
 }, {
   name: 'Emails',
-  width: 220,
+  width: 200,
   sortable: item => item.Emails.length,
   group: 'freezing',
 }, {
   name: 'AddressInfo',
+  width: 100,
   columns: [{
+    width: 100,
     name: 'Address',
     property: 'AddressInfo/0/Address',
     sortable: true,
   }, {
     name: 'City',
     columns: [{
+      width: 200,
       name: 'CityName',
       property: 'AddressInfo/0/City/Name',
       sortable: true,
     }, {
+      width: 250,
       name: 'CityCountry',
       property: 'AddressInfo/0/City/CountryRegion',
       sortable: true,
@@ -64,8 +68,7 @@ const stickyGridConfig = _.defaults({
   },
 }, gridConfigBase);
 
-
-window.gridView = pgrid.factory({ vnext: true }).create(stickyGridConfig).gridView
+window.gridView = pgrid.factory({ vnext: true }).create(stickyGridConfig).gridView;
 
 _.each([
   'willRedrawHeader',

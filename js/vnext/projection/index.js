@@ -4,6 +4,7 @@ export { itemIndex } from './item-index.js';
 export { selection, setSelectAll, setSelectRow } from './selection.js';
 export { rangeSelection } from './range-selection.js';
 export { columns } from './columns.js';
+export { flexColumns } from './flex-columns.js';
 export { rows } from './rows.js';
 export { columnGroup } from './column-group.js';
 export { cells } from './cells.js';
