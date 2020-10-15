@@ -2,7 +2,7 @@ import emailsTemplate from './emails.jade';
 
 export default [{
   name: 'UserName',
-  width: 120,
+  width: 520,
   sortable: true,
 }, {
   name: 'Name',

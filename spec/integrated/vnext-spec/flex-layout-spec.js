@@ -31,22 +31,27 @@ const columns = [{
 }, {
   name: 'Name',
   property: item => `${item.FirstName}, ${item.LastName}`,
-  width: 150,
+  width: 120,
   sortable: true,
   group: 'freezing',
 }, {
   name: 'AddressInfo',
+  width: 130,
   columns: [{
+    width: 140,
     name: 'Address',
     property: 'AddressInfo/0/Address',
     sortable: true,
   }, {
     name: 'City',
+    width: 150,
     columns: [{
       name: 'CityName',
+      width: 160,
       property: 'AddressInfo/0/City/Name',
       sortable: true,
     }, {
+      width: 170,
       name: 'CityCountry',
       property: 'AddressInfo/0/City/CountryRegion',
       sortable: true,
@@ -168,6 +173,12 @@ describe('Flex layout', () => {
 
         // Check non-sticky group
         expect($nonStickyGroup.find('[data-name="AddressInfo"]').size()).to.be.equal(1);
+
+        // check the width for the header
+        expect($stickyGroup.find('[data-name="selection"]').attr('style')).to.be.undefined; // not define the width
+        expect($stickyGroup.find('[data-name="UserName"]').attr('style')).to.be.equal('width: 120px'); // set the width to 500
+        expect($stickyGroup.find('[data-name="AddressInfo"]').attr('style')).to.be.undefined; // the column with sub columns shouldn't have width
+        expect($nonStickyGroup.find('[data-name="CityCountry"]').attr('style')).to.be.equal('width: 170px'); // the leaf column should have width
       })
       .tapCatch(console.log);
   });

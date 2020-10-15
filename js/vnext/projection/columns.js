@@ -1,15 +1,5 @@
 import _ from 'underscore';
-import { extendDataColumnAttribute } from './common.js';
-
-function extendColumns(columns, extendFunc) {
-  return _.map(columns, column => {
-    if (column.columns) {
-      return _.defaults({ columns: extendColumns(column.columns, extendFunc) }, extendFunc(column));
-    } else {
-      return extendFunc(column);
-    }
-  });
-}
+import { getDefaultColumns, extendColumns, extendDataColumnAttr } from './common.js';
 
 /**
  * @typedef ColumnConfig
@@ -76,15 +66,11 @@ function extendColumns(columns, extendFunc) {
  *    data will be shown.
  */
 function columnsProjectionHandler(state, columns) {
-  const defaultColumns = columns || _.chain(state.items.slice(0, 1)).first().keys().map(name => ({
-    name,
-    sortable: true,
-  })).value();
-
-  const extendedColumns = extendColumns(defaultColumns, extendDataColumnAttribute);
+  const defaultColumns = getDefaultColumns(state, columns);
+  const extendedColumnsWithDataColumn = extendColumns(defaultColumns, extendDataColumnAttr);
 
   return _.defaults({
-    columns: extendedColumns,
+    columns: extendedColumnsWithDataColumn,
   }, state);
 }
 

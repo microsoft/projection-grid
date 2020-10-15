@@ -19,8 +19,10 @@ window.customView = new CustomView().render();
 
 export default {
   headRows: [
+    'column-header-rows',
+  ],
+  footRows: [
     { view: window.customView },
     { html: '<h3>This a html row</h3>' },
-    'column-header-rows',
   ],
 };

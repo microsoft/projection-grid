@@ -11,6 +11,7 @@ import {
   setSelectRow,
   rangeSelection,
   columns,
+  flexColumns,
   rows,
   columnGroup,
   cells,
@@ -122,6 +123,8 @@ export class GridView extends Backbone.View {
       classes: tableClasses,
       attributes: tableAttributes,
     });
+    this.layout = layout;
+
     this.model = new Backbone.Model();
 
     this._dataSource = dataSource;
@@ -220,12 +223,15 @@ export class GridView extends Backbone.View {
     this._chainContent = new ProjectionChain(this.model);
 
     this.pipeDataProjections(query, buffer, itemIndex);
-    this.pipeStructureProjections([
-      columns,
-      rows,
-      selection,
-      rangeSelection,
-    ]);
+    this.pipeStructureProjections([]
+      .concat(this.layout === 'flex' ? flexColumns : columns)
+      .concat([
+        rows,
+        selection,
+        rangeSelection,
+      ])
+    );
+
     this.pipeContentProjections([
       columnGroup,
       cells,

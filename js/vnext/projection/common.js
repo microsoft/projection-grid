@@ -80,23 +80,39 @@ export function normalizeAttributes(attributes, context) {
   return {};
 }
 
-/**
- * Normalize the attributes configuration
- * @param {ColumnConfig} column 
- *    The column config.
- * @return {ColumnConfig}
- *    The column config with attribute.
- */
-export const extendDataColumnAttribute= (column) => _.defaults({
-  headAttributes: _.extend({
-    'data-column': column.name || column.property,
-  }, column.headAttributes),
+export function getDefaultColumns(state, columns) {
+  return columns || _.chain(state.items.slice(0, 1)).first().keys().map(name => ({
+    name,
+    sortable: true,
+  })).value();
+}
 
-  bodyAttributes: _.extend({
-    'data-column': column.name || column.property,
-  }, column.bodyAttributes),
+// extend headAttribute/bodyAttribute/footAttribute
+const getDateColumnAttr = column => ({
+  'data-column': column.name || column.property,
+});
+const getStyleAttr = column => _.isUndefined(column.width) || column.columns ? {} : {
+  style: `width: ${column.width}px`,
+};
 
-  footAttributes: _.extend({
-    'data-column': column.name || column.property,
-  }, column.footAttributes),
+export const extendDataColumnAttr = column => _.defaults({
+  headAttributes: _.extend(getDateColumnAttr(column), column.headAttributes),
+  bodyAttributes: _.extend(getDateColumnAttr(column), column.bodyAttributes),
+  footAttributes: _.extend(getDateColumnAttr(column), column.footAttributes),
 }, column);
+
+export const extendWidthAttr = column => _.defaults({
+  headAttributes: _.extend(getStyleAttr(column), column.headAttributes),
+  bodyAttributes: _.extend(getStyleAttr(column), column.bodyAttributes),
+  footAttributes: _.extend(getStyleAttr(column), column.footAttributes),
+}, column);
+
+// extend the column attribute recursively
+export function extendColumns(columns, extendFunc) {
+  return _.map(columns, column => {
+    if (column.columns) {
+      return _.defaults({ columns: extendColumns(column.columns, extendFunc) }, extendFunc(column));
+    }
+    return extendFunc(column);
+  });
+}
