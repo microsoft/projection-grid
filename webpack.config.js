@@ -47,7 +47,7 @@ module.exports = {
       { test: /\.json$/, loader: 'json' },
     ],
   },
-  babel: { presets: ['es2015' ] },
+  babel: { presets: ['es2015'] },
   externals: [getExternals()],
   resolve: { alias: webpackAlias },
   devtool: 'source-map',
