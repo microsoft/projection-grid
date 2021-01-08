@@ -306,7 +306,7 @@ export class TableView extends Backbone.View {
         });
         $stickyHeader.css({
           position: 'relative',
-          top: Math.min(Math.max(topVP + offset - topCur, 0), $table.height()),
+          top: Math.min(Math.max(topVP + offset - topCur, 0), Math.max(0, $table.height())),
         });
       }
     };
