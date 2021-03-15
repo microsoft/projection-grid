@@ -59,7 +59,6 @@ class HeaderFooterView extends Backbone.View {
 
       _.each(hasParentcells, cell => {
         const cellHtml = $(flexHeadCell({ cell, escapeAttr }));
-        
         this.$(columnPlaceholderSelector(cell.parentName)).append(cellHtml);
       });
     } else if (this.layout === LAYOUT.table) {
