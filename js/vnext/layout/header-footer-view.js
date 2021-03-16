@@ -8,7 +8,7 @@ import flexHeadCell from './flex-head-cell.jade';
 const subviewClass = i => `header-subview-${i}`;
 const subviewSelector = i => `.${subviewClass(i)}`;
 const columnNameClass = name => `column-name-${name}`;
-const columnPlaceholderSelector = name => `.${columnNameClass(name)} +.nested-column-placeholder`;
+const columnPlaceholderSelector = name => `.${columnNameClass(name.replace('/', '\\/'))} +.nested-column-placeholder`;
 
 class HeaderFooterView extends Backbone.View {
   initialize({ tableView, group, layout }) {
@@ -61,7 +61,7 @@ class HeaderFooterView extends Backbone.View {
         const cellHtml = $(flexHeadCell({ cell, escapeAttr }));
         this.$(columnPlaceholderSelector(cell.parentName)).append(cellHtml);
       });
-    } else if (this.layout === LAYOUT.table){
+    } else if (this.layout === LAYOUT.table) {
       this.$el.html(_.map(this.rowsWithClass, row => this.template(row)).join(''));
     }
 
