@@ -33,9 +33,8 @@ mixin mixinSection(section, cell, escapeAttr)
 
 mixin mixinRow(row, section, escapeAttr)
   - var attr = escapeAttr(row.attributes)
-  - var role = section === 'head' ? 'rowheader' : 'row';
 
-  div.tr.flex-row&attributes(attr)(class=row.classes, role=role)
+  div.tr.flex-row&attributes(attr)(class=row.classes, role='row')
     if row.html || row.view
       each cell in row.cells 
         +mixinSection(section, cell, escapeAttr)
