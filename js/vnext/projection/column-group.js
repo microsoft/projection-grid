@@ -239,6 +239,8 @@ class ColumnGroup {
         const attributes = _.defaults({
           colspan,
           rowspan,
+          'aria-colspan': colspan,
+          'aria-rowspan': rowspan,
           'data-name': name,
         }, normalizeAttributes(col.headAttributes, col));
 
