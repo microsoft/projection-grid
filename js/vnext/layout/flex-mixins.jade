@@ -8,19 +8,19 @@ mixin mixinHeadCell(cell, escapeAttr)
   - var attr = escapeAttr(cell.attributes)
   if attr.colspan > 1
     .nested-column-container(style=`flex-grow: ${attr.colspan};`)
-      div.th.flex-cell&attributes(attr)(class=cell.classes)
+      div.th.flex-cell&attributes(attr)(class=cell.classes, role='columnheader')
         +cellValue(cell)
       if (cell.hasChild)
         .nested-column-placeholder
   else
-    div.th.flex-cell&attributes(attr)(class=cell.classes)
+    div.th.flex-cell&attributes(attr)(class=cell.classes, role='columnheader')
       +cellValue(cell)
     if (cell.hasChild)
       .nested-column-placeholder
 
 mixin mixinCell(cell, escapeAttr)
   - var attr = escapeAttr(cell.attributes)
-  div.td.flex-cell&attributes(attr)(class=cell.classes)
+  div.td.flex-cell&attributes(attr)(class=cell.classes, role='gridcell')
     +cellValue(cell)
 
 mixin mixinSection(section, cell, escapeAttr)
@@ -34,7 +34,7 @@ mixin mixinSection(section, cell, escapeAttr)
 mixin mixinRow(row, section, escapeAttr)
   - var attr = escapeAttr(row.attributes)
 
-  div.tr.flex-row&attributes(attr)(class=row.classes)
+  div.tr.flex-row&attributes(attr)(class=row.classes, role='row')
     if row.html || row.view
       each cell in row.cells 
         +mixinSection(section, cell, escapeAttr)
