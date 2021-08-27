@@ -6,6 +6,10 @@
       }
     }
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/microsoft/projection-grid.git"
+  },
   "name": "projection-grid",
   "description": "Client side grid control in JavaScript using pipe and filter patterns.",
   "keywords": [],
