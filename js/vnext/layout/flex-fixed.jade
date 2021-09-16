@@ -5,12 +5,12 @@
     'table-layout': 'fixed',
   };
 
-.table-container.flex-layout
+.table-container.flex-layout(role='grid')
   .fixed-header
-    div.table.fixed-header(style=tableStyle, class=classes, role='grid')&attributes(headerAttributes)
+    div.table.fixed-header(style=tableStyle, class=classes)&attributes(headerAttributes)
       div.thead.header
   .viewport
-    div.table.data-table(style=tableStyle, class=classes, role='grid')&attributes(dataTableAttributes)
+    div.table.data-table(style=tableStyle, class=classes)&attributes(dataTableAttributes)
       div.tbody(role='rowgroup')
         div.tr.top-filler(role='presentation')
         div.tr.bottom-filler(role='presentation')
