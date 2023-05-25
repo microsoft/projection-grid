@@ -4,8 +4,8 @@
     'margin': 0,
   };
 
-.table-container.flex-layout(role='grid')
-  div.table.data-table(style=tableStyle, class=classes)&attributes(dataTableAttributes)
+.table-container.flex-layout(role='grid')&attributes(dataTableAttributes)
+  div.table.data-table(style=tableStyle, class=classes)
     div.thead.header
     div.tbody(role='rowgroup')
       div.tr.top-filler(role='presentation')
